@@ -1512,7 +1512,17 @@ app.post('/api/workflow/execute/:id', async (req, res) => {
 });
 
 // ========== Frontend & Workflow Builder UI with Gorgeous Multi-Color Studio Modal & Live Preview ==========
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.get('/', (req, res) => {
+  const indexPath = path.join(__dirname, 'public', 'index.html');
+  if (fs.existsSync(indexPath)) {
+    return res.sendFile(indexPath);
+  }
+  const rootIndex = path.join(__dirname, 'index.html');
+  if (fs.existsSync(rootIndex)) {
+    return res.sendFile(rootIndex);
+  }
+  res.send('<!DOCTYPE html><html><head><title>Filesque</title><style>body{font-family:system-ui,sans-serif;text-align:center;padding:4rem 2rem;background:#f8fafc;color:#0f172a;}.card{background:white;padding:2.5rem;border-radius:1rem;max-width:500px;margin:0 auto;box-shadow:0 4px 20px rgba(0,0,0,0.05);border:1px solid #e2e8f0;}.btn{background:#dc2626;color:white;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:bold;display:inline-block;margin-top:1.5rem;}</style></head><body><div class="card"><h1>⚡ Filesque Live</h1><p style="color:#64748b;margin-top:0.8rem;">Please upload the <b>public</b> folder (with <code>index.html</code>) to GitHub.</p><a href="/workflow-builder" class="btn">⚡ Open Workflow Builder Page</a></div></body></html>');
+});
 
 app.get('/workflow-builder', (req, res) => {
   const toolsListHTML = toolRegistry.map(tool => {
