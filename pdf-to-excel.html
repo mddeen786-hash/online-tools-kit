@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Excel Converter | iLoveFiles</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- PDF parsing & Excel generation libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col items-center">
+
+<!-- Top Navigation Bar with Creative Animated Brand & Nav Links -->
+<nav class="w-full bg-white/90 backdrop-blur-md border-b border-slate-100 px-8 py-5 flex justify-between items-center fixed top-0 left-0 z-50 shadow-xs">
+    
+    <!-- Creative Animated Brand Name -->
+    <div class="cursor-pointer flex items-center space-x-2 group shrink-0" onclick="window.location.href='index.html'">
+        <span class="text-4xl sm:text-7xl font-black tracking-tighter text-[#0f172a] flex items-center overflow-hidden">
+            <span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span><span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span>
+        </span>
+        <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping ml-1 hidden sm:inline-block"></span>
+    </div>
+    
+    <!-- Navbar Links -->
+    <div class="hidden lg:flex items-center space-x-9 text-base font-black text-slate-800 tracking-wide ml-auto">
+        <a href="index.html" class="hover:text-red-600 transition-colors uppercase">Home</a>
+
+        <!-- 1. PDF Core Tools -->
+        <div class="relative group py-2">
+            <a href="#pdf-section" class="flex items-center space-x-1 hover:text-red-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>PDF Core Tools</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-red-600 uppercase tracking-wider mb-2 px-2">PDF Utilities (7)</div>
+                <a href="pdf-to-word.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📄</span> <span>PDF to Word</span></a>
+                <a href="pdf-to-excel.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📊</span> <span>PDF to Excel</span></a>
+                <a href="merge.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💼</span> <span>Merge PDF</span></a>
+                <a href="pdf-splitter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>✂️</span> <span>PDF Splitter</span></a>
+                <a href="pdf-organizer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📑</span> <span>PDF Organizer</span></a>
+                <a href="pdf-watermark.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💧</span> <span>PDF Watermark</span></a>
+                <a href="pdf-to-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>🖼️</span> <span>PDF to Image</span></a>
+            </div>
+        </div>
+
+        <!-- 2. Image Utilities -->
+        <div class="relative group py-2">
+            <a href="#image-section" class="flex items-center space-x-1 hover:text-teal-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Image Utilities</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-teal-600 uppercase tracking-wider mb-2 px-2">Image Utilities (7)</div>
+                <a href="compress.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🗜️</span> <span>Compress Image</span></a>
+                <a href="image-converter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🖼️</span> <span>Image Converter</span></a>
+                <a href="image-to-pdf.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📷</span> <span>Image to PDF</span></a>
+                <a href="image-reducer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📉</span> <span>Image Reducer</span></a>
+                <a href="image-to-text.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🔍</span> <span>Image to Text</span></a>
+                <a href="passport-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🛂</span> <span>Passport Studio</span></a>
+                <a href="merge-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🧩</span> <span>Merge Image</span></a>
+            </div>
+        </div>
+
+        <!-- 3. Business Suite -->
+        <div class="relative group py-2">
+            <a href="#business-section" class="flex items-center space-x-1 hover:text-purple-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Business Suite</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-purple-600 uppercase tracking-wider mb-2 px-2">Business Utilities (6)</div>
+                <a href="invoice-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🧾</span> <span>Invoice Generator</span></a>
+                <a href="barcode-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🏷️</span> <span>Barcode Generator</span></a>
+                <a href="qr-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📱</span> <span>QR Code Studio</span></a>
+                <a href="sign-maker.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>✍️</span> <span>Digital Signature Studio</span></a>
+                <a href="code-formatter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>⚡</span> <span>Code Formatter</span></a>
+                <a href="product-listing.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📦</span> <span>Product Listing</span></a>
+            </div>
+        </div>
+
+    </div>
+</nav>
+
+<!-- Main Workspace -->
+<div class="w-full max-w-6xl px-4 mt-36 mb-24">
+    <a href="index.html" class="text-sm font-semibold text-gray-500 hover:text-cyan-500 mb-4 inline-block">← Back to Dashboard</a>
+    
+    <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+        <h2 class="text-3xl font-black text-slate-900 text-center mb-2">Smart PDF to Excel Converter</h2>
+        <p class="text-gray-500 text-center mb-8">Convert digital & scanned PDF documents into clean, structured Excel spreadsheets.</p>
+
+        <!-- Drop Zone Area -->
+        <div id="drop-zone" onclick="document.getElementById('file-input').click()" class="border-3 border-dashed border-gray-300 rounded-xl p-8 bg-gray-50 text-center relative cursor-pointer hover:bg-gray-100/50 transition-all">
+            <span class="text-4xl block mb-2">📊</span>
+            <p class="text-gray-600 font-medium mb-3">Drag & Drop PDF file here to extract structured tables</p>
+
+            <!-- EXACT TOGGLE FROM SCREENSHOT (RENAMED LABELS) -->
+            <div class="mt-4 mb-5 flex items-center justify-center space-x-3 bg-white p-3 rounded-lg border border-gray-200 inline-flex w-auto mx-auto shadow-sm" onclick="event.stopPropagation();">
+                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Simple Table</span>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="layout-toggle" class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                </label>
+                <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Complex Table</span>
+            </div>
+            <br>
+
+            <button type="button" onclick="event.stopPropagation(); document.getElementById('file-input').click();" class="bg-emerald-600 text-white font-bold px-6 py-2.5 rounded-xl shadow hover:bg-emerald-700 transition-all cursor-pointer inline-block text-sm">
+                Select PDF File
+            </button>
+            <input type="file" id="file-input" accept="application/pdf" class="hidden" onchange="handleFileSelected(this.files)">
+        </div>
+
+        <!-- Processing Status Bar -->
+        <div id="scan-status" class="mt-6 hidden">
+            <div class="flex justify-between text-xs font-bold text-slate-700 mb-2">
+                <span id="status-text">Parsing PDF layout & table boundaries...</span>
+                <span id="status-percent">0%</span>
+            </div>
+            <div class="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden">
+                <div id="progress-bar" class="bg-emerald-600 h-full w-0 transition-all duration-200"></div>
+            </div>
+        </div>
+
+        <!-- Live Spreadsheet Preview Panel -->
+        <div id="result-panel" class="mt-8 border-t border-gray-100 pt-6 hidden">
+            <div class="flex justify-between items-center mb-3">
+                <div>
+                    <h3 class="text-base font-bold text-slate-900">Live Spreadsheet Output</h3>
+                    <p class="text-xs text-gray-400">Click any cell to edit data before downloading.</p>
+                </div>
+                <span id="row-count-badge" class="bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full border border-emerald-200">0 Rows Extracted</span>
+            </div>
+
+            <!-- Scrollable Data Grid -->
+            <div class="w-full h-[450px] border border-gray-200 rounded-xl overflow-auto bg-slate-50 shadow-inner">
+                <table id="preview-table" class="w-full text-left text-xs border-collapse bg-white">
+                </table>
+            </div>
+
+            <!-- Export Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 mt-6">
+                <button id="export-xlsx-btn" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow transition-all flex items-center justify-center space-x-2 cursor-pointer">
+                    <span>📊 Download Excel Sheet (.xlsx)</span>
+                </button>
+                <button id="export-csv-btn" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow transition-all flex items-center justify-center space-x-2 cursor-pointer">
+                    <span>📄 Export CSV File (.csv)</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    if (typeof pdfjsLib !== 'undefined') {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+
+    const scanStatus = document.getElementById('scan-status');
+    const progressBar = document.getElementById('progress-bar');
+    const statusText = document.getElementById('status-text');
+    const statusPercent = document.getElementById('status-percent');
+    const resultPanel = document.getElementById('result-panel');
+    const previewTable = document.getElementById('preview-table');
+    const rowCountBadge = document.getElementById('row-count-badge');
+    const exportXlsxBtn = document.getElementById('export-xlsx-btn');
+    const exportCsvBtn = document.getElementById('export-csv-btn');
+
+    let currentFileName = "extracted_spreadsheet";
+    let extractedTableData = [];
+
+    function handleFileSelected(files) {
+        if (files && files.length > 0) {
+            processPDF(files[0]);
+        }
+    }
+
+    const dropZone = document.getElementById('drop-zone');
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false);
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
+        if (files && files.length > 0) processPDF(files[0]);
+    }, false);
+
+    async function processPDF(file) {
+        if (!file || file.type !== 'application/pdf') {
+            alert('Please select a valid PDF document.');
+            return;
+        }
+
+        currentFileName = file.name.substring(0, file.name.lastIndexOf('.')) || 'extracted_spreadsheet';
+        const isComplex = document.getElementById('layout-toggle').checked;
+
+        scanStatus.classList.remove('hidden');
+        resultPanel.classList.add('hidden');
+        progressBar.style.width = '0%';
+        statusPercent.textContent = '0%';
+
+        try {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            const totalPages = pdfDoc.numPages;
+
+            extractedTableData = [];
+
+            for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+                const progress = Math.round((pageNum / totalPages) * 100);
+                progressBar.style.width = progress + '%';
+                statusPercent.textContent = progress + '%';
+                statusText.textContent = `Processing page ${pageNum} of ${totalPages}...`;
+
+                const page = await pdfDoc.getPage(pageNum);
+                const textContent = await page.getTextContent();
+                
+                // CONDITIONAL ROUTING - Separated exactly as requested
+                const pageRows = isComplex 
+                    ? parseComplexPDFTables(textContent.items) 
+                    : parseSimplePDFTables(textContent.items);
+
+                if (pageRows.length > 0) {
+                    extractedTableData.push(...pageRows);
+                }
+            }
+
+            if (extractedTableData.length === 0) {
+                statusText.textContent = 'Running OCR engine on scanned PDF...';
+                extractedTableData = await runOCRFallback(file);
+            }
+
+            scanStatus.classList.add('hidden');
+            resultPanel.classList.remove('hidden');
+
+            renderPreviewTable(extractedTableData);
+
+        } catch (err) {
+            console.error(err);
+            scanStatus.classList.add('hidden');
+            alert("Error reading PDF file. Please try another PDF.");
+        }
+    }
+
+    // ==========================================
+    // PARSER 1: THE USER'S EXACT CODE FOR SIMPLE TABLES
+    // (Untouched, verbatim copy from your provided text)
+    // ==========================================
+    function parseSimplePDFTables(items) {
+        if (!items || items.length === 0) return [];
+
+        let rawItems = [];
+        items.forEach(item => {
+            let str = item.str;
+            if (!str || !str.trim()) return;
+            let x = item.transform[4];
+            let y = item.transform[5];
+            let w = item.width || str.length * 6;
+            rawItems.push({ x: x, y: y, right: x + w, text: str.trim() });
+        });
+
+        if (rawItems.length === 0) return [];
+
+        // Group by Y coordinate
+        rawItems.sort((a, b) => b.y - a.y || a.x - b.x);
+        let lines = [];
+        let currentLine = [];
+        let currentY = null;
+        const Y_TOLERANCE = 5;
+
+        rawItems.forEach(item => {
+            if (currentY === null || Math.abs(item.y - currentY) <= Y_TOLERANCE) {
+                currentLine.push(item);
+                if (currentY === null) currentY = item.y;
+            } else {
+                lines.push(currentLine);
+                currentLine = [item];
+                currentY = item.y;
+            }
+        });
+        if (currentLine.length > 0) lines.push(currentLine);
+
+        // Collect all X coordinates from data lines to establish stable column anchors
+        let allXCoords = [];
+        lines.forEach(line => {
+            if (line.length > 1) {
+                line.forEach(item => allXCoords.push(item.x));
+            }
+        });
+
+        allXCoords.sort((a, b) => a - b);
+        let columnAnchors = [];
+        const COLUMN_TOLERANCE = 35;
+
+        allXCoords.forEach(x => {
+            let found = columnAnchors.find(anchor => Math.abs(anchor - x) <= COLUMN_TOLERANCE);
+            if (!found) {
+                columnAnchors.push(x);
+            }
+        });
+
+        columnAnchors.sort((a, b) => a - b);
+        let refinedAnchors = [];
+        for (let x of columnAnchors) {
+            if (refinedAnchors.length === 0 || x - refinedAnchors[refinedAnchors.length - 1] > COLUMN_TOLERANCE) {
+                refinedAnchors.push(x);
+            }
+        }
+
+        if (refinedAnchors.length === 0) {
+            return lines.map(line => line.map(i => i.text));
+        }
+
+        let grid = [];
+        lines.forEach(line => {
+            let row = new Array(refinedAnchors.length).fill("");
+            let isTitle = line.length === 1 && isTitleLine(line[0].text);
+
+            if (isTitle) {
+                grid.push([line[0].text]);
+                return;
+            }
+
+            line.forEach(item => {
+                let bestCol = 0;
+                let minDist = Math.abs(refinedAnchors[0] - item.x);
+                for (let c = 1; c < refinedAnchors.length; c++) {
+                    let dist = Math.abs(refinedAnchors[c] - item.x);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        bestCol = c;
+                    }
+                }
+                if (row[bestCol]) {
+                    row[bestCol] += " " + item.text;
+                } else {
+                    row[bestCol] = item.text;
+                }
+            });
+
+            if (row.some(c => c.trim() !== "")) {
+                grid.push(row);
+            }
+        });
+
+        // Prune empty columns completely to eliminate unwanted spacing/blank columns
+        if (grid.length > 0) {
+            let maxCols = Math.max(...grid.map(r => r.length));
+            let activeCols = [];
+            for (let c = 0; c < maxCols; c++) {
+                let hasContent = grid.some(row => row[c] && row[c].toString().trim() !== "");
+                if (hasContent) activeCols.push(c);
+            }
+            grid = grid.map(row => activeCols.map(c => row[c] || ""));
+        }
+
+        return grid;
+    }
+
+    // ==========================================
+    // PARSER 2: COMPLEX TABLE LOGIC (Runs only on toggle)
+    // ==========================================
+    function parseComplexPDFTables(items) {
+        if (!items || items.length === 0) return [];
+
+        let rawItems = [];
+        items.forEach(item => {
+            let str = item.str;
+            if (!str || !str.trim()) return;
+
+            let x = item.transform[4];
+            let y = item.transform[5];
+            let w = item.width || 0;
+
+            let parts = str.split(/\s{2,}/);
+            if (parts.length > 1) {
+                let totalLen = str.length || 1;
+                let charWidth = w / totalLen;
+                let searchIdx = 0;
+                parts.forEach(part => {
+                    let trimmed = part.trim();
+                    if (trimmed) {
+                        let idx = str.indexOf(part, searchIdx);
+                        let partX = x + (idx * charWidth);
+                        let partW = part.length * charWidth;
+                        rawItems.push({ x: partX, y: y, width: partW, right: partX + partW, text: trimmed });
+                        searchIdx = idx + part.length;
+                    }
+                });
+            } else {
+                rawItems.push({ x: x, y: y, width: w, right: x + w, text: str.trim() });
+            }
+        });
+
+        if (rawItems.length === 0) return [];
+
+        rawItems.sort((a, b) => b.y - a.y || a.x - b.x);
+
+        let lines = [];
+        let currentLine = [];
+        let currentY = null;
+        const Y_TOLERANCE = 5;
+
+        rawItems.forEach(item => {
+            if (currentY === null || Math.abs(item.y - currentY) <= Y_TOLERANCE) {
+                currentLine.push(item);
+                if (currentY === null) currentY = item.y;
+            } else {
+                lines.push(currentLine);
+                currentLine = [item];
+                currentY = item.y;
+            }
+        });
+        if (currentLine.length > 0) lines.push(currentLine);
+
+        lines.forEach(line => line.sort((a, b) => a.x - b.x));
+
+        let parsedLines = [];
+        lines.forEach(line => {
+            let cells = [];
+            let currCell = null;
+
+            line.forEach(item => {
+                if (!currCell) {
+                    currCell = { x: item.x, right: item.right, text: item.text };
+                } else {
+                    let gap = item.x - currCell.right;
+                    if (gap > 8) {
+                        cells.push(currCell);
+                        currCell = { x: item.x, right: item.right, text: item.text };
+                    } else {
+                        let space = gap > 1.5 ? " " : "";
+                        currCell.text += space + item.text;
+                        currCell.right = Math.max(currCell.right, item.right);
+                    }
+                }
+            });
+            if (currCell) cells.push(currCell);
+            if (cells.length > 0) parsedLines.push(cells);
+        });
+
+        let blocks = [];
+        let currentBlock = [];
+
+        parsedLines.forEach(line => {
+            let lineText = line.map(c => c.text).join(" ");
+            let isTitle = line.length === 1 && isTitleLine(lineText);
+
+            if (isTitle) {
+                if (currentBlock.length > 0) {
+                    blocks.push(currentBlock);
+                    currentBlock = [];
+                }
+                blocks.push([line]);
+            } else {
+                currentBlock.push(line);
+            }
+        });
+        if (currentBlock.length > 0) blocks.push(currentBlock);
+
+        let finalGrid = [];
+
+        blocks.forEach(block => {
+            if (block.length === 0) return;
+
+            let blockText = block[0].map(c => c.text).join(" ");
+            if (block.length === 1 && (block[0].length === 1 || isTitleLine(blockText))) {
+                finalGrid.push([blockText]);
+                return;
+            }
+
+            let blockXStarts = [];
+            block.forEach(line => {
+                if (line.length >= 2) {
+                    line.forEach(cell => blockXStarts.push(cell.x));
+                } else if (line.length === 1) {
+                    blockXStarts.push(line[0].x);
+                }
+            });
+
+            blockXStarts.sort((a, b) => a - b);
+
+            let localColBins = [];
+            const LOCAL_BIN_TOLERANCE = 22;
+
+            blockXStarts.forEach(x => {
+                let bin = localColBins.find(b => Math.abs(b.center - x) <= LOCAL_BIN_TOLERANCE);
+                if (bin) {
+                    bin.count++;
+                    bin.center = ((bin.center * (bin.count - 1)) + x) / bin.count;
+                } else {
+                    localColBins.push({ center: x, count: 1 });
+                }
+            });
+
+            localColBins.sort((a, b) => a.center - b.center);
+            let blockCols = localColBins.map(b => b.center);
+
+            if (blockCols.length <= 1) {
+                block.forEach(line => finalGrid.push(line.map(c => c.text)));
+                return;
+            }
+
+            block.forEach(line => {
+                let lineText = line.map(c => c.text).join(" ");
+                if (line.length === 1 && isTitleLine(lineText)) {
+                    finalGrid.push([lineText]);
+                    return;
+                }
+
+                let row = new Array(blockCols.length).fill("");
+
+                line.forEach(cell => {
+                    let bestIdx = 0;
+                    let minDist = Math.abs(blockCols[0] - cell.x);
+
+                    for (let c = 1; c < blockCols.length; c++) {
+                        let dist = Math.abs(blockCols[c] - cell.x);
+                        if (dist < minDist) {
+                            minDist = dist;
+                            bestIdx = c;
+                        }
+                    }
+
+                    if (row[bestIdx]) {
+                        row[bestIdx] += " " + cell.text;
+                    } else {
+                        row[bestIdx] = cell.text;
+                    }
+                });
+
+                while (row.length > 1 && row[row.length - 1] === "") {
+                    row.pop();
+                }
+
+                if (row.some(c => c.trim() !== "")) {
+                    finalGrid.push(row);
+                }
+            });
+        });
+
+        if (finalGrid.length > 0) {
+            let maxCols = Math.max(...finalGrid.map(r => r.length));
+            let activeCols = [];
+            for (let c = 0; c < maxCols; c++) {
+                let hasContent = finalGrid.some(row => row[c] && row[c].toString().trim() !== "");
+                if (hasContent) activeCols.push(c);
+            }
+            finalGrid = finalGrid.map(row => activeCols.map(c => row[c] || ""));
+        }
+
+        return finalGrid;
+    }
+
+    function isTitleLine(str) {
+        return str.startsWith('Table') || str.startsWith('Design') || str.startsWith('Sample') || str.startsWith('SK&M') || str.startsWith('Test') || str.startsWith('Yeh ek') || str.startsWith('Aap is') || str.startsWith('file:///') || /^\(\d+\)/.test(str);
+    }
+
+    async function runOCRFallback(file) {
+        const rows = [];
+        try {
+            const worker = await Tesseract.createWorker('eng', 1);
+            const { data } = await worker.recognize(file);
+            await worker.terminate();
+
+            if (data && data.text) {
+                const lines = data.text.split('\n');
+                lines.forEach(l => {
+                    const cols = l.split(/\t|\s{2,}/).map(c => c.trim()).filter(c => c.length > 0);
+                    if (cols.length > 0) rows.push(cols);
+                });
+            }
+        } catch (e) {
+            console.log("OCR Error:", e);
+        }
+        return rows;
+    }
+
+    function renderPreviewTable(data) {
+        previewTable.innerHTML = "";
+        if (!data || data.length === 0) {
+            previewTable.innerHTML = `<tr><td class="p-4 text-center text-gray-400">No tabular data found in this PDF.</td></tr>`;
+            rowCountBadge.textContent = "0 Rows Extracted";
+            return;
+        }
+
+        rowCountBadge.textContent = `${data.length} Rows Extracted`;
+
+        data.forEach((row, rowIndex) => {
+            const tr = document.createElement('tr');
+            const isHeader = row.length === 1 || (row[0] && (row[0].toString().startsWith('Table') || row[0].toString().startsWith('Design') || row[0].toString().startsWith('Product')));
+            
+            tr.className = isHeader 
+                ? "bg-slate-100 font-bold border-b border-gray-300 text-slate-900" 
+                : "border-b border-gray-100 hover:bg-emerald-50/50 transition-all text-slate-700";
+
+            row.forEach((cellText, colIndex) => {
+                const td = document.createElement(isHeader ? 'th' : 'td');
+                td.className = "p-2.5 border-r border-gray-200 last:border-0 outline-none focus:bg-amber-50 focus:ring-2 focus:ring-emerald-400 font-medium whitespace-nowrap";
+                td.contentEditable = "true";
+                td.textContent = cellText || "";
+
+                td.addEventListener('blur', () => {
+                    if (!extractedTableData[rowIndex]) extractedTableData[rowIndex] = [];
+                    extractedTableData[rowIndex][colIndex] = td.textContent.trim();
+                });
+
+                tr.appendChild(td);
+            });
+
+            previewTable.appendChild(tr);
+        });
+    }
+
+    exportXlsxBtn.onclick = () => {
+        if (extractedTableData.length === 0) return;
+
+        const formattedData = extractedTableData.map(row => 
+            row.map(cell => {
+                const cleanNum = cell ? cell.toString().replace(/,/g, '').trim() : '';
+                return (!isNaN(cleanNum) && cleanNum !== '') ? parseFloat(cleanNum) : cell;
+            })
+        );
+
+        const worksheet = XLSX.utils.aoa_to_sheet(formattedData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "PDF_Data");
+        XLSX.writeFile(workbook, `${currentFileName}.xlsx`);
+    };
+
+    exportCsvBtn.onclick = () => {
+        if (extractedTableData.length === 0) return;
+
+        const csvContent = extractedTableData.map(row => 
+            row.map(cell => `"${(cell || '').toString().replace(/"/g, '""')}"`).join(",")
+        ).join("\n");
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `${currentFileName}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+</script>
+
+</body>
+</html>

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Image Converter Online | iLoveFiles</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+
+    </script>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col items-center">
+
+<!-- Top Navigation Bar with Creative Animated Brand & Nav Links -->
+<nav class="w-full bg-white/90 backdrop-blur-md border-b border-slate-100 px-8 py-5 flex justify-between items-center fixed top-0 left-0 z-50 shadow-xs">
+    
+    <!-- Creative Animated Brand Name -->
+    <div class="cursor-pointer flex items-center space-x-2 group shrink-0" onclick="window.location.href='index.html'">
+        <span class="text-4xl sm:text-7xl font-black tracking-tighter text-[#0f172a] flex items-center overflow-hidden">
+            <span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span><span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span>
+        </span>
+        <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping ml-1 hidden sm:inline-block"></span>
+    </div>
+    
+    <!-- Navbar Links -->
+    <div class="hidden lg:flex items-center space-x-9 text-base font-black text-slate-800 tracking-wide ml-auto">
+        <a href="index.html" class="hover:text-red-600 transition-colors uppercase">Home</a>
+
+        <!-- 1. PDF Core Tools -->
+        <div class="relative group py-2">
+            <a href="#pdf-section" class="flex items-center space-x-1 hover:text-red-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>PDF Core Tools</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-red-600 uppercase tracking-wider mb-2 px-2">PDF Utilities (7)</div>
+                <a href="pdf-to-word.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📄</span> <span>PDF to Word</span></a>
+                <a href="pdf-to-excel.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📊</span> <span>PDF to Excel</span></a>
+                <a href="merge.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💼</span> <span>Merge PDF</span></a>
+                <a href="pdf-splitter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>✂️</span> <span>PDF Splitter</span></a>
+                <a href="pdf-organizer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📑</span> <span>PDF Organizer</span></a>
+                <a href="pdf-watermark.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💧</span> <span>PDF Watermark</span></a>
+                <a href="pdf-to-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>🖼️</span> <span>PDF to Image</span></a>
+            </div>
+        </div>
+
+        <!-- 2. Image Utilities -->
+        <div class="relative group py-2">
+            <a href="#image-section" class="flex items-center space-x-1 hover:text-teal-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Image Utilities</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-teal-600 uppercase tracking-wider mb-2 px-2">Image Utilities (7)</div>
+                <a href="compress.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🗜️</span> <span>Compress Image</span></a>
+                <a href="image-converter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🖼️</span> <span>Image Converter</span></a>
+                <a href="image-to-pdf.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📷</span> <span>Image to PDF</span></a>
+                <a href="image-reducer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📉</span> <span>Image Reducer</span></a>
+                <a href="image-to-text.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🔍</span> <span>Image to Text</span></a>
+                <a href="passport-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🛂</span> <span>Passport Studio</span></a>
+                <a href="merge-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🧩</span> <span>Merge Image</span></a>
+            </div>
+        </div>
+
+        <!-- 3. Business Suite -->
+        <div class="relative group py-2">
+            <a href="#business-section" class="flex items-center space-x-1 hover:text-purple-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Business Suite</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-purple-600 uppercase tracking-wider mb-2 px-2">Business Utilities (6)</div>
+                <a href="invoice-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🧾</span> <span>Invoice Generator</span></a>
+                <a href="barcode-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🏷️</span> <span>Barcode Generator</span></a>
+                <a href="qr-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📱</span> <span>QR Code Studio</span></a>
+                <a href="sign-maker.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>✍️</span> <span>Digital Signature Studio</span></a>
+                <a href="code-formatter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>⚡</span> <span>Code Formatter</span></a>
+                <a href="product-listing.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📦</span> <span>Product Listing</span></a>
+            </div>
+        </div>
+
+    </div>
+</nav>
+
+    <div class="w-full max-w-2xl px-4 mt-32">
+        <a href="index.html" class="text-sm font-semibold text-gray-500 hover:text-orange-500 mb-4 inline-block">← Back to Dashboard</a>
+        
+        <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 text-center">
+            <h2 class="text-3xl font-black text-slate-900 mb-2">PDF to Image</h2>
+            <p class="text-gray-500 mb-8">Extract all pages from your PDF document into high-quality JPG images instantly.</p>
+
+            <div id="drop-zone" class="border-3 border-dashed border-gray-300 rounded-xl p-10 bg-gray-50 text-center relative">
+                <span class="text-5xl block mb-3">📄</span>
+                <p class="text-gray-600 font-medium mb-4">Drag & Drop your PDF file here</p>
+                <button type="button" id="browse-btn" class="bg-orange-600 text-white font-bold px-6 py-2.5 rounded-lg shadow hover:bg-orange-700 transition-all cursor-pointer inline-block">
+                    Select PDF File
+                </button>
+                <input type="file" id="file-input" accept="application/pdf" class="hidden">
+            </div>
+
+            <div id="file-list" class="mt-6 text-left hidden">
+                <h4 class="font-bold text-gray-700 text-sm mb-2">Selected Document:</h4>
+                <div id="file-item" class="flex justify-between items-center bg-white p-3 rounded border border-gray-200 shadow-sm text-sm">
+                    <span id="file-name" class="truncate font-medium text-gray-700 max-w-[70%]"></span>
+                    <div class="flex items-center space-x-2">
+                        <span id="file-size" class="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded font-bold"></span>
+                        <button type="button" id="remove-btn" class="text-red-500 font-bold px-2 cursor-pointer">✕</button>
+                    </div>
+                </div>
+            </div>
+
+            <button id="action-btn" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl mt-8 shadow-md hover:bg-slate-800 transition-all hidden">
+                Extract Images Now 🚀
+            </button>
+            
+            <div id="status" class="mt-4 text-sm font-semibold text-gray-600 hidden"></div>
+        </div>
+    </div>
+
+    <canvas id="render-canvas" class="hidden"></canvas>
+
+    <script>
+        const fileInput = document.getElementById('file-input');
+        const browseBtn = document.getElementById('browse-btn');
+        const dropZone = document.getElementById('drop-zone');
+        const fileList = document.getElementById('file-list');
+        const fileNameSpan = document.getElementById('file-name');
+        const fileSizeSpan = document.getElementById('file-size');
+        const removeBtn = document.getElementById('remove-btn');
+        const actionBtn = document.getElementById('action-btn');
+        const statusDiv = document.getElementById('status');
+        const canvas = document.getElementById('render-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let selectedFile = null;
+
+        browseBtn.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            if(e.target.files.length > 0) {
+                selectedFile = e.target.files[0];
+                updateUI();
+            }
+        });
+
+        function updateUI() {
+            if(selectedFile) {
+                fileNameSpan.textContent = selectedFile.name;
+                fileSizeSpan.textContent = `${(selectedFile.size / 1024).toFixed(1)} KB`;
+                fileList.classList.remove('hidden');
+                actionBtn.classList.remove('hidden');
+                statusDiv.classList.add('hidden');
+            } else {
+                fileList.classList.add('hidden');
+                actionBtn.classList.add('hidden');
+                fileInput.value = '';
+            }
+        }
+
+        removeBtn.addEventListener('click', () => {
+            selectedFile = null;
+            updateUI();
+        });
+
+        actionBtn.addEventListener('click', async () => {
+            if(!selectedFile) return;
+            actionBtn.classList.add('hidden');
+            statusDiv.classList.remove('hidden');
+            
+            try {
+                const fileReader = new FileReader();
+                fileReader.onload = async function () {
+                    const typedarray = new Uint8Array(this.result);
+                    const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                    const zip = new JSZip();
+                    const totalPages = pdf.numPages;
+
+                    for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+                        statusDiv.innerHTML = `⏳ Processing Page ${pageNum} of ${totalPages}...`;
+                        const page = await pdf.getPage(pageNum);
+                        const viewport = page.getViewport({ scale: 2.0 });
+                        
+                        canvas.width = viewport.width;
+                        canvas.height = viewport.height;
+                        
+                        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+                        const imgDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                        zip.file(`Page_${pageNum}.jpg`, imgDataUrl.split(',')[1], { base64: true });
+                    }
+
+                    statusDiv.innerHTML = "📦 Packing images into ZIP package...";
+                    const content = await zip.generateAsync({ type: "blob" });
+                    const url = window.URL.createObjectURL(content);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${selectedFile.name.split('.')[0]}_Extracted_Images.zip`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+
+                    statusDiv.innerHTML = "🎉 Images ZIP Downloaded successfully!";
+                    selectedFile = null;
+                    updateUI();
+                };
+                fileReader.readAsArrayBuffer(selectedFile);
+            } catch(err) {
+                statusDiv.innerHTML = "❌ Conversion engine failure.";
+                actionBtn.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

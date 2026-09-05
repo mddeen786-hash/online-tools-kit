@@ -1,0 +1,2875 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Image to Excel — Extract Tables | Filesque</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- OCR -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+    <!-- OpenCV -->
+    <script async src="https://docs.opencv.org/4.x/opencv.js"></script>
+
+    <!-- Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f8fafc;
+            color: #0f172a;
+        }
+
+        .dropzone {
+            transition: .25s ease;
+        }
+
+        .dropzone.drag {
+            border-color: #0d9488;
+            background: #f0fdfa;
+        }
+
+        .spinner {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 3px solid #dbe4ea;
+            border-top-color: #0d9488;
+            animation: spin .8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .preview-table {
+            width: 100%;
+            min-width: 700px;
+            border-collapse: collapse;
+        }
+
+        .preview-table th,
+        .preview-table td {
+            border: 1px solid #cbd5e1;
+            padding: 9px 11px;
+            font-size: 13px;
+            min-width: 90px;
+            vertical-align: middle;
+            white-space: pre-wrap;
+        }
+
+        .preview-table th {
+            background: #dff7f3;
+            color: #115e59;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .preview-table td {
+            background: white;
+        }
+
+        .preview-table td:focus,
+        .preview-table th:focus {
+            outline: 2px solid #14b8a6;
+            outline-offset: -2px;
+            background: #fffbeb;
+        }
+
+        .scroll-area::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .scroll-area::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 20px;
+        }
+
+        .success {
+            background: #ecfdf5;
+            color: #047857;
+            border-color: #a7f3d0;
+        }
+
+        .warning {
+            background: #fffbeb;
+            color: #92400e;
+            border-color: #fde68a;
+        }
+
+        .error {
+            background: #fef2f2;
+            color: #b91c1c;
+            border-color: #fecaca;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     NAVBAR
+========================================================= -->
+
+<nav
+    class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-100 px-6 py-5 flex items-center justify-between">
+
+    <div
+        onclick="window.location.href='index.html'"
+        class="cursor-pointer text-4xl font-black tracking-tight">
+
+        Files<span class="text-red-600">que</span>
+
+    </div>
+
+
+    <div
+        class="hidden md:flex items-center gap-8 text-sm font-extrabold uppercase">
+
+        <a href="index.html"
+           class="hover:text-red-600">
+            Home
+        </a>
+
+        <a href="index.html#pdf-section"
+           class="hover:text-red-600">
+            PDF Core Tools
+        </a>
+
+        <a href="index.html#image-section"
+           class="text-teal-600">
+            Image Utilities
+        </a>
+
+        <a href="index.html#business-section"
+           class="hover:text-red-600">
+            Business Suite
+        </a>
+
+    </div>
+
+</nav>
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main
+    class="max-w-5xl mx-auto px-5 pt-36 pb-20">
+
+
+    <!-- Header -->
+
+    <div class="mb-8">
+
+        <div class="flex items-center gap-4">
+
+            <div
+                class="w-14 h-14 rounded-2xl bg-teal-50 flex items-center justify-center text-3xl">
+
+                📊
+
+            </div>
+
+            <div>
+
+                <h1
+                    class="text-3xl font-black">
+
+                    Image to Excel
+
+                </h1>
+
+                <p
+                    class="text-sm text-slate-500 font-semibold mt-1">
+
+                    Extract editable tables from images with 300 DPI clarity & dual-engine auto routing.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         CARD
+    ====================================================== -->
+
+    <section
+        class="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 md:p-8">
+
+
+        <!-- Upload -->
+
+        <div
+            id="dropzone"
+            class="dropzone border-2 border-dashed border-slate-200 rounded-2xl p-10 text-center cursor-pointer">
+
+            <input
+                id="fileInput"
+                type="file"
+                accept="image/*"
+                class="hidden">
+
+
+            <div
+                id="uploadMessage">
+
+                <div class="text-5xl mb-4">
+                    🖼️
+                </div>
+
+                <h3
+                    class="font-black text-slate-800">
+
+                    Upload Table Image
+
+                </h3>
+
+                <p
+                    class="text-xs text-slate-400 font-semibold mt-2">
+
+                    JPG, PNG, WEBP or BMP (Auto 300 DPI Enhanced)
+
+                </p>
+
+            </div>
+
+
+            <div
+                id="imagePreviewContainer"
+                class="hidden">
+
+                <img
+                    id="imagePreview"
+                    class="max-h-80 mx-auto rounded-xl shadow-sm">
+
+                <p
+                    id="imageName"
+                    class="text-xs text-slate-500 font-bold mt-3">
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             SETTINGS
+        ================================================== -->
+
+        <div
+            class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-5">
+
+
+            <div
+                class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+
+                <p
+                    class="text-[11px] font-black text-slate-700 uppercase">
+
+                    Auto Table Router
+
+                </p>
+
+                <p
+                    class="text-[10px] text-slate-400 mt-1">
+
+                    Auto-detects Bordered vs Borderless layouts.
+
+                </p>
+
+            </div>
+
+
+            <div
+                class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+
+                <p
+                    class="text-[11px] font-black text-slate-700 uppercase">
+
+                    Resolution Mode
+
+                </p>
+
+                <select
+                    id="ocrMode"
+                    class="mt-2 w-full bg-white border border-slate-200 rounded-lg px-2 py-2 text-xs font-bold">
+
+                    <option value="high">
+                        High Accuracy (300 DPI)
+                    </option>
+
+                    <option value="balanced">
+                        Balanced (250 DPI)
+                    </option>
+
+                    <option value="fast">
+                        Fast (200 DPI)
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div
+                class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+
+                <p
+                    class="text-[11px] font-black text-slate-700 uppercase">
+
+                    Smart Cell OCR
+
+                </p>
+
+                <p
+                    class="text-[10px] text-slate-400 mt-1">
+
+                    Zero text mutilation via smart boundary projection.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             BUTTONS
+        ================================================== -->
+
+        <div
+            class="flex flex-col md:flex-row gap-3 mt-6">
+
+            <button
+                id="extractBtn"
+                disabled
+                class="flex-1 bg-teal-600 hover:bg-teal-700 disabled:bg-slate-200 disabled:text-slate-400 text-white font-black py-4 rounded-xl cursor-pointer">
+
+                Extract Table
+
+            </button>
+
+
+            <button
+                id="clearBtn"
+                class="px-8 py-4 border border-slate-200 rounded-xl font-bold text-slate-600 hover:bg-slate-50 cursor-pointer">
+
+                Clear
+
+            </button>
+
+        </div>
+
+
+        <!-- =================================================
+             PROGRESS
+        ================================================== -->
+
+        <div
+            id="progressBox"
+            class="hidden mt-6">
+
+            <div
+                class="flex items-center gap-3">
+
+                <div class="spinner"></div>
+
+                <span
+                    id="progressText"
+                    class="text-xs font-bold text-slate-500">
+
+                    Preparing...
+
+                </span>
+
+            </div>
+
+
+            <div
+                class="w-full h-2 bg-slate-100 rounded-full overflow-hidden mt-3">
+
+                <div
+                    id="progressBar"
+                    class="h-full bg-teal-500 transition-all"
+                    style="width:0%">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Status -->
+
+        <div
+            id="statusBox"
+            class="hidden mt-5 border rounded-xl px-4 py-3 text-xs font-bold">
+        </div>
+
+
+        <!-- =================================================
+             RESULT
+        ================================================== -->
+
+        <div
+            id="resultBox"
+            class="hidden mt-8">
+
+
+            <div
+                class="flex justify-between items-center mb-3">
+
+                <h2
+                    class="font-black text-sm">
+
+                    Extracted Table Preview
+
+                </h2>
+
+
+                <span
+                    id="countBadge"
+                    class="text-xs font-bold bg-teal-50 text-teal-700 border border-teal-200 rounded-full px-3 py-1">
+
+                    0 Rows
+
+                </span>
+
+            </div>
+
+
+            <div
+                class="scroll-area overflow-auto max-h-[550px] border border-slate-200 rounded-xl">
+
+                <table
+                    id="resultTable"
+                    class="preview-table">
+                </table>
+
+            </div>
+
+
+            <p
+                class="text-[11px] text-slate-400 mt-2">
+
+                You can click any cell and edit the extracted value.
+
+            </p>
+
+
+            <div
+                class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-5">
+
+                <button
+                    id="excelBtn"
+                    class="bg-teal-600 hover:bg-teal-700 text-white font-black py-4 rounded-xl cursor-pointer">
+
+                    📊 Download Excel
+
+                </button>
+
+
+                <button
+                    id="csvBtn"
+                    class="bg-slate-900 hover:bg-slate-800 text-white font-black py-4 rounded-xl cursor-pointer">
+
+                    📄 Download CSV
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+    <!-- =====================================================
+         INFO
+    ====================================================== -->
+
+    <div
+        class="grid md:grid-cols-3 gap-5 mt-8">
+
+        <div class="bg-white border border-slate-100 rounded-2xl p-5">
+
+            <div class="text-2xl mb-2">
+                1️⃣
+            </div>
+
+            <h3 class="font-black text-sm">
+                300 DPI Enhancement
+            </h3>
+
+            <p class="text-xs text-slate-500 mt-1">
+                Image is upscaled to print-grade 300 DPI internally before OCR.
+            </p>
+
+        </div>
+
+
+        <div class="bg-white border border-slate-100 rounded-2xl p-5">
+
+            <div class="text-2xl mb-2">
+                2️⃣
+            </div>
+
+            <h3 class="font-black text-sm">
+                Dual-Engine Routing
+            </h3>
+
+            <p class="text-xs text-slate-500 mt-1">
+                Selects grid-slice for bordered tables or gap-projection for borderless.
+            </p>
+
+        </div>
+
+
+        <div class="bg-white border border-slate-100 rounded-2xl p-5">
+
+            <div class="text-2xl mb-2">
+                3️⃣
+            </div>
+
+            <h3 class="font-black text-sm">
+                Excel Export
+            </h3>
+
+            <p class="text-xs text-slate-500 mt-1">
+                Download a clean, perfectly aligned spreadsheet.
+            </p>
+
+        </div>
+
+    </div>
+
+
+</main>
+
+
+<footer
+    class="border-t border-slate-100 bg-white py-8 text-center text-xs font-bold text-slate-400">
+
+    © 2026 Filesque. All rights reserved.
+
+</footer>
+
+
+<script>
+
+
+/* ============================================================
+   GLOBAL STATE
+============================================================ */
+
+let selectedFile = null;
+
+let selectedImage = null;
+
+let tableData = [];
+
+let ocrWorker = null;
+
+
+/* ============================================================
+   ELEMENTS
+============================================================ */
+
+const dropzone =
+    document.getElementById("dropzone");
+
+const fileInput =
+    document.getElementById("fileInput");
+
+const uploadMessage =
+    document.getElementById("uploadMessage");
+
+const imagePreviewContainer =
+    document.getElementById("imagePreviewContainer");
+
+const imagePreview =
+    document.getElementById("imagePreview");
+
+const imageName =
+    document.getElementById("imageName");
+
+const extractBtn =
+    document.getElementById("extractBtn");
+
+const clearBtn =
+    document.getElementById("clearBtn");
+
+const progressBox =
+    document.getElementById("progressBox");
+
+const progressText =
+    document.getElementById("progressText");
+
+const progressBar =
+    document.getElementById("progressBar");
+
+const statusBox =
+    document.getElementById("statusBox");
+
+const resultBox =
+    document.getElementById("resultBox");
+
+const resultTable =
+    document.getElementById("resultTable");
+
+const countBadge =
+    document.getElementById("countBadge");
+
+const excelBtn =
+    document.getElementById("excelBtn");
+
+const csvBtn =
+    document.getElementById("csvBtn");
+
+const ocrMode =
+    document.getElementById("ocrMode");
+
+
+/* ============================================================
+   FILE SELECT
+============================================================ */
+
+dropzone.addEventListener(
+    "click",
+    () => fileInput.click()
+);
+
+
+fileInput.addEventListener(
+    "change",
+    function () {
+
+        if (
+            this.files &&
+            this.files[0]
+        ) {
+
+            loadFile(
+                this.files[0]
+            );
+
+        }
+
+    }
+);
+
+
+/* ============================================================
+   DRAG DROP
+============================================================ */
+
+dropzone.addEventListener(
+    "dragover",
+    function (e) {
+
+        e.preventDefault();
+
+        dropzone.classList.add(
+            "drag"
+        );
+
+    }
+);
+
+
+dropzone.addEventListener(
+    "dragleave",
+    function () {
+
+        dropzone.classList.remove(
+            "drag"
+        );
+
+    }
+);
+
+
+dropzone.addEventListener(
+    "drop",
+    function (e) {
+
+        e.preventDefault();
+
+        dropzone.classList.remove(
+            "drag"
+        );
+
+
+        if (
+            e.dataTransfer.files.length
+        ) {
+
+            loadFile(
+                e.dataTransfer.files[0]
+            );
+
+        }
+
+    }
+);
+
+
+/* ============================================================
+   LOAD FILE
+============================================================ */
+
+function loadFile(file) {
+
+    if (
+        !file.type.startsWith("image/")
+    ) {
+
+        showStatus(
+            "error",
+            "Please select a valid image."
+        );
+
+        return;
+
+    }
+
+
+    selectedFile = file;
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload =
+        function (e) {
+
+            selectedImage =
+                new Image();
+
+
+            selectedImage.onload =
+                function () {
+
+                    imagePreview.src =
+                        e.target.result;
+
+                    imageName.textContent =
+                        file.name;
+
+                    uploadMessage.classList.add(
+                        "hidden"
+                    );
+
+                    imagePreviewContainer.classList.remove(
+                        "hidden"
+                    );
+
+                    extractBtn.disabled =
+                        false;
+
+                    hideStatus();
+
+                };
+
+
+            selectedImage.src =
+                e.target.result;
+
+        };
+
+
+    reader.readAsDataURL(file);
+
+}
+
+
+/* ============================================================
+   CLEAR
+============================================================ */
+
+clearBtn.addEventListener(
+    "click",
+    function () {
+
+        selectedFile = null;
+
+        selectedImage = null;
+
+        tableData = [];
+
+        fileInput.value = "";
+
+        uploadMessage.classList.remove(
+            "hidden"
+        );
+
+        imagePreviewContainer.classList.add(
+            "hidden"
+        );
+
+        resultBox.classList.add(
+            "hidden"
+        );
+
+        progressBox.classList.add(
+            "hidden"
+        );
+
+        extractBtn.disabled =
+            true;
+
+        resultTable.innerHTML =
+            "";
+
+        hideStatus();
+
+    }
+);
+
+
+/* ============================================================
+   PREPARE IMAGE (INTERNAL 300 DPI ENHANCEMENT)
+============================================================ */
+
+function prepareImage(img) {
+
+    const canvas =
+        document.createElement(
+            "canvas"
+        );
+
+
+    const baseDPI =
+        72;
+
+    let targetDPI =
+        300;
+
+
+    if (
+        ocrMode.value === "fast"
+    ) {
+
+        targetDPI =
+            200;
+
+    }
+
+
+    if (
+        ocrMode.value === "balanced"
+    ) {
+
+        targetDPI =
+            250;
+
+    }
+
+
+    let scale =
+        targetDPI /
+        baseDPI;
+
+
+    const maxCanvasDim =
+        3600;
+
+
+    if (
+        img.width * scale >
+        maxCanvasDim ||
+        img.height * scale >
+        maxCanvasDim
+    ) {
+
+        scale =
+            maxCanvasDim /
+            Math.max(
+                img.width,
+                img.height
+            );
+
+    }
+
+
+    canvas.width =
+        Math.round(
+            img.width *
+            scale
+        );
+
+
+    canvas.height =
+        Math.round(
+            img.height *
+            scale
+        );
+
+
+    const ctx =
+        canvas.getContext(
+            "2d"
+        );
+
+
+    ctx.fillStyle =
+        "#ffffff";
+
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    ctx.imageSmoothingEnabled =
+        true;
+
+
+    ctx.imageSmoothingQuality =
+        "high";
+
+
+    ctx.filter =
+        "contrast(1.14) brightness(1.02)";
+
+
+    ctx.drawImage(
+        img,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    ctx.filter =
+        "none";
+
+
+    return canvas;
+
+}
+
+
+/* ============================================================
+   OPENCV READY
+============================================================ */
+
+function waitForOpenCV() {
+    return new Promise((resolve, reject) => {
+        if (typeof cv !== "undefined" && cv.Mat) {
+            resolve();
+            return;
+        }
+
+        let attempts = 0;
+        const maxAttempts = 100;
+
+        const timer = setInterval(() => {
+            attempts++;
+            if (typeof cv !== "undefined" && cv.Mat) {
+                clearInterval(timer);
+                resolve();
+            } else if (attempts >= maxAttempts) {
+                clearInterval(timer);
+                reject(new Error("OpenCV load nahi hua. Internet connection check karo."));
+            }
+        }, 100);
+    });
+}
+
+
+/* ============================================================
+   DETECT TRUE BORDERED TABLE GRID USING OPENCV
+============================================================ */
+
+function detectTrueBorderedGrid(canvas) {
+
+    const src =
+        cv.imread(canvas);
+
+
+    const gray =
+        new cv.Mat();
+
+
+    const binary =
+        new cv.Mat();
+
+
+    const horizontal =
+        new cv.Mat();
+
+
+    const vertical =
+        new cv.Mat();
+
+
+    const combined =
+        new cv.Mat();
+
+
+    try {
+
+        cv.cvtColor(
+            src,
+            gray,
+            cv.COLOR_RGBA2GRAY
+        );
+
+
+        let blockSize =
+            Math.floor(
+                gray.cols /
+                100
+            );
+
+
+        if (
+            blockSize % 2 === 0
+        ) {
+
+            blockSize++;
+
+        }
+
+
+        blockSize =
+            Math.max(
+                15,
+                Math.min(
+                    45,
+                    blockSize
+                )
+            );
+
+
+        cv.adaptiveThreshold(
+            gray,
+            binary,
+            255,
+            cv.ADAPTIVE_THRESH_GAUSSIAN_C,
+            cv.THRESH_BINARY_INV,
+            blockSize,
+            5
+        );
+
+
+        const width =
+            binary.cols;
+
+        const height =
+            binary.rows;
+
+
+        const hSize =
+            Math.max(
+                20,
+                Math.min(
+                    60,
+                    Math.floor(
+                        width /
+                        30
+                    )
+                )
+            );
+
+
+        const vSize =
+            Math.max(
+                20,
+                Math.min(
+                    60,
+                    Math.floor(
+                        height /
+                        30
+                    )
+                )
+            );
+
+
+        const hKernel =
+            cv.getStructuringElement(
+                cv.MORPH_RECT,
+                new cv.Size(
+                    hSize,
+                    1
+                )
+            );
+
+
+        const vKernel =
+            cv.getStructuringElement(
+                cv.MORPH_RECT,
+                new cv.Size(
+                    1,
+                    vSize
+                )
+            );
+
+
+        cv.morphologyEx(
+            binary,
+            horizontal,
+            cv.MORPH_OPEN,
+            hKernel
+        );
+
+
+        cv.morphologyEx(
+            binary,
+            vertical,
+            cv.MORPH_OPEN,
+            vKernel
+        );
+
+
+        cv.bitwise_or(
+            horizontal,
+            vertical,
+            combined
+        );
+
+
+        hKernel.delete();
+
+        vKernel.delete();
+
+
+        const data =
+            combined.data;
+
+
+        const vData =
+            vertical.data;
+
+
+        const xScores =
+            new Array(
+                width
+            ).fill(0);
+
+
+        const yScores =
+            new Array(
+                height
+            ).fill(0);
+
+
+        for (
+            let y = 0;
+            y < height;
+            y++
+        ) {
+
+            for (
+                let x = 0;
+                x < width;
+                x++
+            ) {
+
+                if (
+                    data[
+                        y * combined.cols + x
+                    ] > 0
+                ) {
+
+                    yScores[y]++;
+
+                }
+
+                if (
+                    vData[
+                        y * vertical.cols + x
+                    ] > 0
+                ) {
+
+                    xScores[x]++;
+
+                }
+
+            }
+
+        }
+
+
+        let maxX = 0;
+
+        for (let x = 0; x < width; x++) {
+
+            if (xScores[x] > maxX) maxX = xScores[x];
+
+        }
+
+
+        let maxY = 0;
+
+        for (let y = 0; y < height; y++) {
+
+            if (yScores[y] > maxY) maxY = yScores[y];
+
+        }
+
+
+        if (maxX < height * 0.35 || maxY < width * 0.35) {
+
+            return null;
+
+        }
+
+
+        const xThreshold = maxX * 0.45;
+
+        const yThreshold = maxY * 0.45;
+
+
+        const xPositions = [];
+
+        const yPositions = [];
+
+
+        for (let x = 0; x < width; x++) {
+
+            if (xScores[x] >= xThreshold) xPositions.push(x);
+
+        }
+
+
+        for (let y = 0; y < height; y++) {
+
+            if (yScores[y] >= yThreshold) yPositions.push(y);
+
+        }
+
+
+        const xLines =
+            mergeCoordinates(
+                xPositions,
+                Math.max(
+                    6,
+                    Math.round(
+                        width / 450
+                    )
+                )
+            );
+
+
+        const yLines =
+            mergeCoordinates(
+                yPositions,
+                Math.max(
+                    6,
+                    Math.round(
+                        height / 450
+                    )
+                )
+            );
+
+
+        if (
+            xLines.length < 3 ||
+            yLines.length < 3
+        ) {
+
+            return null;
+
+        }
+
+
+        return {
+
+            xLines,
+            yLines
+
+        };
+
+    }
+    finally {
+
+        src.delete();
+
+        gray.delete();
+
+        binary.delete();
+
+        horizontal.delete();
+
+        vertical.delete();
+
+        combined.delete();
+
+    }
+
+}
+
+
+/* ============================================================
+   MERGE COORDINATES
+============================================================ */
+
+function mergeCoordinates(
+    values,
+    tolerance
+) {
+
+    if (
+        !values.length
+    ) {
+
+        return [];
+
+    }
+
+
+    const sorted =
+        values
+            .slice()
+            .sort(
+                (a, b) =>
+                    a - b
+            );
+
+
+    const result = [];
+
+    let group = [
+        sorted[0]
+    ];
+
+
+    for (
+        let i = 1;
+        i < sorted.length;
+        i++
+    ) {
+
+        if (
+            sorted[i] -
+            sorted[i - 1]
+            <= tolerance
+        ) {
+
+            group.push(
+                sorted[i]
+            );
+
+        }
+        else {
+
+            result.push(
+                Math.round(
+                    group.reduce(
+                        (a, b) =>
+                            a + b,
+                        0
+                    ) /
+                    group.length
+                )
+            );
+
+
+            group = [
+                sorted[i]
+            ];
+
+        }
+
+    }
+
+
+    result.push(
+        Math.round(
+            group.reduce(
+                (a, b) =>
+                    a + b,
+                0
+            ) /
+            group.length
+        )
+    );
+
+
+    return result;
+
+}
+
+
+/* ============================================================
+   IMPROVE CELL IMAGE (FOR BORDERED GRIDS)
+============================================================ */
+
+function prepareCellCanvas(
+    sourceCanvas,
+    left,
+    top,
+    right,
+    bottom
+) {
+
+    const width =
+        right - left;
+
+    const height =
+        bottom - top;
+
+
+    const inset =
+        Math.max(
+            3,
+            Math.round(
+                Math.min(
+                    width,
+                    height
+                ) * 0.05
+            )
+        );
+
+
+    const x =
+        Math.min(
+            right - 1,
+            left + inset
+        );
+
+
+    const y =
+        Math.min(
+            bottom - 1,
+            top + inset
+        );
+
+
+    const w =
+        Math.max(
+            5,
+            right - x - inset
+        );
+
+
+    const h =
+        Math.max(
+            5,
+            bottom - y - inset
+        );
+
+
+    const cellCanvas =
+        document.createElement(
+            "canvas"
+        );
+
+
+    const scale =
+        Math.max(
+            1.2,
+            Math.min(
+                2.5,
+                90 / h
+            )
+        );
+
+
+    cellCanvas.width =
+        Math.max(
+            60,
+            Math.round(
+                w * scale
+            )
+        );
+
+
+    cellCanvas.height =
+        Math.max(
+            35,
+            Math.round(
+                h * scale
+            )
+        );
+
+
+    const ctx =
+        cellCanvas.getContext(
+            "2d"
+        );
+
+
+    ctx.fillStyle =
+        "#ffffff";
+
+
+    ctx.fillRect(
+        0,
+        0,
+        cellCanvas.width,
+        cellCanvas.height
+    );
+
+
+    ctx.imageSmoothingEnabled =
+        true;
+
+
+    ctx.imageSmoothingQuality =
+        "high";
+
+
+    ctx.filter =
+        "contrast(1.15) brightness(1.02)";
+
+
+    ctx.drawImage(
+        sourceCanvas,
+        x,
+        y,
+        w,
+        h,
+        0,
+        0,
+        cellCanvas.width,
+        cellCanvas.height
+    );
+
+
+    ctx.filter =
+        "none";
+
+
+    return cellCanvas;
+
+}
+
+
+/* ============================================================
+   OCR WORKER
+============================================================ */
+
+async function getOCRWorker() {
+
+    if (
+        ocrWorker
+    ) {
+
+        return ocrWorker;
+
+    }
+
+
+    progressText.textContent =
+        "Loading OCR engine...";
+
+
+    ocrWorker =
+        await Tesseract.createWorker(
+            "eng",
+            1,
+            {
+
+                logger: function (info) {
+
+                    if (
+                        info.status &&
+                        info.progress != null
+                    ) {
+
+                        const p =
+                            Math.round(
+                                info.progress *
+                                100
+                            );
+
+
+                        progressBar.style.width =
+                            Math.max(
+                                2,
+                                Math.min(
+                                    30,
+                                    p * 0.30
+                                )
+                            ) + "%";
+
+                    }
+
+                }
+
+            }
+        );
+
+
+    await ocrWorker.setParameters({
+
+        preserve_interword_spaces:
+            "1",
+
+        tessedit_pageseg_mode:
+            "7"
+
+    });
+
+
+    return ocrWorker;
+
+}
+
+
+/* ============================================================
+   OCR SINGLE CELL
+============================================================ */
+
+async function readCell(
+    worker,
+    canvas,
+    isNumeric
+) {
+
+    if (
+        isNumeric
+    ) {
+
+        await worker.setParameters({
+
+            tessedit_pageseg_mode:
+                "7",
+
+            tessedit_char_whitelist:
+                "0123456789.,-/%"
+
+        });
+
+    }
+    else {
+
+        await worker.setParameters({
+
+            tessedit_pageseg_mode:
+                "7",
+
+            tessedit_char_whitelist:
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;!?()/-_%@&'\" "
+
+        });
+
+    }
+
+
+    const result =
+        await worker.recognize(
+            canvas
+        );
+
+
+    return cleanText(
+        result.data.text
+    );
+
+}
+
+
+/* ============================================================
+   CLEAN TEXT
+============================================================ */
+
+function cleanText(text) {
+
+    if (
+        !text
+    ) {
+
+        return "";
+
+    }
+
+
+    return text
+        .replace(/\r/g, " ")
+        .replace(/\n/g, " ")
+        .replace(/[|¦\[\]_—]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+
+}
+
+
+/* ============================================================
+   CHECK IF NUMERIC COLUMN
+============================================================ */
+
+function looksNumericColumn(
+    table,
+    col
+) {
+
+    let numeric =
+        0;
+
+    let total =
+        0;
+
+
+    for (
+        let r = 0;
+        r < table.length;
+        r++
+    ) {
+
+        const value =
+            String(
+                table[r][col] ||
+                ""
+            ).trim();
+
+
+        if (
+            !value
+        ) {
+
+            continue;
+
+        }
+
+
+        total++;
+
+
+        if (
+            /^[0-9.,%/-]+$/.test(
+                value
+            )
+        ) {
+
+            numeric++;
+
+        }
+
+    }
+
+
+    return (
+        total > 0 &&
+        numeric / total >= 0.6
+    );
+
+}
+
+
+/* ============================================================
+   ROBUST BORDERLESS SMART PROJECTION ENGINE (PREVENTS TEXT MUTILATION)
+============================================================ */
+
+function extractBorderlessTable(words) {
+
+    const heights =
+        words.map(w => w.bbox.y1 - w.bbox.y0).sort((a, b) => a - b);
+
+    const medianH =
+        heights[Math.floor(heights.length / 2)] || 18;
+
+    const rowTol =
+        medianH * 0.45;
+
+
+    words.sort((a, b) => a.bbox.y0 - b.bbox.y0);
+
+    let rows = [];
+
+
+    words.forEach(w => {
+
+        let cy = (w.bbox.y0 + w.bbox.y1) / 2;
+
+        let r = rows.find(row => Math.abs(row.cy - cy) < rowTol);
+
+        if (!r) {
+
+            r = { cy: cy, words: [] };
+
+            rows.push(r);
+
+        }
+
+        r.words.push(w);
+
+        r.cy = r.words.reduce((sum, item) => sum + (item.bbox.y0 + item.bbox.y1)/2, 0) / r.words.length;
+
+    });
+
+
+    rows.sort((a, b) => a.cy - b.cy);
+
+
+    const spaceThreshold = Math.max(medianH * 0.35, 7);
+
+    const rowTokens = [];
+
+
+    rows.forEach(r => {
+
+        r.words.sort((a, b) => a.bbox.x0 - b.bbox.x0);
+
+        const tokens = [];
+
+        let cur = null;
+
+
+        r.words.forEach(w => {
+
+            let clean = cleanText(w.text);
+
+            if (!clean) return;
+
+
+            if (!cur) {
+
+                cur = { text: clean, x0: w.bbox.x0, x1: w.bbox.x1 };
+
+            } else {
+
+                let gap = w.bbox.x0 - cur.x1;
+
+                if (gap <= spaceThreshold) {
+
+                    cur.text += ' ' + clean;
+
+                    cur.x1 = w.bbox.x1;
+
+                } else {
+
+                    tokens.push(cur);
+
+                    cur = { text: clean, x0: w.bbox.x0, x1: w.bbox.x1 };
+
+                }
+
+            }
+
+        });
+
+
+        if (cur) tokens.push(cur);
+
+        if (tokens.length > 0) rowTokens.push(tokens);
+
+    });
+
+
+    if (rowTokens.length === 0) return [];
+
+
+    let titleRow = null;
+
+    let tableRows = rowTokens;
+
+
+    if (rowTokens.length > 2 && rowTokens[0].length === 1 && rowTokens[1].length >= 3) {
+
+        titleRow = [rowTokens[0][0].text];
+
+        tableRows = rowTokens.slice(1);
+
+    }
+
+
+    const counts = tableRows.map(r => r.length);
+
+    const freq = {};
+
+    counts.forEach(c => { if (c >= 2) freq[c] = (freq[c] || 0) + 1; });
+
+
+    let K = 0;
+
+    let maxF = 0;
+
+    for (const [c, f] of Object.entries(freq)) {
+
+        const countNum = parseInt(c);
+
+        if (f > maxF || (f === maxF && countNum > K)) {
+
+            maxF = f;
+
+            K = countNum;
+
+        }
+
+    }
+
+
+    if (K < 2) K = Math.max(...counts);
+
+
+    const fullRows = tableRows.filter(r => r.length === K);
+
+    let colBounds = [];
+
+
+    if (fullRows.length > 0) {
+
+        const colCenters = [];
+
+        for (let c = 0; c < K; c++) {
+
+            const x0s = fullRows.map(r => r[c].x0).sort((a, b) => a - b);
+
+            const x1s = fullRows.map(r => r[c].x1).sort((a, b) => a - b);
+
+            const midX0 = x0s[Math.floor(x0s.length / 2)];
+
+            const midX1 = x1s[Math.floor(x1s.length / 2)];
+
+            colCenters.push({ midX0, midX1, center: (midX0 + midX1) / 2 });
+
+        }
+
+        for (let c = 0; c < K - 1; c++) {
+
+            colBounds.push((colCenters[c].midX1 + colCenters[c + 1].midX0) / 2);
+
+        }
+
+    } else {
+
+        const allT = tableRows.flat().sort((a, b) => a.x0 - b.x0);
+
+        let anchors = [];
+
+        allT.forEach(t => {
+
+            let found = anchors.find(a => Math.abs(a.cx - (t.x0 + t.x1) / 2) < medianH * 2.0);
+
+            if (!found) anchors.push({ cx: (t.x0 + t.x1) / 2 });
+
+        });
+
+        anchors.sort((a, b) => a.cx - b.cx);
+
+        K = anchors.length;
+
+        for (let i = 0; i < anchors.length - 1; i++) {
+
+            colBounds.push((anchors[i].cx + anchors[i + 1].cx) / 2);
+
+        }
+
+    }
+
+
+    const grid = tableRows.map(row => {
+
+        const rowData = new Array(K).fill('');
+
+        row.forEach(t => {
+
+            const tCenter = (t.x0 + t.x1) / 2;
+
+            let colIdx = 0;
+
+            while (colIdx < colBounds.length && tCenter > colBounds[colIdx]) {
+
+                colIdx++;
+
+            }
+
+            if (colIdx >= K) colIdx = K - 1;
+
+
+            if (rowData[colIdx]) {
+
+                rowData[colIdx] += ' ' + t.text;
+
+            } else {
+
+                rowData[colIdx] = t.text;
+
+            }
+
+        });
+
+        return rowData;
+
+    });
+
+
+    if (titleRow) {
+
+        grid.unshift([titleRow[0], ...new Array(K - 1).fill('')]);
+
+    }
+
+
+    return grid;
+
+}
+
+
+/* ============================================================
+   MAIN EXTRACTION (WITH DUAL-ENGINE AUTO ROUTER)
+============================================================ */
+
+extractBtn.addEventListener(
+    "click",
+    async function () {
+
+        if (
+            !selectedImage
+        ) {
+
+            return;
+
+        }
+
+
+        extractBtn.disabled =
+            true;
+
+
+        resultBox.classList.add(
+            "hidden"
+        );
+
+
+        progressBox.classList.remove(
+            "hidden"
+        );
+
+
+        progressBar.style.width =
+            "2%";
+
+
+        try {
+
+            /*
+              STEP 1: 300 DPI Enhancement
+            */
+
+            progressText.textContent =
+                "Upscaling image internally to 300 DPI print standard...";
+
+
+            const canvas =
+                prepareImage(
+                    selectedImage
+                );
+
+
+            progressBar.style.width =
+                "8%";
+
+
+            /*
+              STEP 2: Load OpenCV
+            */
+
+            progressText.textContent =
+                "Analyzing table grid & border structure...";
+
+
+            await waitForOpenCV();
+
+
+            progressBar.style.width =
+                "15%";
+
+
+            /*
+              STEP 3: Check Bordered vs Borderless
+            */
+
+            const grid =
+                detectTrueBorderedGrid(
+                    canvas
+                );
+
+
+            const worker =
+                await getOCRWorker();
+
+
+            if (grid) {
+
+                /* ============================================================
+                   PATH A: TRUE BORDERED TABLE (OPENCV CELL-BY-CELL OCR)
+                ============================================================ */
+
+                const xLines = grid.xLines;
+
+                const yLines = grid.yLines;
+
+                const rows = yLines.length - 1;
+
+                const cols = xLines.length - 1;
+
+
+                progressText.textContent =
+                    `Bordered table detected (${rows} rows × ${cols} cols). Reading cells...`;
+
+
+                tableData =
+                    Array.from({ length: rows }, () => Array(cols).fill(""));
+
+
+                let cellNumber = 0;
+
+                const totalCells = rows * cols;
+
+
+                for (let r = 0; r < rows; r++) {
+
+                    for (let c = 0; c < cols; c++) {
+
+                        cellNumber++;
+
+                        progressText.textContent =
+                            `Reading cell ${cellNumber} of ${totalCells}...`;
+
+                        progressBar.style.width =
+                            (15 + (cellNumber / totalCells) * 80) + "%";
+
+
+                        const left = xLines[c];
+
+                        const right = xLines[c + 1];
+
+                        const top = yLines[r];
+
+                        const bottom = yLines[r + 1];
+
+
+                        if (right - left < 8 || bottom - top < 8) continue;
+
+
+                        const cellCanvas =
+                            prepareCellCanvas(canvas, left, top, right, bottom);
+
+                        const text =
+                            await readCell(worker, cellCanvas, false);
+
+                        tableData[r][c] = text;
+
+                    }
+
+                }
+
+
+                /* Numeric refinement */
+
+                for (let c = 0; c < cols; c++) {
+
+                    if (!looksNumericColumn(tableData, c)) continue;
+
+                    for (let r = 0; r < rows; r++) {
+
+                        const left = xLines[c];
+
+                        const right = xLines[c + 1];
+
+                        const top = yLines[r];
+
+                        const bottom = yLines[r + 1];
+
+                        const cellCanvas =
+                            prepareCellCanvas(canvas, left, top, right, bottom);
+
+                        const text =
+                            await readCell(worker, cellCanvas, true);
+
+                        if (text) tableData[r][c] = text;
+
+                    }
+
+                }
+
+            } else {
+
+                /* ============================================================
+                   PATH B: BORDERLESS TABLE (WHOLE-IMAGE OCR + GAP PROJECTION)
+                   Prevents chopping letters into 'RRR RRR' or 'EEE'
+                ============================================================ */
+
+                progressText.textContent =
+                    "Borderless table layout detected. Running 300 DPI text recognition...";
+
+                progressBar.style.width = "40%";
+
+
+                await worker.setParameters({
+
+                    tessedit_pageseg_mode: Tesseract.PSM.AUTO,
+
+                    preserve_interword_spaces: "1"
+
+                });
+
+
+                const { data } =
+                    await worker.recognize(canvas);
+
+                progressBar.style.width = "75%";
+
+
+                if (!data.words || data.words.length === 0) {
+
+                    throw new Error("No readable text found in table image.");
+
+                }
+
+
+                progressText.textContent =
+                    "Aligning rows and columns via smart projection...";
+
+
+                tableData =
+                    extractBorderlessTable(data.words);
+
+            }
+
+
+            /*
+              STEP 4: Render Table Preview
+            */
+
+            progressText.textContent =
+                "Building editable Excel preview...";
+
+            progressBar.style.width = "98%";
+
+
+            tableData =
+                removeEmptyOuterRows(tableData);
+
+
+            if (!tableData.length) {
+
+                throw new Error("No table data could be extracted.");
+
+            }
+
+
+            renderTable(tableData);
+
+            resultBox.classList.remove("hidden");
+
+            progressBar.style.width = "100%";
+
+
+            showStatus(
+                "success",
+                `✓ Successfully extracted ${tableData.length} rows and ${tableData[0].length} columns with 300 DPI clarity.`
+            );
+
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+            showStatus(
+                "error",
+                error.message || "Table extraction failed."
+            );
+
+        }
+        finally {
+
+            progressBox.classList.add("hidden");
+
+            extractBtn.disabled = false;
+
+        }
+
+    }
+);
+
+
+/* ============================================================
+   REMOVE EMPTY OUTER ROWS
+============================================================ */
+
+function removeEmptyOuterRows(
+    data
+) {
+
+    let start =
+        0;
+
+    let end =
+        data.length - 1;
+
+
+    function empty(row) {
+
+        return row.every(
+            x =>
+                !String(
+                    x || ""
+                ).trim()
+        );
+
+    }
+
+
+    while (
+        start <= end &&
+        empty(data[start])
+    ) {
+
+        start++;
+
+    }
+
+
+    while (
+        end >= start &&
+        empty(data[end])
+    ) {
+
+        end--;
+
+    }
+
+
+    if (
+        start > end
+    ) {
+
+        return [];
+
+    }
+
+
+    return data.slice(
+        start,
+        end + 1
+    );
+
+}
+
+
+/* ============================================================
+   RENDER TABLE
+============================================================ */
+
+function renderTable(
+    data
+) {
+
+    resultTable.innerHTML =
+        "";
+
+
+    if (
+        !data.length
+    ) {
+
+        return;
+
+    }
+
+
+    const maxCols =
+        Math.max(
+            ...data.map(
+                row =>
+                    row.length
+            )
+        );
+
+
+    data =
+        data.map(
+            row => {
+
+                const copy =
+                    row.slice();
+
+
+                while (
+                    copy.length <
+                    maxCols
+                ) {
+
+                    copy.push("");
+
+                }
+
+
+                return copy;
+
+            }
+        );
+
+
+    tableData =
+        data;
+
+
+    countBadge.textContent =
+        `${data.length} Rows × ${maxCols} Columns`;
+
+
+    data.forEach(
+        function (
+            row,
+            rowIndex
+        ) {
+
+            const tr =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.forEach(
+                function (
+                    value,
+                    colIndex
+                ) {
+
+                    const cell =
+                        document.createElement(
+                            rowIndex === 0
+                                ? "th"
+                                : "td"
+                        );
+
+
+                    cell.contentEditable =
+                        "true";
+
+
+                    cell.spellcheck =
+                        false;
+
+
+                    cell.textContent =
+                        value || "";
+
+
+                    cell.addEventListener(
+                        "input",
+                        function () {
+
+                            tableData[
+                                rowIndex
+                            ][colIndex] =
+                                cell.textContent;
+
+                        }
+                    );
+
+
+                    tr.appendChild(
+                        cell
+                    );
+
+                }
+            );
+
+
+            resultTable.appendChild(
+                tr
+            );
+
+        }
+    );
+
+}
+
+
+/* ============================================================
+   EXCEL
+============================================================ */
+
+excelBtn.addEventListener(
+    "click",
+    function () {
+
+        if (
+            !tableData.length
+        ) {
+
+            return;
+
+        }
+
+
+        const data =
+            tableData.map(
+                row =>
+                    row.map(
+                        excelValue
+                    )
+            );
+
+
+        const ws =
+            XLSX.utils.aoa_to_sheet(
+                data
+            );
+
+
+        const cols =
+            Math.max(
+                ...data.map(
+                    r => r.length
+                )
+            );
+
+
+        ws["!cols"] =
+            Array.from(
+                {
+                    length: cols
+                },
+                function (_, c) {
+
+                    let width =
+                        10;
+
+
+                    data.forEach(
+                        row => {
+
+                            const value =
+                                row[c] ?? "";
+
+
+                            width =
+                                Math.max(
+                                    width,
+                                    String(
+                                        value
+                                    ).length + 2
+                                );
+
+                        }
+                    );
+
+
+                    return {
+
+                        wch:
+                            Math.min(
+                                45,
+                                width
+                            )
+
+                    };
+
+                }
+            );
+
+
+        const wb =
+            XLSX.utils.book_new();
+
+
+        XLSX.utils.book_append_sheet(
+            wb,
+            ws,
+            "Extracted Table"
+        );
+
+
+        const filename =
+            selectedFile
+                ? selectedFile.name
+                    .replace(
+                        /\.[^/.]+$/,
+                        ""
+                    )
+                : "extracted-table";
+
+
+        XLSX.writeFile(
+            wb,
+            filename +
+            ".xlsx"
+        );
+
+    }
+);
+
+
+/* ============================================================
+   EXCEL VALUE
+============================================================ */
+
+function excelValue(
+    value
+) {
+
+    const text =
+        String(
+            value || ""
+        ).trim();
+
+
+    if (
+        !text
+    ) {
+
+        return "";
+
+    }
+
+
+    if (
+        /^0\d+$/.test(
+            text
+        )
+    ) {
+
+        return text;
+
+    }
+
+
+    if (
+        /^-?\d+$/.test(
+            text
+        )
+    ) {
+
+        const n =
+            Number(text);
+
+
+        if (
+            Number.isSafeInteger(
+                n
+            )
+        ) {
+
+            return n;
+
+        }
+
+    }
+
+
+    if (
+        /^-?\d+\.\d+$/.test(
+            text
+        )
+    ) {
+
+        const n =
+            Number(text);
+
+
+        if (
+            Number.isFinite(n)
+        ) {
+
+            return n;
+
+        }
+
+    }
+
+
+    return text;
+
+}
+
+
+/* ============================================================
+   CSV
+============================================================ */
+
+csvBtn.addEventListener(
+    "click",
+    function () {
+
+        if (
+            !tableData.length
+        ) {
+
+            return;
+
+        }
+
+
+        const csv =
+            tableData
+                .map(
+                    row =>
+                        row
+                            .map(
+                                value =>
+                                    `"${String(
+                                        value || ""
+                                    )
+                                    .replace(
+                                        /"/g,
+                                        '""'
+                                    )}"`
+                            )
+                            .join(",")
+                )
+                .join("\r\n");
+
+
+        const blob =
+            new Blob(
+                [
+                    "\uFEFF" +
+                    csv
+                ],
+                {
+                    type:
+                        "text/csv;charset=utf-8"
+                }
+            );
+
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+
+        const a =
+            document.createElement(
+                "a"
+            );
+
+
+        a.href =
+            url;
+
+
+        a.download =
+            (
+                selectedFile
+                    ? selectedFile.name
+                        .replace(
+                            /\.[^/.]+$/,
+                            ""
+                        )
+                    : "extracted-table"
+            ) +
+            ".csv";
+
+
+        document.body.appendChild(
+            a
+        );
+
+
+        a.click();
+
+
+        a.remove();
+
+
+        URL.revokeObjectURL(
+            url
+        );
+
+    }
+);
+
+
+/* ============================================================
+   STATUS
+============================================================ */
+
+function showStatus(
+    type,
+    message
+) {
+
+    statusBox.className =
+        "mt-5 border rounded-xl px-4 py-3 text-xs font-bold";
+
+
+    if (
+        type === "success"
+    ) {
+
+        statusBox.classList.add(
+            "success"
+        );
+
+    }
+    else if (
+        type === "warning"
+    ) {
+
+        statusBox.classList.add(
+            "warning"
+        );
+
+    }
+    else {
+
+        statusBox.classList.add(
+            "error"
+        );
+
+    }
+
+
+    statusBox.textContent =
+        message;
+
+
+    statusBox.classList.remove(
+        "hidden"
+    );
+
+}
+
+
+function hideStatus() {
+
+    statusBox.classList.add(
+        "hidden"
+    );
+
+}
+
+
+</script>
+
+</body>
+</html>

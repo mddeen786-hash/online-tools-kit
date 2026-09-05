@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Converter | iLoveFiles</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col items-center">
+
+<!-- Top Navigation Bar (Matching Home Page Exactly) -->
+<nav class="w-full bg-white/90 backdrop-blur-md border-b border-slate-100 px-8 py-5 flex justify-between items-center fixed top-0 left-0 z-50 shadow-xs">
+    
+    <!-- Creative Animated Brand Name -->
+    <div class="cursor-pointer flex items-center space-x-2 group shrink-0" onclick="window.location.href='index.html'">
+        <span class="text-4xl sm:text-7xl font-black tracking-tighter text-[#0f172a] flex items-center overflow-hidden">
+            <span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span><span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span>
+        </span>
+        <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping ml-1 hidden sm:inline-block"></span>
+    </div>
+    
+    <!-- Category-wise Navbar Links -->
+    <div class="hidden lg:flex items-center space-x-9 text-base font-black text-slate-800 tracking-wide ml-auto">
+        <a href="index.html" class="hover:text-red-600 transition-colors uppercase">Home</a>
+
+        <!-- 1. PDF Core Tools -->
+        <div class="relative group py-2">
+            <a href="index.html#pdf-section" class="flex items-center space-x-1 hover:text-red-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>PDF Core Tools</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-red-600 uppercase tracking-wider mb-2 px-2">PDF Utilities (7)</div>
+                <a href="pdf-to-word.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📄</span> <span>PDF to Word</span></a>
+                <a href="pdf-to-excel.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📊</span> <span>PDF to Excel</span></a>
+                <a href="merge.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💼</span> <span>Merge PDF</span></a>
+                <a href="pdf-splitter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>✂️</span> <span>PDF Splitter</span></a>
+                <a href="pdf-organizer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📑</span> <span>PDF Organizer</span></a>
+                <a href="pdf-watermark.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💧</span> <span>PDF Watermark</span></a>
+                <a href="pdf-to-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>🖼️</span> <span>PDF to Image</span></a>
+            </div>
+        </div>
+
+        <!-- 2. Image Utilities -->
+        <div class="relative group py-2">
+            <a href="index.html#image-section" class="flex items-center space-x-1 hover:text-teal-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Image Utilities</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-teal-600 uppercase tracking-wider mb-2 px-2">Image Utilities (6)</div>
+                <a href="compress.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🗜️</span> <span>Compress Image</span></a>
+                <a href="image-converter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🖼️</span> <span>Image Converter</span></a>
+                <a href="image-to-pdf.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📷</span> <span>Image to PDF</span></a>
+                <a href="image-reducer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📉</span> <span>Image Reducer</span></a>
+                <a href="image-to-text.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🔍</span> <span>Image to Text</span></a>
+                <a href="passport-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🛂</span> <span>Passport Studio</span></a>
+            </div>
+        </div>
+
+        <!-- 3. Business Suite -->
+        <div class="relative group py-2">
+            <a href="index.html#business-section" class="flex items-center space-x-1 hover:text-purple-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Business Suite</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-purple-600 uppercase tracking-wider mb-2 px-2">Business Utilities (6)</div>
+                <a href="invoice-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🧾</span> <span>Invoice Generator</span></a>
+                <a href="barcode-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🏷️</span> <span>Barcode Generator</span></a>
+                <a href="qr-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📱</span> <span>QR Code Studio</span></a>
+                <a href="sign-maker.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-rose-600 transition-all"><span>✍️</span> <span>Digital Signature Studio</span></a>
+                <a href="code-formatter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>⚡</span> <span>Code Formatter</span></a>
+                <a href="product-listing.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📦</span> <span>Product Listing</span></a>
+            </div>
+        </div>
+
+    </div>
+</nav>
+
+<!-- Main Workspace -->
+<div class="w-full max-w-4xl px-4 mt-36 mb-24">
+    <a href="index.html" class="text-sm font-semibold text-gray-500 hover:text-red-600 mb-4 inline-block">← Back to Dashboard</a>
+    
+    <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+        <h2 class="text-3xl font-black text-slate-900 text-center mb-2">All-in-One Image Converter</h2>
+        <p class="text-gray-500 text-center mb-8">Convert any image (JPG, PNG, WEBP, SVG, HEIC) to JPG, JPEG, PNG, WEBP, BMP, or ICO in seconds.</p>
+
+        <!-- Drop Zone -->
+        <div id="drop-zone" onclick="document.getElementById('file-input').click()" class="border-3 border-dashed border-gray-300 rounded-xl p-8 bg-gray-50 text-center relative cursor-pointer hover:bg-gray-100/50 transition-all">
+            <span class="text-4xl block mb-2">🖼️</span>
+            <p class="text-gray-600 font-medium mb-3">Drag & Drop your image file here</p>
+            <button type="button" onclick="event.stopPropagation(); document.getElementById('file-input').click();" class="bg-red-600 text-white font-bold px-6 py-2.5 rounded-xl shadow hover:bg-red-700 transition-all cursor-pointer inline-block text-sm">
+                Select Image File
+            </button>
+            <input type="file" id="file-input" accept="image/*" class="hidden" onchange="handleFileSelected(this.files)">
+        </div>
+
+        <!-- Conversion Settings & Output Panel -->
+        <div id="editor-panel" class="mt-8 border-t border-gray-100 pt-6 hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- Left: Preview Box -->
+                <div>
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Image Preview</h3>
+                    <div class="p-3 border border-gray-200 bg-slate-100 rounded-xl h-64 flex items-center justify-center overflow-hidden">
+                        <img id="image-preview" src="" class="max-h-full max-w-full object-contain rounded-lg shadow-sm">
+                    </div>
+                    <div class="flex justify-between items-center mt-3 text-xs text-gray-500 font-semibold">
+                        <span id="file-name-label">filename.png</span>
+                        <span id="file-size-label">0 KB</span>
+                    </div>
+                </div>
+
+                <!-- Right: Format Selection & Quality Settings -->
+                <div class="flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Target Format Selection</h3>
+                        
+                        <!-- Target Format Grid -->
+                        <div class="grid grid-cols-3 gap-2.5 mb-5">
+                            <button type="button" onclick="selectFormat('jpg')" class="format-btn px-4 py-3 rounded-xl border border-gray-200 text-sm font-bold text-slate-700 bg-white hover:border-red-500 transition-all text-center" data-format="jpg">JPG</button>
+                            <button type="button" onclick="selectFormat('jpeg')" class="format-btn px-4 py-3 rounded-xl border border-gray-200 text-sm font-bold text-slate-700 bg-white hover:border-red-500 transition-all text-center" data-format="jpeg">JPEG</button>
+                            <button type="button" onclick="selectFormat('png')" class="format-btn px-4 py-3 rounded-xl border-2 border-red-600 bg-red-50 text-red-600 font-bold transition-all text-center" data-format="png">PNG</button>
+                            <button type="button" onclick="selectFormat('webp')" class="format-btn px-4 py-3 rounded-xl border border-gray-200 text-sm font-bold text-slate-700 bg-white hover:border-red-500 transition-all text-center" data-format="webp">WEBP</button>
+                            <button type="button" onclick="selectFormat('bmp')" class="format-btn px-4 py-3 rounded-xl border border-gray-200 text-sm font-bold text-slate-700 bg-white hover:border-red-500 transition-all text-center" data-format="bmp">BMP</button>
+                            <button type="button" onclick="selectFormat('ico')" class="format-btn px-4 py-3 rounded-xl border border-gray-200 text-sm font-bold text-slate-700 bg-white hover:border-red-500 transition-all text-center" data-format="ico">ICO</button>
+                        </div>
+
+                        <!-- Quality Slider (Visible for lossy formats) -->
+                        <div id="quality-container" class="mb-4">
+                            <div class="flex justify-between text-xs font-bold text-slate-700 mb-1.5">
+                                <span>Output Quality</span>
+                                <span id="quality-val" class="text-red-600">92%</span>
+                            </div>
+                            <input type="range" id="quality-range" min="10" max="100" value="92" class="w-full accent-red-600 cursor-pointer" oninput="updateQuality(this.value)">
+                        </div>
+                    </div>
+
+                    <!-- Convert & Download Button -->
+                    <button onclick="convertAndDownload()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-2 cursor-pointer mt-4">
+                        <span>⚡ Convert & Download</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentImage = null;
+    let originalFileName = "converted_image";
+    let selectedFormat = "png";
+    let outputQuality = 0.92;
+
+    const dropZone = document.getElementById('drop-zone');
+    const editorPanel = document.getElementById('editor-panel');
+    const imagePreview = document.getElementById('image-preview');
+    const fileNameLabel = document.getElementById('file-name-label');
+    const fileSizeLabel = document.getElementById('file-size-label');
+    const qualityContainer = document.getElementById('quality-container');
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false);
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
+        if (files && files.length > 0) handleFileSelected(files);
+    }, false);
+
+    function handleFileSelected(files) {
+        if (!files || files.length === 0) return;
+        const file = files[0];
+
+        if (!file.type.startsWith('image/')) {
+            alert('Please upload a valid image file.');
+            return;
+        }
+
+        originalFileName = file.name.substring(0, file.name.lastIndexOf('.')) || 'converted_image';
+        fileNameLabel.textContent = file.name;
+        fileSizeLabel.textContent = (file.size / 1024).toFixed(1) + ' KB';
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            currentImage = new Image();
+            currentImage.onload = () => {
+                imagePreview.src = e.target.result;
+                editorPanel.classList.remove('hidden');
+            };
+            currentImage.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function selectFormat(format) {
+        selectedFormat = format;
+        document.querySelectorAll('.format-btn').forEach(btn => {
+            if (btn.getAttribute('data-format') === format) {
+                btn.className = "format-btn px-4 py-3 rounded-xl border-2 border-red-600 bg-red-50 text-red-600 font-bold transition-all text-center";
+            } else {
+                btn.className = "format-btn px-4 py-3 rounded-xl border border-gray-200 text-sm font-bold text-slate-700 bg-white hover:border-red-500 transition-all text-center";
+            }
+        });
+
+        if (format === 'png' || format === 'bmp' || format === 'ico') {
+            qualityContainer.classList.add('opacity-40', 'pointer-events-none');
+        } else {
+            qualityContainer.classList.remove('opacity-40', 'pointer-events-none');
+        }
+    }
+
+    function updateQuality(val) {
+        outputQuality = val / 100;
+        document.getElementById('quality-val').textContent = val + '%';
+    }
+
+    function convertAndDownload() {
+        if (!currentImage) return;
+
+        const canvas = document.createElement('canvas');
+        let width = currentImage.width;
+        let height = currentImage.height;
+
+        // ICO specific dimension scaling
+        if (selectedFormat === 'ico') {
+            width = Math.min(width, 256);
+            height = Math.min(height, 256);
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+
+        // Fill white background for non-transparent target formats
+        if (selectedFormat === 'jpg' || selectedFormat === 'jpeg' || selectedFormat === 'bmp') {
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, width, height);
+        }
+
+        ctx.drawImage(currentImage, 0, 0, width, height);
+
+        let mimeType = 'image/png';
+        if (selectedFormat === 'jpg' || selectedFormat === 'jpeg') mimeType = 'image/jpeg';
+        else if (selectedFormat === 'webp') mimeType = 'image/webp';
+        else if (selectedFormat === 'bmp') mimeType = 'image/bmp';
+        else if (selectedFormat === 'ico') mimeType = 'image/x-icon';
+
+        const dataUrl = canvas.toDataURL(mimeType, outputQuality);
+
+        const link = document.createElement('a');
+        link.download = `${originalFileName}.${selectedFormat}`;
+        link.href = dataUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+
+</body>
+</html>

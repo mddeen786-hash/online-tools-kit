@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merge Image | Filesque</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .step-badge {
+            width: 28px; height: 28px;
+            display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 9999px; background: #0f172a; color: #ffffff;
+            font-size: 12px; font-weight: 900; margin-right: 8px;
+        }
+        #crop-canvas, #split-canvas {
+            max-width: 100%;
+            max-height: 42vh;
+            object-fit: contain;
+            cursor: crosshair;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body class="text-slate-900 min-h-screen flex flex-col items-center antialiased">
+
+<!-- Top Navigation Bar with Creative Animated Brand & Nav Links -->
+<nav class="w-full bg-white/90 backdrop-blur-md border-b border-slate-100 px-8 py-5 flex justify-between items-center fixed top-0 left-0 z-50 shadow-xs">
+    
+    <!-- Creative Animated Brand Name -->
+    <div class="cursor-pointer flex items-center space-x-2 group shrink-0" onclick="window.location.href='index.html'">
+        <span class="text-4xl sm:text-7xl font-black tracking-tighter text-[#0f172a] flex items-center overflow-hidden">
+            <span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span><span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span>
+        </span>
+        <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping ml-1 hidden sm:inline-block"></span>
+    </div>
+    
+    <!-- Navbar Links -->
+    <div class="hidden lg:flex items-center space-x-9 text-base font-black text-slate-800 tracking-wide ml-auto">
+        <a href="index.html" class="hover:text-red-600 transition-colors uppercase">Home</a>
+
+        <!-- 1. PDF Core Tools -->
+        <div class="relative group py-2">
+            <a href="#pdf-section" class="flex items-center space-x-1 hover:text-red-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>PDF Core Tools</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-red-600 uppercase tracking-wider mb-2 px-2">PDF Utilities (7)</div>
+                <a href="pdf-to-word.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📄</span> <span>PDF to Word</span></a>
+                <a href="pdf-to-excel.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📊</span> <span>PDF to Excel</span></a>
+                <a href="merge.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💼</span> <span>Merge PDF</span></a>
+                <a href="pdf-splitter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>✂️</span> <span>PDF Splitter</span></a>
+                <a href="pdf-organizer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📑</span> <span>PDF Organizer</span></a>
+                <a href="pdf-watermark.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💧</span> <span>PDF Watermark</span></a>
+                <a href="pdf-to-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>🖼️</span> <span>PDF to Image</span></a>
+            </div>
+        </div>
+
+        <!-- 2. Image Utilities -->
+        <div class="relative group py-2">
+            <a href="#image-section" class="flex items-center space-x-1 hover:text-teal-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Image Utilities</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-teal-600 uppercase tracking-wider mb-2 px-2">Image Utilities (7)</div>
+                <a href="compress.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🗜️</span> <span>Compress Image</span></a>
+                <a href="image-converter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🖼️</span> <span>Image Converter</span></a>
+                <a href="image-to-pdf.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📷</span> <span>Image to PDF</span></a>
+                <a href="image-reducer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📉</span> <span>Image Reducer</span></a>
+                <a href="image-to-text.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🔍</span> <span>Image to Text</span></a>
+                <a href="passport-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🛂</span> <span>Passport Studio</span></a>
+                <a href="merge-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🧩</span> <span>Merge Image</span></a>
+            </div>
+        </div>
+
+        <!-- 3. Business Suite -->
+        <div class="relative group py-2">
+            <a href="#business-section" class="flex items-center space-x-1 hover:text-purple-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Business Suite</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-purple-600 uppercase tracking-wider mb-2 px-2">Business Utilities (6)</div>
+                <a href="invoice-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🧾</span> <span>Invoice Generator</span></a>
+                <a href="barcode-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🏷️</span> <span>Barcode Generator</span></a>
+                <a href="qr-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📱</span> <span>QR Code Studio</span></a>
+                <a href="sign-maker.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>✍️</span> <span>Digital Signature Studio</span></a>
+                <a href="code-formatter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>⚡</span> <span>Code Formatter</span></a>
+                <a href="product-listing.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📦</span> <span>Product Listing</span></a>
+            </div>
+        </div>
+
+    </div>
+</nav>
+
+<div class="w-full max-w-4xl px-4 mt-40 mb-24 mx-auto flex flex-col items-center">
+    <div class="w-full flex justify-between items-center mb-4">
+        <a href="index.html" class="text-sm font-semibold text-gray-500 hover:text-rose-500 inline-block">← Back to Dashboard</a>
+        
+        <div class="bg-slate-200 p-1 rounded-xl flex space-x-1">
+            <button onclick="switchTab(1)" id="tab-btn-1" class="px-4 py-2 rounded-lg text-xs font-black uppercase transition-all bg-white text-slate-900 shadow-xs cursor-pointer">
+                🛠️ Single Image Studio & Extractor
+            </button>
+            <button onclick="switchTab(2)" id="tab-btn-2" class="px-4 py-2 rounded-lg text-xs font-black uppercase transition-all text-slate-600 hover:text-slate-900 cursor-pointer">
+                📚 Multiple Files Page-wise Merger
+            </button>
+        </div>
+    </div>
+    
+    <div id="tab-content-1" class="bg-white p-10 rounded-2xl shadow-xl border border-slate-100 text-center w-full space-y-8">
+        <div>
+            <h2 class="text-4xl font-black text-slate-900 mb-2">Single Image Studio & Extractor</h2>
+            <p class="text-gray-500 text-sm">Upload any image format, precise manual crop & multiple split bucket extraction, and export professional HD JPEG under 100KB.</p>
+        </div>
+
+        <div class="bg-slate-50/50 p-6 rounded-2xl border border-slate-200 text-left">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide flex items-center m-0">
+                    <span class="step-badge">1</span> Upload & Manage Image File
+                </h3>
+                <button type="button" onclick="resetAllWorkspace()" class="text-xs font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-3 py-1.5 rounded-lg transition-all cursor-pointer">🔄 Reset All</button>
+            </div>
+            
+            <label for="file-input" class="border-3 border-dashed border-gray-300 rounded-xl p-8 bg-white text-center transition-all cursor-pointer hover:border-teal-500 block">
+                <span class="text-5xl block mb-3">📁</span>
+                <p id="file-name-display" class="text-slate-700 font-bold text-base mb-1">Click to browse or drop images here</p>
+                <p class="text-slate-400 text-xs">Supports multiple JPEG, JPG, PNG, WebP files</p>
+                <span class="mt-4 bg-teal-600 hover:bg-teal-700 text-white font-bold px-6 py-3 rounded-xl shadow transition-all inline-block text-xs uppercase tracking-wider">
+                    Browse Files
+                </span>
+                <input type="file" id="file-input" accept="image/*" multiple class="hidden">
+            </label>
+
+            <div id="image-cards-list" class="mt-6 space-y-3 hidden">
+                <label class="block text-xs font-black uppercase text-slate-700">Uploaded Images (Manage Order, Delete, Crop or Split):</label>
+            </div>
+        </div>
+
+        <div id="step-2-section" class="bg-slate-50/50 p-6 rounded-2xl border border-slate-200 text-left hidden space-y-6">
+            <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide flex items-center">
+                <span class="step-badge">2</span> Choose Layout & Preview
+            </h3>
+            
+            <div>
+                <label class="block text-xs font-black uppercase text-slate-700 mb-2">Merge Orientation:</label>
+                <select id="merge-direction" onchange="generateLivePreview()" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:border-teal-500 transition-all">
+                    <option value="horizontal">Horizontal (Side by Side with professional gap)</option>
+                    <option value="vertical">Vertical (Stacked Top to Bottom with professional gap)</option>
+                </select>
+            </div>
+
+            <div>
+                <div class="flex justify-between items-center mb-2">
+                    <label class="text-xs font-black uppercase text-slate-700">Live Layout Preview & Final Dimensions:</label>
+                    <span id="preview-size-badge" class="text-xs font-black text-teal-700 bg-teal-50 border border-teal-200 px-3 py-1 rounded-lg">Output Size: 0 × 0 px</span>
+                </div>
+                <div id="preview-container" class="w-full bg-white border border-slate-200 rounded-xl p-4 flex justify-center items-center overflow-auto max-h-72">
+                    <span class="text-xs text-slate-400 font-bold">Generating preview...</span>
+                </div>
+            </div>
+
+            <button onclick="startFinalProcessing()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase tracking-wider py-4 rounded-xl shadow-lg transition-all cursor-pointer">
+                Proceed to Export (< 100KB HD)
+            </button>
+        </div>
+
+        <div id="step-3-section" class="bg-slate-50/50 p-6 rounded-2xl border border-slate-200 text-center hidden space-y-4">
+            <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide text-left flex items-center">
+                <span class="step-badge">3</span> Processing & Download
+            </h3>
+            <div id="loading-status" class="text-sm font-bold text-teal-600">Rendering sharp HD quality and optimizing under 100KB...</div>
+            <div id="progress-container" class="w-full bg-gray-200 rounded-full h-3 overflow-hidden max-w-md mx-auto">
+                <div id="progress-bar" class="bg-teal-600 h-3 rounded-full transition-all duration-150" style="width: 0%"></div>
+            </div>
+            <div id="progress-percentage" class="text-xs font-black text-teal-600">0%</div>
+            <button id="download-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-8 py-4 rounded-xl shadow-lg transition-all text-lg cursor-pointer hidden inline-flex items-center space-x-2">
+                <span>📥 Download Final Optimized JPEG (< 100KB)</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="tab-content-2" class="bg-white p-10 rounded-2xl shadow-xl border border-slate-100 text-center w-full space-y-8 hidden">
+        <div>
+            <h2 class="text-4xl font-black text-slate-900 mb-2">Multiple Files Page-wise Merger</h2>
+            <p class="text-gray-500 text-sm">Upload multiple images, rotate sideways photos, reorder sequence cards with large visual previews, and choose vertical/horizontal orientation to merge into a single master file.</p>
+        </div>
+
+        <div class="bg-slate-50/50 p-6 rounded-2xl border border-slate-200 text-left">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide flex items-center m-0">
+                    <span class="step-badge">1</span> Upload, Rotate & Sequence Pages
+                </h3>
+                <button type="button" onclick="resetAllWorkspace2()" class="text-xs font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-3 py-1.5 rounded-lg transition-all cursor-pointer">🔄 Reset All</button>
+            </div>
+            
+            <label for="file-input-2" class="border-3 border-dashed border-gray-300 rounded-xl p-8 bg-white text-center transition-all cursor-pointer hover:border-teal-500 block">
+                <span class="text-5xl block mb-3">📁</span>
+                <p id="file-name-display-2" class="text-slate-700 font-bold text-base mb-1">Click to browse or drop multiple image files here</p>
+                <p class="text-slate-400 text-xs">Supports multiple JPEG, JPG, PNG, WebP files to rotate and merge page-wise</p>
+                <span class="mt-4 bg-teal-600 hover:bg-teal-700 text-white font-bold px-6 py-3 rounded-xl shadow transition-all inline-block text-xs uppercase tracking-wider">
+                    Browse Files
+                </span>
+                <input type="file" id="file-input-2" accept="image/*" multiple class="hidden">
+            </label>
+
+            <div id="image-cards-list-2" class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 hidden"></div>
+        </div>
+
+        <div id="step-2-section-2" class="bg-slate-50/50 p-6 rounded-2xl border border-slate-200 text-left hidden space-y-6">
+            <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide flex items-center">
+                <span class="step-badge">2</span> Choose Merge Orientation & Export
+            </h3>
+            
+            <div>
+                <label class="block text-xs font-black uppercase text-slate-700 mb-2">Merge Orientation (Page Flow):</label>
+                <select id="merge-direction-2" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:border-teal-500 transition-all">
+                    <option value="vertical">Vertical Sequence (Page by Page Top to Bottom)</option>
+                    <option value="horizontal">Horizontal Sequence (Side by Side)</option>
+                </select>
+            </div>
+
+            <button onclick="startMultiPageMerge()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black text-sm uppercase tracking-wider py-4 rounded-xl shadow-lg transition-all cursor-pointer flex items-center justify-center space-x-2">
+                <span>MERGE ALL PAGES INTO SINGLE FILE 🚀</span>
+            </button>
+        </div>
+
+        <div id="step-3-section-2" class="bg-slate-50/50 p-6 rounded-2xl border border-slate-200 text-center hidden space-y-4">
+            <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide text-left flex items-center">
+                <span class="step-badge">3</span> Merged File Ready
+            </h3>
+            <div id="loading-status-2" class="text-sm font-bold text-teal-600">✅ All pages successfully merged into a single file!</div>
+            <div id="download-buttons-container" class="flex flex-wrap justify-center gap-3 pt-2"></div>
+        </div>
+    </div>
+
+</div>
+
+<div id="crop-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-xs z-50 flex items-center justify-center hidden">
+    <div class="bg-white p-6 rounded-2xl shadow-2xl max-w-2xl w-full mx-4 space-y-4 text-left">
+        <div class="flex justify-between items-center flex-wrap gap-2">
+            <div>
+                <h3 class="text-lg font-black text-slate-900">Manual Crop & Image Resize</h3>
+                <p id="all-images-size-guide" class="text-[11px] font-bold text-slate-500 mt-0.5">Other images sizes: --</p>
+            </div>
+            <div class="flex items-center space-x-2 bg-slate-50 p-2 rounded-xl border border-slate-200">
+                <div class="flex items-center space-x-1">
+                    <span class="text-[10px] font-black text-slate-600 uppercase">W:</span>
+                    <input type="number" id="crop-input-w" onchange="onManualDimensionChange()" class="w-16 bg-white border border-slate-300 rounded-lg px-2 py-1 text-xs font-bold text-slate-800 outline-none focus:border-teal-500 text-center">
+                </div>
+                <span class="text-slate-400 font-bold">×</span>
+                <div class="flex items-center space-x-1">
+                    <span class="text-[10px] font-black text-slate-600 uppercase">H:</span>
+                    <input type="number" id="crop-input-h" onchange="onManualDimensionChange()" class="w-16 bg-white border border-slate-300 rounded-lg px-2 py-1 text-xs font-bold text-slate-800 outline-none focus:border-teal-500 text-center">
+                </div>
+                <span class="text-[10px] font-bold text-slate-400">px</span>
+            </div>
+        </div>
+        
+        <div class="flex items-center space-x-4 bg-slate-50 p-3 rounded-xl">
+            <label class="text-xs font-bold text-slate-700">Image Scale / Resize:</label>
+            <input type="range" id="zoom-slider" min="0.3" max="2.0" step="0.05" value="1.0" oninput="onZoomChange(this.value)" class="w-full accent-teal-600 cursor-pointer">
+            <span id="zoom-value" class="text-xs font-black text-teal-600 w-12">100%</span>
+        </div>
+
+        <div class="flex justify-center bg-slate-100 p-4 rounded-xl overflow-hidden">
+            <canvas id="crop-canvas"></canvas>
+        </div>
+
+        <div class="flex justify-end space-x-3 pt-4 border-t border-slate-100">
+            <button type="button" onclick="resetManualCrop()" class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 cursor-pointer mr-auto bg-slate-100">🔄 Reset Crop</button>
+            <button type="button" onclick="closeCropModal()" class="px-5 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 cursor-pointer">Cancel</button>
+            <button type="button" onclick="saveManualCrop()" class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow cursor-pointer">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<div id="split-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-xs z-50 flex items-center justify-center hidden">
+    <div class="bg-white p-6 rounded-2xl shadow-2xl max-w-2xl w-full mx-4 space-y-4 text-left">
+        <div class="flex justify-between items-center flex-wrap gap-2">
+            <div>
+                <h3 class="text-lg font-black text-slate-900">Multiple Split & Extract</h3>
+                <p class="text-xs text-slate-500">Draw boxes to extract multiple portions into your bucket.</p>
+            </div>
+            <button type="button" onclick="addCurrentBoxToBucket()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow cursor-pointer">➕ Add Box to Bucket</button>
+        </div>
+
+        <div class="flex justify-center bg-slate-100 p-3 rounded-xl overflow-hidden">
+            <canvas id="split-canvas"></canvas>
+        </div>
+
+        <div>
+            <div class="flex justify-between items-center mb-1.5">
+                <label class="block text-[11px] font-black uppercase text-slate-500">Extracted Bucket Parts (<span id="bucket-count">0</span>):</label>
+                <button type="button" onclick="clearSplitBucket()" class="text-[11px] font-bold text-rose-600 hover:underline">Clear All</button>
+            </div>
+            <div id="bucket-container" class="flex gap-2 overflow-x-auto bg-slate-50 p-3 rounded-xl border border-slate-200 min-h-[90px] items-center">
+                <span class="text-xs text-slate-400 font-bold mx-auto">No parts added yet. Draw box and click "Add Box to Bucket".</span>
+            </div>
+        </div>
+
+        <div class="flex justify-end space-x-3 pt-3 border-t border-slate-100">
+            <button type="button" onclick="resetSplitBox()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 cursor-pointer mr-auto bg-slate-100">🔄 Reset Split Box</button>
+            <button type="button" onclick="closeSplitModal()" class="px-5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 cursor-pointer">Cancel</button>
+            <button type="button" onclick="executeMultiSplit()" class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-xl text-xs font-bold shadow cursor-pointer">Add All Bucket Parts to Workspace</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- TAB SWITCHER LOGIC ---
+    function switchTab(tabNum) {
+        if(tabNum === 1) {
+            document.getElementById('tab-content-1').classList.remove('hidden');
+            document.getElementById('tab-content-2').classList.add('hidden');
+            document.getElementById('tab-btn-1').className = "px-4 py-2 rounded-lg text-xs font-black uppercase transition-all bg-white text-slate-900 shadow-xs cursor-pointer";
+            document.getElementById('tab-btn-2').className = "px-4 py-2 rounded-lg text-xs font-black uppercase transition-all text-slate-600 hover:text-slate-900 cursor-pointer";
+        } else {
+            document.getElementById('tab-content-2').classList.remove('hidden');
+            document.getElementById('tab-content-1').classList.add('hidden');
+            document.getElementById('tab-btn-2').className = "px-4 py-2 rounded-lg text-xs font-black uppercase transition-all bg-white text-slate-900 shadow-xs cursor-pointer";
+            document.getElementById('tab-btn-1').className = "px-4 py-2 rounded-lg text-xs font-black uppercase transition-all text-slate-600 hover:text-slate-900 cursor-pointer";
+        }
+    }
+
+    // --- TAB 1 SCRIPT (Single Image Studio) ---
+    let imageItems = []; 
+    let activeCropIndex = null;
+    let activeSplitIndex = null;
+    let finalBlobUrl = "";
+
+    let cropCanvas, cropCtx, cropImg;
+    let cropBox = { x: 0, y: 0, w: 100, h: 100 };
+    let imgPan = { x: 0, y: 0 };
+    let zoomFactor = 1.0;
+    let isDragging = false;
+    let dragType = null; 
+    let startMouseX = 0, startMouseY = 0;
+    let startBoxX = 0, startBoxY = 0, startBoxW = 0, startBoxH = 0;
+    let startPanX = 0, startPanY = 0;
+
+    let splitCanvas, splitCtx, splitImg;
+    let splitBox = { x: 0, y: 0, w: 100, h: 100 };
+    let isSplitDragging = false;
+    let splitDragType = null;
+    let splitBucketList = [];
+
+    const fileInput = document.getElementById('file-input');
+    const fileNameDisplay = document.getElementById('file-name-display');
+    const imageCardsList = document.getElementById('image-cards-list');
+    const step2Section = document.getElementById('step-2-section');
+    const step3Section = document.getElementById('step-3-section');
+    const previewContainer = document.getElementById('preview-container');
+    const cropModal = document.getElementById('crop-modal');
+    const splitModal = document.getElementById('split-modal');
+    const zoomSlider = document.getElementById('zoom-slider');
+    const zoomValue = document.getElementById('zoom-value');
+    const cropInputW = document.getElementById('crop-input-w');
+    const cropInputH = document.getElementById('crop-input-h');
+    const previewSizeBadge = document.getElementById('preview-size-badge');
+    const allImagesSizeGuide = document.getElementById('all-images-size-guide');
+    const bucketContainer = document.getElementById('bucket-container');
+    const bucketCount = document.getElementById('bucket-count');
+    const loadingStatus = document.getElementById('loading-status');
+    const downloadBtn = document.getElementById('download-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const progressPercentage = document.getElementById('progress-percentage');
+    const progressContainer = document.getElementById('progress-container');
+
+    fileInput.addEventListener('change', async (e) => {
+        if (e.target.files.length > 0) {
+            const files = Array.from(e.target.files);
+            for (let file of files) {
+                const url = URL.createObjectURL(file);
+                const imgObj = await loadImage(url);
+                imageItems.push({
+                    id: Math.random().toString(36).substring(2, 9),
+                    file: file,
+                    imgObj: imgObj,
+                    url: url
+                });
+            }
+            fileInput.value = "";
+            renderImageCards();
+        }
+    });
+
+    function loadImage(url) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = url;
+        });
+    }
+
+    function renderImageCards() {
+        if (imageItems.length === 0) {
+            imageCardsList.classList.add('hidden');
+            step2Section.classList.add('hidden');
+            fileNameDisplay.textContent = "Click to browse or drop images here";
+            return;
+        }
+
+        imageCardsList.classList.remove('hidden');
+        step2Section.classList.remove('hidden');
+        fileNameDisplay.textContent = `${imageItems.length} image files selected successfully.`;
+
+        let html = '<label class="block text-xs font-black uppercase text-slate-700 mb-2">Uploaded Images (Manage Order, Delete, Crop or Split):</label>';
+        
+        imageItems.forEach((item, idx) => {
+            html += `
+                <div class="flex items-center justify-between bg-white p-3 rounded-xl border border-slate-200 shadow-xs gap-3">
+                    <div class="flex items-center space-x-3">
+                        <img src="${item.url}" class="w-12 h-12 object-cover rounded-lg border border-slate-100" alt="Thumb">
+                        <div>
+                            <p class="text-xs font-black text-slate-800">Image #${idx + 1}</p>
+                            <p class="text-[11px] font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded inline-block mt-0.5">Size: ${item.imgObj.width} × ${item.imgObj.height} px</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                        <button type="button" onclick="moveImage(${idx}, -1)" ${idx === 0 ? 'disabled class="opacity-30 cursor-not-allowed p-2"' : 'class="p-2 hover:bg-slate-100 rounded-lg text-xs cursor-pointer font-bold text-slate-700"'} title="Move Up">⬆️</button>
+                        <button type="button" onclick="moveImage(${idx}, 1)" ${idx === imageItems.length - 1 ? 'disabled class="opacity-30 cursor-not-allowed p-2"' : 'class="p-2 hover:bg-slate-100 rounded-lg text-xs cursor-pointer font-bold text-slate-700"'} title="Move Down">⬇️</button>
+                        <button type="button" onclick="openCropModal(${idx})" class="px-3 py-1.5 bg-teal-50 hover:bg-teal-100 text-teal-700 rounded-lg text-xs font-bold cursor-pointer transition-all">✂️ Crop</button>
+                        <button type="button" onclick="openSplitModal(${idx})" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold cursor-pointer transition-all">🔪 Split</button>
+                        <button type="button" onclick="deleteImage(${idx})" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold cursor-pointer transition-all">🗑️ Delete</button>
+                    </div>
+                </div>
+            `;
+        });
+
+        imageCardsList.innerHTML = html;
+        generateLivePreview();
+    }
+
+    function moveImage(index, direction) {
+        const targetIndex = index + direction;
+        if (targetIndex < 0 || targetIndex >= imageItems.length) return;
+        const temp = imageItems[index];
+        imageItems[index] = imageItems[targetIndex];
+        imageItems[targetIndex] = temp;
+        renderImageCards();
+    }
+
+    function deleteImage(index) {
+        imageItems.splice(index, 1);
+        renderImageCards();
+    }
+
+    function resetAllWorkspace() {
+        imageItems = [];
+        fileInput.value = "";
+        step3Section.classList.add('hidden');
+        renderImageCards();
+    }
+
+    function openCropModal(index) {
+        activeCropIndex = index;
+        cropModal.classList.remove('hidden');
+
+        cropImg = imageItems[index].imgObj;
+        cropCanvas = document.getElementById('crop-canvas');
+        cropCtx = cropCanvas.getContext('2d');
+
+        let guideText = "Other sizes: ";
+        imageItems.forEach((it, i) => {
+            if (i !== index) {
+                guideText += `[Img #${i+1}: ${it.imgObj.width}×${it.imgObj.height}px] `;
+            }
+        });
+        allImagesSizeGuide.textContent = imageItems.length > 1 ? guideText : "Single image loaded";
+
+        zoomFactor = 1.0;
+        zoomSlider.value = 1.0;
+        zoomValue.textContent = "100%";
+        imgPan = { x: 0, y: 0 };
+
+        updateCanvasDimensions();
+        setupCropHandlers();
+        redrawCropCanvas();
+    }
+
+    function updateCanvasDimensions() {
+        cropCanvas.width = cropImg.width;
+        cropCanvas.height = cropImg.height;
+
+        cropBox = {
+            x: Math.round(cropImg.width * 0.1),
+            y: Math.round(cropImg.height * 0.1),
+            w: Math.round(cropImg.width * 0.8),
+            h: Math.round(cropImg.height * 0.8)
+        };
+    }
+
+    function onZoomChange(val) {
+        zoomFactor = parseFloat(val);
+        zoomValue.textContent = Math.round(zoomFactor * 100) + "%";
+        redrawCropCanvas();
+    }
+
+    function onManualDimensionChange() {
+        const newW = parseInt(cropInputW.value);
+        const newH = parseInt(cropInputH.value);
+
+        if (!isNaN(newW) && newW > 20 && newW <= cropCanvas.width) {
+            cropBox.w = newW;
+        }
+        if (!isNaN(newH) && newH > 20 && newH <= cropCanvas.height) {
+            cropBox.h = newH;
+        }
+        redrawCropCanvas();
+    }
+
+    function setupCropHandlers() {
+        function getMousePos(e) {
+            const rect = cropCanvas.getBoundingClientRect();
+            const scaleX = cropCanvas.width / rect.width;
+            const scaleY = cropCanvas.height / rect.height;
+            return {
+                x: (e.clientX - rect.left) * scaleX,
+                y: (e.clientY - rect.top) * scaleY
+            };
+        }
+
+        function getHandleAtPos(x, y) {
+            const hs = Math.max(20, cropCanvas.width * 0.04);
+            const { x: bx, y: by, w: bw, h: bh } = cropBox;
+
+            if (Math.abs(x - bx) < hs && Math.abs(y - by) < hs) return 'nw';
+            if (Math.abs(x - (bx + bw)) < hs && Math.abs(y - by) < hs) return 'ne';
+            if (Math.abs(x - bx) < hs && Math.abs(y - (by + bh)) < hs) return 'sw';
+            if (Math.abs(x - (bx + bw)) < hs && Math.abs(y - (by + bh)) < hs) return 'se';
+
+            if (Math.abs(x - bx) < hs && y > by && y < by + bh) return 'w';
+            if (Math.abs(x - (bx + bw)) < hs && y > by && y < by + bh) return 'e';
+            if (Math.abs(y - by) < hs && x > bx && x < bx + bw) return 'n';
+            if (Math.abs(y - (by + bh)) < hs && x > bx && x < bx + bw) return 's';
+
+            if (x > bx && x < bx + bw && y > by && y < by + bh) return 'box-move';
+            return 'image-pan';
+        }
+
+        cropCanvas.onmousemove = (e) => {
+            const pos = getMousePos(e);
+            if (!isDragging) {
+                const type = getHandleAtPos(pos.x, pos.y);
+                if (type === 'nw' || type === 'se') cropCanvas.style.cursor = 'nwse-resize';
+                else if (type === 'ne' || type === 'sw') cropCanvas.style.cursor = 'nesw-resize';
+                else if (type === 'n' || type === 's') cropCanvas.style.cursor = 'ns-resize';
+                else if (type === 'w' || type === 'e') cropCanvas.style.cursor = 'ew-resize';
+                else if (type === 'box-move') cropCanvas.style.cursor = 'move';
+                else cropCanvas.style.cursor = 'grab';
+                return;
+            }
+
+            const dx = pos.x - startMouseX;
+            const dy = pos.y - startMouseY;
+
+            if (dragType === 'image-pan') {
+                imgPan.x = startPanX + dx;
+                imgPan.y = startPanY + dy;
+            } else if (dragType === 'box-move') {
+                cropBox.x = Math.max(0, Math.min(cropCanvas.width - cropBox.w, startBoxX + dx));
+                cropBox.y = Math.max(0, Math.min(cropCanvas.height - cropBox.h, startBoxY + dy));
+            } else if (dragType === 'se') {
+                cropBox.w = Math.max(30, Math.min(cropCanvas.width - cropBox.x, startBoxW + dx));
+                cropBox.h = Math.max(30, Math.min(cropCanvas.height - cropBox.y, startBoxH + dy));
+            } else if (dragType === 'nw') {
+                let newX = Math.max(0, startBoxX + dx);
+                let newY = Math.max(0, startBoxY + dy);
+                let newW = startBoxW - (newX - startBoxX);
+                let newH = startBoxH - (newY - startBoxY);
+                if (newW > 30) { cropBox.x = newX; cropBox.w = newW; }
+                if (newH > 30) { cropBox.y = newY; cropBox.h = newH; }
+            } else if (dragType === 'ne') {
+                let newY = Math.max(0, startBoxY + dy);
+                let newW = Math.max(30, Math.min(cropCanvas.width - cropBox.x, startBoxW + dx));
+                let newH = startBoxH - (newY - startBoxY);
+                if (newH > 30) { cropBox.y = newY; cropBox.h = newH; }
+                cropBox.w = newW;
+            } else if (dragType === 'sw') {
+                let newX = Math.max(0, startBoxX + dx);
+                let newW = startBoxW - (newX - startBoxX);
+                let newH = Math.max(30, Math.min(cropCanvas.height - cropBox.y, startBoxH + dy));
+                if (newW > 30) { cropBox.x = newX; cropBox.w = newW; }
+                cropBox.h = newH;
+            }
+
+            redrawCropCanvas();
+        };
+
+        cropCanvas.onmousedown = (e) => {
+            const pos = getMousePos(e);
+            dragType = getHandleAtPos(pos.x, pos.y);
+            isDragging = true;
+            startMouseX = pos.x;
+            startMouseY = pos.y;
+            startBoxX = cropBox.x;
+            startBoxY = cropBox.y;
+            startBoxW = cropBox.w;
+            startBoxH = cropBox.h;
+            startPanX = imgPan.x;
+            startPanY = imgPan.y;
+        };
+
+        window.onmouseup = () => { isDragging = false; };
+    }
+
+    function redrawCropCanvas() {
+        cropCtx.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
+        
+        cropCtx.save();
+        cropCtx.translate(imgPan.x, imgPan.y);
+        cropCtx.scale(zoomFactor, zoomFactor);
+        cropCtx.drawImage(cropImg, 0, 0);
+        cropCtx.restore();
+
+        cropCtx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+        cropCtx.fillRect(0, 0, cropCanvas.width, cropCanvas.height);
+
+        cropCtx.save();
+        cropCtx.beginPath();
+        cropCtx.rect(cropBox.x, cropBox.y, cropBox.w, cropBox.h);
+        cropCtx.clip();
+        cropCtx.translate(imgPan.x, imgPan.y);
+        cropCtx.scale(zoomFactor, zoomFactor);
+        cropCtx.drawImage(cropImg, 0, 0);
+        cropCtx.restore();
+
+        cropCtx.strokeStyle = '#0d9488';
+        cropCtx.lineWidth = 2;
+        cropCtx.strokeRect(cropBox.x, cropBox.y, cropBox.w, cropBox.h);
+
+        const hs = 12;
+        cropCtx.fillStyle = '#ffffff';
+        cropCtx.strokeStyle = '#0d9488';
+        cropCtx.lineWidth = 2;
+
+        const handles = [
+            [cropBox.x, cropBox.y],
+            [cropBox.x + cropBox.w, cropBox.y],
+            [cropBox.x, cropBox.y + cropBox.h],
+            [cropBox.x + cropBox.w, cropBox.y + cropBox.h]
+        ];
+
+        handles.forEach(([hx, hy]) => {
+            cropCtx.fillRect(hx - hs/2, hy - hs/2, hs, hs);
+            cropCtx.strokeRect(hx - hs/2, hy - hs/2, hs, hs);
+        });
+
+        cropInputW.value = Math.round(cropBox.w);
+        cropInputH.value = Math.round(cropBox.h);
+    }
+
+    function resetManualCrop() {
+        zoomFactor = 1.0;
+        zoomSlider.value = 1.0;
+        zoomValue.textContent = "100%";
+        imgPan = { x: 0, y: 0 };
+        updateCanvasDimensions();
+        redrawCropCanvas();
+    }
+
+    function closeCropModal() {
+        cropModal.classList.add('hidden');
+        activeCropIndex = null;
+    }
+
+    async function saveManualCrop() {
+        if (activeCropIndex === null) return;
+
+        const outCanvas = document.createElement('canvas');
+        outCanvas.width = cropBox.w;
+        outCanvas.height = cropBox.h;
+        const outCtx = outCanvas.getContext('2d');
+
+        outCtx.fillStyle = "#FFFFFF";
+        outCtx.fillRect(0, 0, cropBox.w, cropBox.h);
+
+        outCtx.save();
+        outCtx.translate(imgPan.x - cropBox.x, imgPan.y - cropBox.y);
+        outCtx.scale(zoomFactor, zoomFactor);
+        outCtx.drawImage(cropImg, 0, 0);
+        outCtx.restore();
+
+        const newUrl = outCanvas.toDataURL('image/jpeg', 0.95);
+        const newImgObj = await loadImage(newUrl);
+
+        imageItems[activeCropIndex].url = newUrl;
+        imageItems[activeCropIndex].imgObj = newImgObj;
+
+        closeCropModal();
+        renderImageCards();
+    }
+
+    function openSplitModal(index) {
+        activeSplitIndex = index;
+        splitModal.classList.remove('hidden');
+
+        splitImg = imageItems[index].imgObj;
+        splitCanvas = document.getElementById('split-canvas');
+        splitCtx = splitCanvas.getContext('2d');
+
+        splitCanvas.width = splitImg.width;
+        splitCanvas.height = splitImg.height;
+
+        resetSplitBox();
+        splitBucketList = [];
+        updateBucketUI();
+        setupSplitHandlers();
+        redrawSplitCanvas();
+    }
+
+    function resetSplitBox() {
+        splitBox = {
+            x: Math.round(splitImg.width * 0.1),
+            y: Math.round(splitImg.height * 0.1),
+            w: Math.round(splitImg.width * 0.4),
+            h: Math.round(splitImg.height * 0.4)
+        };
+        redrawSplitCanvas();
+    }
+
+    function setupSplitHandlers() {
+        function getMousePos(e) {
+            const rect = splitCanvas.getBoundingClientRect();
+            const scaleX = splitCanvas.width / rect.width;
+            const scaleY = splitCanvas.height / rect.height;
+            return {
+                x: (e.clientX - rect.left) * scaleX,
+                y: (e.clientY - rect.top) * scaleY
+            };
+        }
+
+        function getSplitHandleAtPos(x, y) {
+            const hs = Math.max(20, splitCanvas.width * 0.04);
+            const { x: bx, y: by, w: bw, h: bh } = splitBox;
+
+            if (Math.abs(x - bx) < hs && Math.abs(y - by) < hs) return 'nw';
+            if (Math.abs(x - (bx + bw)) < hs && Math.abs(y - by) < hs) return 'ne';
+            if (Math.abs(x - bx) < hs && Math.abs(y - (by + bh)) < hs) return 'sw';
+            if (Math.abs(x - (bx + bw)) < hs && Math.abs(y - (by + bh)) < hs) return 'se';
+
+            if (x > bx && x < bx + bw && y > by && y < by + bh) return 'box-move';
+            return 'none';
+        }
+
+        splitCanvas.onmousemove = (e) => {
+            const pos = getMousePos(e);
+            if (!isSplitDragging) {
+                const type = getSplitHandleAtPos(pos.x, pos.y);
+                if (type === 'nw' || type === 'se') splitCanvas.style.cursor = 'nwse-resize';
+                else if (type === 'ne' || type === 'sw') splitCanvas.style.cursor = 'nesw-resize';
+                else if (type === 'box-move') splitCanvas.style.cursor = 'move';
+                else splitCanvas.style.cursor = 'crosshair';
+                return;
+            }
+
+            const dx = pos.x - startMouseX;
+            const dy = pos.y - startMouseY;
+
+            if (splitDragType === 'box-move') {
+                splitBox.x = Math.max(0, Math.min(splitCanvas.width - splitBox.w, startBoxX + dx));
+                splitBox.y = Math.max(0, Math.min(splitCanvas.height - splitBox.h, startBoxY + dy));
+            } else if (splitDragType === 'se') {
+                splitBox.w = Math.max(30, Math.min(splitCanvas.width - splitBox.x, startBoxW + dx));
+                splitBox.h = Math.max(30, Math.min(splitCanvas.height - splitBox.y, startBoxH + dy));
+            } else if (splitDragType === 'nw') {
+                let newX = Math.max(0, startBoxX + dx);
+                let newY = Math.max(0, startBoxY + dy);
+                let newW = startBoxW - (newX - startBoxX);
+                let newH = startBoxH - (newY - startBoxY);
+                if (newW > 30) { splitBox.x = newX; splitBox.w = newW; }
+                if (newH > 30) { splitBox.y = newY; splitBox.h = newH; }
+            } else if (splitDragType === 'ne') {
+                let newY = Math.max(0, startBoxY + dy);
+                let newW = Math.max(30, Math.min(splitCanvas.width - splitBox.x, startBoxW + dx));
+                let newH = startBoxH - (newY - startBoxY);
+                if (newH > 30) { splitBox.y = newY; splitBox.h = newH; }
+                splitBox.w = newW;
+            } else if (splitDragType === 'sw') {
+                let newX = Math.max(0, startBoxX + dx);
+                let newW = startBoxW - (newX - startBoxX);
+                let newH = Math.max(30, Math.min(splitCanvas.height - splitBox.y, startBoxH + dy));
+                if (newW > 30) { splitBox.x = newX; splitBox.w = newW; }
+                splitBox.h = newH;
+            }
+
+            redrawSplitCanvas();
+        };
+
+        splitCanvas.onmousedown = (e) => {
+            const pos = getMousePos(e);
+            splitDragType = getSplitHandleAtPos(pos.x, pos.y);
+            if (splitDragType === 'none') {
+                splitBox.x = Math.round(pos.x);
+                splitBox.y = Math.round(pos.y);
+                splitBox.w = 120;
+                splitBox.h = 120;
+                splitDragType = 'se';
+            }
+            isSplitDragging = true;
+            startMouseX = pos.x;
+            startMouseY = pos.y;
+            startBoxX = splitBox.x;
+            startBoxY = splitBox.y;
+            startBoxW = splitBox.w;
+            startBoxH = splitBox.h;
+        };
+
+        window.onmouseup = () => { isSplitDragging = false; };
+    }
+
+    function redrawSplitCanvas() {
+        splitCtx.clearRect(0, 0, splitCanvas.width, splitCanvas.height);
+        splitCtx.drawImage(splitImg, 0, 0);
+
+        splitCtx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+        splitCtx.fillRect(0, 0, splitCanvas.width, splitCanvas.height);
+
+        splitCtx.save();
+        splitCtx.beginPath();
+        splitCtx.rect(splitBox.x, splitBox.y, splitBox.w, splitBox.h);
+        splitCtx.clip();
+        splitCtx.drawImage(splitImg, 0, 0);
+        splitCtx.restore();
+
+        splitCtx.strokeStyle = '#6366f1';
+        splitCtx.lineWidth = 2;
+        splitCtx.strokeRect(splitBox.x, splitBox.y, splitBox.w, splitBox.h);
+
+        const hs = 12;
+        splitCtx.fillStyle = '#ffffff';
+        splitCtx.strokeStyle = '#6366f1';
+        splitCtx.lineWidth = 2;
+
+        const handles = [
+            [splitBox.x, splitBox.y],
+            [splitBox.x + splitBox.w, splitBox.y],
+            [splitBox.x, splitBox.y + splitBox.h],
+            [splitBox.x + splitBox.w, splitBox.y + splitBox.h]
+        ];
+
+        handles.forEach(([hx, hy]) => {
+            splitCtx.fillRect(hx - hs/2, hy - hs/2, hs, hs);
+            splitCtx.strokeRect(hx - hs/2, hy - hs/2, hs, hs);
+        });
+    }
+
+    async function addCurrentBoxToBucket() {
+        const outCanvas = document.createElement('canvas');
+        outCanvas.width = splitBox.w;
+        outCanvas.height = splitBox.h;
+        const outCtx = outCanvas.getContext('2d');
+
+        outCtx.fillStyle = "#FFFFFF";
+        outCtx.fillRect(0, 0, splitBox.w, splitBox.h);
+        outCtx.drawImage(splitImg, splitBox.x, splitBox.y, splitBox.w, splitBox.h, 0, 0, splitBox.w, splitBox.h);
+
+        const url = outCanvas.toDataURL('image/jpeg', 0.95);
+        const imgObj = await loadImage(url);
+
+        splitBucketList.push({ url, imgObj });
+        updateBucketUI();
+    }
+
+    function updateBucketUI() {
+        bucketCount.textContent = splitBucketList.length;
+        if (splitBucketList.length === 0) {
+            bucketContainer.innerHTML = `<span class="text-xs text-slate-400 font-bold mx-auto">No parts added yet. Draw box and click "Add Box to Bucket".</span>`;
+            return;
+        }
+
+        let html = '';
+        splitBucketList.forEach((item, idx) => {
+            html += `
+                <div class="relative shrink-0 bg-white border border-slate-200 p-1 rounded-lg shadow-xs group">
+                    <img src="${item.url}" class="h-16 w-16 object-contain rounded" alt="Part">
+                    <button type="button" onclick="removeBucketItem(${idx})" class="absolute -top-1.5 -right-1.5 bg-rose-600 text-white rounded-full w-5 h-5 text-[10px] font-black flex items-center justify-center shadow hover:bg-rose-700">×</button>
+                </div>
+            `;
+        });
+        bucketContainer.innerHTML = html;
+    }
+
+    function removeBucketItem(index) {
+        splitBucketList.splice(index, 1);
+        updateBucketUI();
+    }
+
+    function clearSplitBucket() {
+        splitBucketList = [];
+        updateBucketUI();
+    }
+
+    function closeSplitModal() {
+        splitModal.classList.add('hidden');
+        activeSplitIndex = null;
+    }
+
+    async function executeMultiSplit() {
+        if (splitBucketList.length === 0) {
+            closeSplitModal();
+            return;
+        }
+
+        const item = imageItems[activeSplitIndex];
+        const newItems = splitBucketList.map(b => ({
+            id: Math.random().toString(36).substring(2, 9),
+            file: item.file,
+            imgObj: b.imgObj,
+            url: b.url
+        }));
+
+        imageItems.splice(activeSplitIndex, 1, ...newItems);
+
+        closeSplitModal();
+        renderImageCards();
+    }
+
+    function generateLivePreview() {
+        if (imageItems.length === 0) return;
+        const direction = document.getElementById('merge-direction').value;
+        const professionalGap = 16; 
+
+        const totalW = direction === 'vertical' ? Math.max(...imageItems.map(i => i.imgObj.width)) : imageItems.reduce((sum, i) => sum + i.imgObj.width, 0) + (professionalGap * (imageItems.length - 1));
+        const totalH = direction === 'vertical' ? imageItems.reduce((sum, i) => sum + i.imgObj.height, 0) + (professionalGap * (imageItems.length - 1)) : Math.max(...imageItems.map(i => i.imgObj.height));
+
+        const canvas = document.createElement('canvas');
+        canvas.width = totalW;
+        canvas.height = totalH;
+        const ctx = canvas.getContext('2d');
+        
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillRect(0, 0, totalW, totalH);
+
+        let offset = 0;
+        imageItems.forEach((item) => {
+            if (direction === 'vertical') {
+                const drawX = (totalW - item.imgObj.width) / 2;
+                ctx.drawImage(item.imgObj, drawX, offset);
+                offset += item.imgObj.height + professionalGap;
+            } else {
+                const drawY = (totalH - item.imgObj.height) / 2;
+                ctx.drawImage(item.imgObj, offset, drawY);
+                offset += item.imgObj.width + professionalGap;
+            }
+        });
+
+        previewSizeBadge.textContent = `Output Size: ${totalW} × ${totalH} px`;
+        previewContainer.innerHTML = `<img src="${canvas.toDataURL('image/jpeg', 0.90)}" class="max-h-60 rounded-lg shadow-sm border border-slate-200 object-contain" alt="Live Preview">`;
+    }
+
+    async function startFinalProcessing() {
+        if (imageItems.length === 0) return;
+
+        step2Section.classList.add('hidden');
+        step3Section.classList.remove('hidden');
+        progressContainer.classList.remove('hidden');
+        progressPercentage.classList.remove('hidden');
+        downloadBtn.classList.add('hidden');
+        loadingStatus.textContent = "⏳ Stitching layout with professional gap and optimizing under 100KB...";
+
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            progress += 15;
+            if (progress > 90) progress = 90;
+            progressBar.style.width = progress + '%';
+            progressPercentage.textContent = progress + '%';
+        }, 80);
+
+        try {
+            const direction = document.getElementById('merge-direction').value;
+            const professionalGap = 16; 
+
+            const totalW = direction === 'vertical' ? Math.max(...imageItems.map(i => i.imgObj.width)) : imageItems.reduce((sum, i) => sum + i.imgObj.width, 0) + (professionalGap * (imageItems.length - 1));
+            const totalH = direction === 'vertical' ? imageItems.reduce((sum, i) => sum + i.imgObj.height, 0) + (professionalGap * (imageItems.length - 1)) : Math.max(...imageItems.map(i => i.imgObj.height));
+
+            const canvas = document.createElement('canvas');
+            let scale = 1.0;
+
+            if (totalW * totalH > 3000000) {
+                scale = Math.sqrt(3000000 / (totalW * totalH));
+            }
+
+            canvas.width = Math.round(totalW * scale);
+            canvas.height = Math.round(totalH * scale);
+            const ctx = canvas.getContext('2d');
+            
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const scaledGap = Math.round(professionalGap * scale);
+
+            let offset = 0;
+            imageItems.forEach((item) => {
+                const scaledW = Math.round(item.imgObj.width * scale);
+                const scaledH = Math.round(item.imgObj.height * scale);
+
+                if (direction === 'vertical') {
+                    const drawX = (canvas.width - scaledW) / 2;
+                    ctx.drawImage(item.imgObj, drawX, offset, scaledW, scaledH);
+                    offset += scaledH + scaledGap;
+                } else {
+                    const drawY = (canvas.height - scaledH) / 2;
+                    ctx.drawImage(item.imgObj, offset, drawY, scaledW, scaledH);
+                    offset += scaledW + scaledGap;
+                }
+            });
+
+            let quality = 0.88;
+            let dataUrl = canvas.toDataURL('image/jpeg', quality);
+
+            while (dataUrl.length * 0.75 > 100 * 1024 && quality > 0.15) {
+                quality -= 0.08;
+                dataUrl = canvas.toDataURL('image/jpeg', quality);
+            }
+
+            const blob = dataURItoBlob(dataUrl);
+            finalBlobUrl = URL.createObjectURL(blob);
+
+            clearInterval(progressInterval);
+            progressBar.style.width = '100%';
+            progressPercentage.textContent = '100%';
+
+            setTimeout(() => {
+                progressContainer.classList.add('hidden');
+                progressPercentage.classList.add('hidden');
+                loadingStatus.textContent = `✅ Successfully optimized! Final Size: ${(blob.size / 1024).toFixed(1)} KB (Professional HD Quality)`;
+                downloadBtn.classList.remove('hidden');
+            }, 300);
+
+        } catch (err) {
+            console.error(err);
+            clearInterval(progressInterval);
+            loadingStatus.textContent = "❌ Error processing images.";
+        }
+    }
+
+
+    // --- TAB 2 SCRIPT (Multiple Files Page-wise Master Merge with Rotation & Vertical/Horizontal Support) ---
+    let multiItems = [];
+    let finalMultiBlobUrl = "";
+    const fileInput2 = document.getElementById('file-input-2');
+    const fileNameDisplay2 = document.getElementById('file-name-display-2');
+    const imageCardsList2 = document.getElementById('image-cards-list-2');
+    const step2Section2 = document.getElementById('step-2-section-2');
+    const step3Section2 = document.getElementById('step-3-section-2');
+    const mergeDirection2 = document.getElementById('merge-direction-2');
+    const downloadButtonsContainer = document.getElementById('download-buttons-container');
+
+    fileInput2.addEventListener('change', async (e) => {
+        if(e.target.files.length > 0) {
+            const files = Array.from(e.target.files);
+            for(let file of files) {
+                const url = URL.createObjectURL(file);
+                const imgObj = await loadImage(url);
+                multiItems.push({ 
+                    id: Math.random().toString(36).substring(2, 9), 
+                    file, 
+                    imgObj, 
+                    url,
+                    rotation: 0 
+                });
+            }
+            fileInput2.value = "";
+            renderMultiCards();
+        }
+    });
+
+    function renderMultiCards() {
+        if(multiItems.length === 0) {
+            imageCardsList2.classList.add('hidden');
+            step2Section2.classList.add('hidden');
+            fileNameDisplay2.textContent = "Click to browse or drop multiple files here";
+            return;
+        }
+        imageCardsList2.classList.remove('hidden');
+        step2Section2.classList.remove('hidden');
+        fileNameDisplay2.textContent = `${multiItems.length} sequence files loaded successfully for page-wise merging.`;
+
+        let html = '';
+        multiItems.forEach((item, idx) => {
+            html += `
+                <div class="bg-white border-2 border-slate-200 rounded-2xl p-4 flex flex-col items-center shadow-sm relative group hover:border-teal-500 transition-all">
+                    <span class="absolute top-3 left-3 bg-slate-900 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs font-black shadow">P${idx + 1}</span>
+                    
+                    <button type="button" onclick="deleteMulti(${idx})" class="absolute top-3 right-3 bg-rose-50 hover:bg-rose-100 text-rose-600 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all" title="Delete Page">🗑️</button>
+
+                    <div class="w-full h-44 bg-slate-100 rounded-xl flex items-center justify-center overflow-hidden my-3 border border-slate-100">
+                        <img src="${item.url}" class="max-h-full max-w-full object-contain transition-transform duration-200" style="transform: rotate(${item.rotation}deg);" alt="Page Preview">
+                    </div>
+
+                    <div class="text-center w-full mb-3 truncate">
+                        <p class="text-xs font-black text-slate-800 truncate px-2">${item.file.name}</p>
+                        <p class="text-[11px] font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded inline-block mt-1">Rotation: ${item.rotation}° | Size: ${item.imgObj.width} × ${item.imgObj.height} px</p>
+                    </div>
+
+                    <div class="flex items-center justify-center space-x-2 w-full pt-2 border-t border-slate-100">
+                        <button type="button" onclick="rotateMulti(${idx})" class="px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg text-xs font-black cursor-pointer transition-all flex items-center space-x-1">
+                            <span>🔄</span><span>Rotate 90°</span>
+                        </button>
+                        <button type="button" onclick="moveMulti(${idx}, -1)" ${idx === 0 ? 'disabled class="opacity-30 cursor-not-allowed px-3 py-1.5 bg-slate-50 text-slate-400 rounded-lg text-xs font-bold"' : 'class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold cursor-pointer"'} title="Move Left/Up">⬅️ Move</button>
+                        <button type="button" onclick="moveMulti(${idx}, 1)" ${idx === multiItems.length - 1 ? 'disabled class="opacity-30 cursor-not-allowed px-3 py-1.5 bg-slate-50 text-slate-400 rounded-lg text-xs font-bold"' : 'class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold cursor-pointer"'} title="Move Right/Down">Move ➡️</button>
+                    </div>
+                </div>
+            `;
+        });
+        imageCardsList2.innerHTML = html;
+    }
+
+    async function rotateMulti(index) {
+        const item = multiItems[index];
+        item.rotation = (item.rotation + 90) % 360;
+
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = item.imgObj;
+
+        if (item.rotation === 90 || item.rotation === 270) {
+            canvas.width = img.height;
+            canvas.height = img.width;
+        } else {
+            canvas.width = img.width;
+            canvas.height = img.height;
+        }
+
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate((item.rotation * Math.PI) / 180);
+        ctx.drawImage(img, -img.width / 2, -img.height / 2);
+
+        const rotatedUrl = canvas.toDataURL('image/jpeg', 0.95);
+        item.imgObj = await loadImage(rotatedUrl);
+        item.url = rotatedUrl;
+        item.rotation = 0; 
+
+        renderMultiCards();
+    }
+
+    function moveMulti(index, direction) {
+        const target = index + direction;
+        if(target < 0 || target >= multiItems.length) return;
+        const temp = multiItems[index];
+        multiItems[index] = multiItems[target];
+        multiItems[target] = temp;
+        renderMultiCards();
+    }
+
+    function deleteMulti(index) {
+        multiItems.splice(index, 1);
+        renderMultiCards();
+    }
+
+    function resetAllWorkspace2() {
+        multiItems = [];
+        fileInput2.value = "";
+        step3Section2.classList.add('hidden');
+        renderMultiCards();
+    }
+
+    function resetWorkspace(tab) {
+        if(tab === 1) resetAllWorkspace();
+        else resetAllWorkspace2();
+    }
+
+    async function startMultiPageMerge() {
+        if(multiItems.length === 0) return;
+        step2Section2.classList.add('hidden');
+        step3Section2.classList.remove('hidden');
+        downloadButtonsContainer.innerHTML = '';
+        
+        const direction = mergeDirection2.value;
+        document.getElementById('loading-status-2').textContent = `⏳ Merging all pages (${direction}) into a single file & optimizing under 100KB...`;
+
+        const professionalGap = 16;
+        const totalW = direction === 'vertical' ? Math.max(...multiItems.map(i => i.imgObj.width)) : multiItems.reduce((sum, i) => sum + i.imgObj.width, 0) + (professionalGap * (multiItems.length - 1));
+        const totalH = direction === 'vertical' ? multiItems.reduce((sum, i) => sum + i.imgObj.height, 0) + (professionalGap * (multiItems.length - 1)) : Math.max(...multiItems.map(i => i.imgObj.height));
+
+        const canvas = document.createElement('canvas');
+        let scale = 1.0;
+        if(totalW * totalH > 3000000) {
+            scale = Math.sqrt(3000000 / (totalW * totalH));
+        }
+
+        canvas.width = Math.round(totalW * scale);
+        canvas.height = Math.round(totalH * scale);
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const scaledGap = Math.round(professionalGap * scale);
+        let offset = 0;
+
+        multiItems.forEach(item => {
+            const scaledW = Math.round(item.imgObj.width * scale);
+            const scaledH = Math.round(item.imgObj.height * scale);
+            if(direction === 'vertical') {
+                const drawX = (canvas.width - scaledW) / 2;
+                ctx.drawImage(item.imgObj, drawX, offset, scaledW, scaledH);
+                offset += scaledH + scaledGap;
+            } else {
+                const drawY = (canvas.height - scaledH) / 2;
+                ctx.drawImage(item.imgObj, offset, drawY, scaledW, scaledH);
+                offset += scaledW + scaledGap;
+            }
+        });
+
+        let quality = 0.88;
+        let dataUrl = canvas.toDataURL('image/jpeg', quality);
+        while (dataUrl.length * 0.75 > 100 * 1024 && quality > 0.15) {
+            quality -= 0.08;
+            dataUrl = canvas.toDataURL('image/jpeg', quality);
+        }
+
+        const blob = dataURItoBlob(dataUrl);
+        finalMultiBlobUrl = URL.createObjectURL(blob);
+
+        document.getElementById('loading-status-2').textContent = `✅ Successfully merged into 1 single file! Final Size: ${(blob.size / 1024).toFixed(1)} KB (HD Quality)`;
+        
+        const btnElem = document.createElement('a');
+        btnElem.href = finalMultiBlobUrl;
+        btnElem.download = "merged-pages-master.jpg";
+        btnElem.className = "bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-8 py-4 rounded-xl shadow-lg cursor-pointer inline-flex items-center space-x-2 text-base";
+        btnElem.innerHTML = `<span>📥 Download Merged File Together (< 100KB)</span>`;
+        downloadButtonsContainer.appendChild(btnElem);
+    }
+
+    function dataURItoBlob(dataURI) {
+        const byteString = atob(dataURI.split(',')[1]);
+        const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+        return new Blob([ab], { type: mimeString });
+    }
+
+    downloadBtn.addEventListener('click', () => {
+        const hTag = document.createElement('a');
+        hTag.href = finalBlobUrl;
+        hTag.download = "merged-hd-optimized.jpg";
+        document.body.appendChild(hTag);
+        hTag.click();
+        document.body.removeChild(hTag);
+        loadingStatus.textContent = "✅ Image downloaded successfully!";
+    });
+</script>
+</body>
+</html>

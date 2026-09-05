@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Product Listing Generator</title>
+
+</head>
+<body class="bg-gray-50 font-sans">
+
+<!-- Top Navigation Bar with Creative Animated Brand & Nav Links -->
+<nav class="w-full bg-white/90 backdrop-blur-md border-b border-slate-100 px-8 py-5 flex justify-between items-center fixed top-0 left-0 z-50 shadow-xs">
+    
+    <!-- Creative Animated Brand Name -->
+    <div class="cursor-pointer flex items-center space-x-2 group shrink-0" onclick="window.location.href='index.html'">
+        <span class="text-4xl sm:text-7xl font-black tracking-tighter text-[#0f172a] flex items-center overflow-hidden">
+            <span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span><span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span>
+        </span>
+        <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping ml-1 hidden sm:inline-block"></span>
+    </div>
+    
+    <!-- Navbar Links -->
+    <div class="hidden lg:flex items-center space-x-9 text-base font-black text-slate-800 tracking-wide ml-auto">
+        <a href="index.html" class="hover:text-red-600 transition-colors uppercase">Home</a>
+
+        <!-- 1. PDF Core Tools -->
+        <div class="relative group py-2">
+            <a href="#pdf-section" class="flex items-center space-x-1 hover:text-red-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>PDF Core Tools</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-red-600 uppercase tracking-wider mb-2 px-2">PDF Utilities (7)</div>
+                <a href="pdf-to-word.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📄</span> <span>PDF to Word</span></a>
+                <a href="pdf-to-excel.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📊</span> <span>PDF to Excel</span></a>
+                <a href="merge.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💼</span> <span>Merge PDF</span></a>
+                <a href="pdf-splitter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>✂️</span> <span>PDF Splitter</span></a>
+                <a href="pdf-organizer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📑</span> <span>PDF Organizer</span></a>
+                <a href="pdf-watermark.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💧</span> <span>PDF Watermark</span></a>
+                <a href="pdf-to-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>🖼️</span> <span>PDF to Image</span></a>
+            </div>
+        </div>
+
+        <!-- 2. Image Utilities -->
+        <div class="relative group py-2">
+            <a href="#image-section" class="flex items-center space-x-1 hover:text-teal-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Image Utilities</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-teal-600 uppercase tracking-wider mb-2 px-2">Image Utilities (7)</div>
+                <a href="compress.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🗜️</span> <span>Compress Image</span></a>
+                <a href="image-converter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🖼️</span> <span>Image Converter</span></a>
+                <a href="image-to-pdf.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📷</span> <span>Image to PDF</span></a>
+                <a href="image-reducer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📉</span> <span>Image Reducer</span></a>
+                <a href="image-to-text.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🔍</span> <span>Image to Text</span></a>
+                <a href="passport-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🛂</span> <span>Passport Studio</span></a>
+                <a href="merge-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🧩</span> <span>Merge Image</span></a>
+            </div>
+        </div>
+
+        <!-- 3. Business Suite -->
+        <div class="relative group py-2">
+            <a href="#business-section" class="flex items-center space-x-1 hover:text-purple-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Business Suite</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-purple-600 uppercase tracking-wider mb-2 px-2">Business Utilities (6)</div>
+                <a href="invoice-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🧾</span> <span>Invoice Generator</span></a>
+                <a href="barcode-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🏷️</span> <span>Barcode Generator</span></a>
+                <a href="qr-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📱</span> <span>QR Code Studio</span></a>
+                <a href="sign-maker.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>✍️</span> <span>Digital Signature Studio</span></a>
+                <a href="code-formatter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>⚡</span> <span>Code Formatter</span></a>
+                <a href="product-listing.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📦</span> <span>Product Listing</span></a>
+            </div>
+        </div>
+
+    </div>
+</nav>
+
+ <!-- Back to Dashboard -->
+<div class="px-10 py-5">
+    <a href="index.html" class="text-gray-500 hover:text-indigo-600 text-sm">← Back to Dashboard</a>
+</div>
+
+<!-- Main Tool Container (Box Design) -->
+<div class="max-w-4xl mx-auto mt-5 bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-slate-900">Product Listing Generator</h1>
+        <p class="text-gray-500 mt-2">Apne product ka naam aur features daal kar description generate karein.</p>
+    </div>
+
+    <!-- Tool Content -->
+    <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+        <input type="text" id="pname" placeholder="Product ka naam yahan likhein" class="w-full p-4 mb-4 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none">
+        <textarea id="pfeat" rows="4" placeholder="Features likhein (comma laga kar)" class="w-full p-4 mb-4 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"></textarea>
+        <button onclick="generate()" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold hover:bg-indigo-700 transition-all">Generate Description</button>
+        
+        <!-- Result Area -->
+        <div id="result" class="mt-6 p-6 bg-white rounded-xl border border-dashed border-gray-300 hidden"></div>
+    </div>
+</div>
+    <script>
+        function generate() {
+            const name = document.getElementById('pname').value;
+            const feat = document.getElementById('pfeat').value.split(',');
+            const res = document.getElementById('result');
+            res.innerHTML = `<h3 class='font-bold text-xl mb-2'>${name}</h3><ul class='list-disc ml-5 space-y-1'>` + feat.map(f => `<li>${f.trim()}</li>`).join('') + `</ul>`;
+            res.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Signature Studio | iLoveFiles</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <style>
+        .grid-pattern {
+            background-color: #ffffff;
+            background-image: radial-gradient(#e2e8f0 1.5px, transparent 1.5px);
+            background-size: 16px 16px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col items-center antialiased">
+
+<!-- Top Navigation Bar with Creative Animated Brand & Nav Links -->
+<nav class="w-full bg-white/90 backdrop-blur-md border-b border-slate-100 px-8 py-5 flex justify-between items-center fixed top-0 left-0 z-50 shadow-xs">
+    
+    <!-- Creative Animated Brand Name -->
+    <div class="cursor-pointer flex items-center space-x-2 group shrink-0" onclick="window.location.href='index.html'">
+        <span class="text-4xl sm:text-7xl font-black tracking-tighter text-[#0f172a] flex items-center overflow-hidden">
+            <span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span><span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span>
+        </span>
+        <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping ml-1 hidden sm:inline-block"></span>
+    </div>
+    
+    <!-- Navbar Links -->
+    <div class="hidden lg:flex items-center space-x-9 text-base font-black text-slate-800 tracking-wide ml-auto">
+        <a href="index.html" class="hover:text-red-600 transition-colors uppercase">Home</a>
+
+        <!-- 1. PDF Core Tools -->
+        <div class="relative group py-2">
+            <a href="#pdf-section" class="flex items-center space-x-1 hover:text-red-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>PDF Core Tools</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-red-600 uppercase tracking-wider mb-2 px-2">PDF Utilities (7)</div>
+                <a href="pdf-to-word.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📄</span> <span>PDF to Word</span></a>
+                <a href="pdf-to-excel.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📊</span> <span>PDF to Excel</span></a>
+                <a href="merge.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💼</span> <span>Merge PDF</span></a>
+                <a href="pdf-splitter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>✂️</span> <span>PDF Splitter</span></a>
+                <a href="pdf-organizer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📑</span> <span>PDF Organizer</span></a>
+                <a href="pdf-watermark.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💧</span> <span>PDF Watermark</span></a>
+                <a href="pdf-to-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>🖼️</span> <span>PDF to Image</span></a>
+            </div>
+        </div>
+
+        <!-- 2. Image Utilities -->
+        <div class="relative group py-2">
+            <a href="#image-section" class="flex items-center space-x-1 hover:text-teal-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Image Utilities</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-teal-600 uppercase tracking-wider mb-2 px-2">Image Utilities (7)</div>
+                <a href="compress.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🗜️</span> <span>Compress Image</span></a>
+                <a href="image-converter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🖼️</span> <span>Image Converter</span></a>
+                <a href="image-to-pdf.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📷</span> <span>Image to PDF</span></a>
+                <a href="image-reducer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📉</span> <span>Image Reducer</span></a>
+                <a href="image-to-text.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🔍</span> <span>Image to Text</span></a>
+                <a href="passport-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🛂</span> <span>Passport Studio</span></a>
+                <a href="merge-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🧩</span> <span>Merge Image</span></a>
+            </div>
+        </div>
+
+        <!-- 3. Business Suite -->
+        <div class="relative group py-2">
+            <a href="#business-section" class="flex items-center space-x-1 hover:text-purple-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Business Suite</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-purple-600 uppercase tracking-wider mb-2 px-2">Business Utilities (6)</div>
+                <a href="invoice-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🧾</span> <span>Invoice Generator</span></a>
+                <a href="barcode-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🏷️</span> <span>Barcode Generator</span></a>
+                <a href="qr-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📱</span> <span>QR Code Studio</span></a>
+                <a href="sign-maker.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>✍️</span> <span>Digital Signature Studio</span></a>
+                <a href="code-formatter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>⚡</span> <span>Code Formatter</span></a>
+                <a href="product-listing.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📦</span> <span>Product Listing</span></a>
+            </div>
+        </div>
+
+    </div>
+</nav>
+
+<!-- Main Workspace -->
+<div class="w-full max-w-4xl px-4 mt-36 mb-24">
+    <a href="index.html" class="text-sm font-semibold text-gray-500 hover:text-red-600 mb-4 inline-block">← Back to Dashboard</a>
+    
+    <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+        <h2 class="text-3xl font-black text-slate-900 text-center mb-2">Digital Signature Studio</h2>
+        <p class="text-gray-500 text-center mb-8">Draw ultra-smooth signatures with auto-crop, custom resolution, and exact target KB compression.</p>
+
+        <!-- Pad Controls Toolbar -->
+        <div class="flex flex-wrap items-center justify-between gap-4 p-4 bg-slate-50 border border-gray-200 rounded-xl mb-4">
+            
+            <!-- Ink Colors -->
+            <div class="flex items-center space-x-3">
+                <span class="text-xs font-bold text-slate-600 uppercase tracking-wider">Ink:</span>
+                <button type="button" onclick="setPenColor('#000000', this)" class="color-btn w-7 h-7 rounded-full bg-black ring-2 ring-offset-2 ring-red-500"></button>
+                <button type="button" onclick="setPenColor('#0f2b82', this)" class="color-btn w-7 h-7 rounded-full bg-blue-900"></button>
+                <button type="button" onclick="setPenColor('#991b1b', this)" class="color-btn w-7 h-7 rounded-full bg-red-800"></button>
+                <button type="button" onclick="setPenColor('#065f46', this)" class="color-btn w-7 h-7 rounded-full bg-emerald-800"></button>
+            </div>
+
+            <!-- Stroke Thickness -->
+            <div class="flex items-center space-x-3">
+                <span class="text-xs font-bold text-slate-600 uppercase tracking-wider">Pen Size:</span>
+                <input type="range" id="stroke-width" min="1" max="6" value="2.5" step="0.5" class="w-20 accent-red-600 cursor-pointer" oninput="updateStroke(this.value)">
+                <span id="stroke-val" class="text-xs font-bold text-slate-700">2.5px</span>
+            </div>
+
+            <!-- Clear Canvas Button -->
+            <button type="button" onclick="clearSignature()" class="px-4 py-2 bg-white border border-gray-300 hover:border-red-500 text-slate-700 text-xs font-bold rounded-lg shadow-sm transition-all cursor-pointer">
+                🗑️ Clear Pad
+            </button>
+        </div>
+
+        <!-- Signature Drawing Canvas Pad -->
+        <div class="relative w-full h-80 rounded-2xl border-2 border-dashed border-gray-300 grid-pattern overflow-hidden shadow-inner flex items-center justify-center">
+            <canvas id="signature-pad" class="w-full h-full cursor-crosshair touch-none"></canvas>
+            <div id="pad-hint" class="absolute pointer-events-none text-slate-400 font-medium text-sm tracking-wide select-none">
+                ✍️ Draw your signature here smoothly
+            </div>
+        </div>
+
+        <!-- Dimension & Target KB Settings -->
+        <div class="mt-6 p-5 bg-slate-50 border border-gray-200 rounded-2xl">
+            <div class="text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-4">Dimension & Compression Settings</div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                <div>
+                    <label class="text-xs font-bold text-slate-600 block mb-1">Custom Width (px)</label>
+                    <input type="number" id="target-width" placeholder="Auto Tight-Crop" class="w-full p-2.5 bg-white border border-gray-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-red-500">
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-slate-600 block mb-1">Custom Height (px)</label>
+                    <input type="number" id="target-height" placeholder="Auto Tight-Crop" class="w-full p-2.5 bg-white border border-gray-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-red-500">
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-slate-600 block mb-1">Target Max Size (KB)</label>
+                    <input type="number" id="target-kb" value="" placeholder="Optional (e.g. 10)" class="w-full p-2.5 bg-white border border-gray-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-red-500" autocomplete="off">
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2 text-xs font-semibold text-slate-600">
+                <input type="checkbox" id="auto-crop" checked class="w-4 h-4 accent-red-600 rounded">
+                <label for="auto-crop" class="cursor-pointer">Auto-crop edges (removes empty extra border space)</label>
+            </div>
+        </div>
+
+        <!-- Action Download Buttons -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+            <!-- 1. Pure Transparent PNG -->
+            <button onclick="processAndDownload('transparent_png')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center space-x-2 cursor-pointer">
+                <span>✨ Download Transparent PNG</span>
+            </button>
+
+            <!-- 2. Pure White PNG -->
+            <button onclick="processAndDownload('white_png')" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center space-x-2 cursor-pointer">
+                <span>📄 Download White PNG</span>
+            </button>
+
+            <!-- 3. White JPG -->
+            <button onclick="processAndDownload('white_jpg')" class="bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center space-x-2 cursor-pointer">
+                <span>📄 Download White JPG</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('signature-pad');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const hint = document.getElementById('pad-hint');
+    
+    let isDrawing = false;
+    let hasDrawn = false;
+    let currentColor = '#000000';
+    let currentStroke = 2.5;
+    let points = [];
+
+    function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 2;
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.strokeStyle = currentColor;
+        ctx.lineWidth = currentStroke;
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    setTimeout(resizeCanvas, 50);
+
+    function getCoords(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return {
+            x: clientX - rect.left,
+            y: clientY - rect.top
+        };
+    }
+
+    function startDrawing(e) {
+        e.preventDefault();
+        isDrawing = true;
+        hasDrawn = true;
+        hint.style.display = 'none';
+        points = [getCoords(e)];
+    }
+
+    function draw(e) {
+        if (!isDrawing) return;
+        e.preventDefault();
+        points.push(getCoords(e));
+
+        if (points.length < 3) {
+            const b = points[0];
+            ctx.beginPath();
+            ctx.arc(b.x, b.y, ctx.lineWidth / 2, 0, Math.PI * 2, !0);
+            ctx.fillStyle = currentColor;
+            ctx.fill();
+            return;
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+
+        for (let i = 1; i < points.length - 2; i++) {
+            const c = (points[i].x + points[i + 1].x) / 2;
+            const d = (points[i].y + points[i + 1].y) / 2;
+            ctx.quadraticCurveTo(points[i].x, points[i].y, c, d);
+        }
+
+        const i = points.length - 2;
+        ctx.quadraticCurveTo(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y);
+        ctx.stroke();
+    }
+
+    function stopDrawing() {
+        if (isDrawing) {
+            isDrawing = false;
+            points = [];
+        }
+    }
+
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    window.addEventListener('mouseup', stopDrawing);
+
+    canvas.addEventListener('touchstart', startDrawing, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    window.addEventListener('touchend', stopDrawing);
+
+    function setPenColor(color, el) {
+        currentColor = color;
+        ctx.strokeStyle = color;
+        document.querySelectorAll('.color-btn').forEach(btn => btn.className = 'color-btn w-7 h-7 rounded-full');
+        el.className = 'color-btn w-7 h-7 rounded-full ring-2 ring-offset-2 ring-red-500';
+    }
+
+    function updateStroke(val) {
+        currentStroke = parseFloat(val);
+        ctx.lineWidth = currentStroke;
+        document.getElementById('stroke-val').textContent = val + 'px';
+    }
+
+    function clearSignature() {
+        const dpr = window.devicePixelRatio || 2;
+        ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+        hint.style.display = 'block';
+        hasDrawn = false;
+        points = [];
+    }
+
+    function getSignatureBoundingBox() {
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imgData.data;
+        const w = canvas.width;
+        const h = canvas.height;
+
+        let minX = w, minY = h, maxX = 0, maxY = 0;
+
+        for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+                const alpha = data[((y * w + x) * 4) + 3];
+                if (alpha > 5) {
+                    if (x < minX) minX = x;
+                    if (x > maxX) maxX = x;
+                    if (y < minY) minY = y;
+                    if (y > maxY) maxY = y;
+                }
+            }
+        }
+
+        if (minX > maxX || minY > maxY) {
+            return { minX: 0, minY: 0, cropW: canvas.width, cropH: canvas.height };
+        }
+
+        const padding = 20;
+        minX = Math.max(0, minX - padding);
+        minY = Math.max(0, minY - padding);
+        maxX = Math.min(w, maxX + padding);
+        maxY = Math.min(h, maxY + padding);
+
+        return {
+            minX,
+            minY,
+            cropW: maxX - minX,
+            cropH: maxY - minY
+        };
+    }
+
+    async function processAndDownload(mode) {
+        if (!hasDrawn) {
+            alert("Please draw your signature first.");
+            return;
+        }
+
+        const shouldCrop = document.getElementById('auto-crop').checked;
+        const reqWidth = parseInt(document.getElementById('target-width').value, 10);
+        const reqHeight = parseInt(document.getElementById('target-height').value, 10);
+        const targetKBInput = document.getElementById('target-kb').value.trim();
+        const targetKB = targetKBInput ? parseFloat(targetKBInput) : null;
+
+        const box = shouldCrop ? getSignatureBoundingBox() : { minX: 0, minY: 0, cropW: canvas.width, cropH: canvas.height };
+
+        const dpr = window.devicePixelRatio || 2;
+        let finalWidth = reqWidth || Math.round(box.cropW / dpr);
+        let finalHeight = reqHeight || Math.round(box.cropH / dpr);
+
+        const outCanvas = document.createElement('canvas');
+        outCanvas.width = finalWidth;
+        outCanvas.height = finalHeight;
+        const outCtx = outCanvas.getContext('2d');
+        outCtx.imageSmoothingEnabled = true;
+        outCtx.imageSmoothingQuality = 'high';
+
+        if (mode === 'white_jpg' || mode === 'white_png') {
+            outCtx.fillStyle = '#FFFFFF';
+            outCtx.fillRect(0, 0, finalWidth, finalHeight);
+        }
+
+        outCtx.drawImage(
+            canvas,
+            box.minX, box.minY, box.cropW, box.cropH,
+            0, 0, finalWidth, finalHeight
+        );
+
+        let blob = null;
+        const ext = (mode === 'white_jpg') ? 'jpg' : 'png';
+        const mimeType = (mode === 'white_jpg') ? 'image/jpeg' : 'image/png';
+
+        if (targetKB) {
+            let scaleFactor = 1.0;
+            let currentBlob = null;
+
+            if (mimeType === 'image/jpeg') {
+                for (let q = 0.92; q >= 0.05; q -= 0.05) {
+                    const b = await new Promise(resolve => outCanvas.toBlob(resolve, 'image/jpeg', q));
+                    if (b && (b.size / 1024) <= targetKB) {
+                        currentBlob = b;
+                        break;
+                    }
+                    currentBlob = b;
+                }
+            }
+
+            while ((!currentBlob || (currentBlob.size / 1024) > targetKB) && scaleFactor > 0.15) {
+                scaleFactor -= 0.08;
+                const scaledCanvas = document.createElement('canvas');
+                scaledCanvas.width = Math.max(20, Math.round(finalWidth * scaleFactor));
+                scaledCanvas.height = Math.max(10, Math.round(finalHeight * scaleFactor));
+                const sCtx = scaledCanvas.getContext('2d');
+                sCtx.imageSmoothingEnabled = true;
+                sCtx.imageSmoothingQuality = 'high';
+
+                if (mode === 'white_jpg' || mode === 'white_png') {
+                    sCtx.fillStyle = '#FFFFFF';
+                    sCtx.fillRect(0, 0, scaledCanvas.width, scaledCanvas.height);
+                }
+
+                sCtx.drawImage(outCanvas, 0, 0, scaledCanvas.width, scaledCanvas.height);
+
+                if (mimeType === 'image/jpeg') {
+                    currentBlob = await new Promise(resolve => scaledCanvas.toBlob(resolve, 'image/jpeg', 0.65));
+                } else {
+                    currentBlob = await new Promise(resolve => scaledCanvas.toBlob(resolve, 'image/png'));
+                }
+            }
+            blob = currentBlob;
+        } else {
+            blob = await new Promise(resolve => outCanvas.toBlob(resolve, mimeType, 0.95));
+        }
+
+        const link = document.createElement('a');
+        link.download = `signature_${finalWidth}x${finalHeight}.${ext}`;
+        link.href = URL.createObjectURL(blob);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+
+</body>
+</html>

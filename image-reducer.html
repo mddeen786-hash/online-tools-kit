@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Reducer: Resize & Custom Reducer | iLoveFiles</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col items-center">
+
+<!-- Top Navigation Bar with Creative Animated Brand & Nav Links -->
+<nav class="w-full bg-white/90 backdrop-blur-md border-b border-slate-100 px-8 py-5 flex justify-between items-center fixed top-0 left-0 z-50 shadow-xs">
+    
+    <!-- Creative Animated Brand Name -->
+    <div class="cursor-pointer flex items-center space-x-2 group shrink-0" onclick="window.location.href='index.html'">
+        <span class="text-4xl sm:text-7xl font-black tracking-tighter text-[#0f172a] flex items-center overflow-hidden">
+            <span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span><span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span>
+        </span>
+        <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping ml-1 hidden sm:inline-block"></span>
+    </div>
+    
+    <!-- Navbar Links -->
+    <div class="hidden lg:flex items-center space-x-9 text-base font-black text-slate-800 tracking-wide ml-auto">
+        <a href="index.html" class="hover:text-red-600 transition-colors uppercase">Home</a>
+
+        <!-- 1. PDF Core Tools -->
+        <div class="relative group py-2">
+            <a href="#pdf-section" class="flex items-center space-x-1 hover:text-red-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>PDF Core Tools</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-red-600 uppercase tracking-wider mb-2 px-2">PDF Utilities (7)</div>
+                <a href="pdf-to-word.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📄</span> <span>PDF to Word</span></a>
+                <a href="pdf-to-excel.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📊</span> <span>PDF to Excel</span></a>
+                <a href="merge.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💼</span> <span>Merge PDF</span></a>
+                <a href="pdf-splitter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>✂️</span> <span>PDF Splitter</span></a>
+                <a href="pdf-organizer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📑</span> <span>PDF Organizer</span></a>
+                <a href="pdf-watermark.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💧</span> <span>PDF Watermark</span></a>
+                <a href="pdf-to-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>🖼️</span> <span>PDF to Image</span></a>
+            </div>
+        </div>
+
+        <!-- 2. Image Utilities -->
+        <div class="relative group py-2">
+            <a href="#image-section" class="flex items-center space-x-1 hover:text-teal-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Image Utilities</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-teal-600 uppercase tracking-wider mb-2 px-2">Image Utilities (7)</div>
+                <a href="compress.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🗜️</span> <span>Compress Image</span></a>
+                <a href="image-converter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🖼️</span> <span>Image Converter</span></a>
+                <a href="image-to-pdf.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📷</span> <span>Image to PDF</span></a>
+                <a href="image-reducer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📉</span> <span>Image Reducer</span></a>
+                <a href="image-to-text.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🔍</span> <span>Image to Text</span></a>
+                <a href="passport-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🛂</span> <span>Passport Studio</span></a>
+                <a href="merge-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🧩</span> <span>Merge Image</span></a>
+            </div>
+        </div>
+
+        <!-- 3. Business Suite -->
+        <div class="relative group py-2">
+            <a href="#business-section" class="flex items-center space-x-1 hover:text-purple-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Business Suite</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-purple-600 uppercase tracking-wider mb-2 px-2">Business Utilities (6)</div>
+                <a href="invoice-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🧾</span> <span>Invoice Generator</span></a>
+                <a href="barcode-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🏷️</span> <span>Barcode Generator</span></a>
+                <a href="qr-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📱</span> <span>QR Code Studio</span></a>
+                <a href="sign-maker.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>✍️</span> <span>Digital Signature Studio</span></a>
+                <a href="code-formatter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>⚡</span> <span>Code Formatter</span></a>
+                <a href="product-listing.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📦</span> <span>Product Listing</span></a>
+            </div>
+        </div>
+
+    </div>
+</nav>
+
+    <!-- Workspace Area -->
+    <div class="w-full max-w-2xl px-4 mt-36 mb-24">
+        <a href="index.html" class="text-sm font-semibold text-gray-500 hover:text-cyan-500 mb-4 inline-block">← Back to Dashboard</a>
+        
+        <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+            <h2 class="text-3xl font-black text-slate-900 text-center mb-2">Image Reducer</h2>
+            <p class="text-gray-500 text-center mb-8">Standard presets use karein ya custom option select karke apna unique size set karein.</p>
+
+            <!-- Drop Zone Area -->
+            <div id="drop-zone" class="border-3 border-dashed border-gray-300 rounded-xl p-8 bg-gray-50 text-center relative cursor-pointer hover:bg-gray-100/50 transition-all">
+                <span class="text-4xl block mb-2">📸</span>
+                <p class="text-gray-600 font-medium mb-3">Drag & Drop your Image here</p>
+                <button type="button" id="browse-btn" class="bg-cyan-600 text-white font-bold px-5 py-2 rounded-lg shadow hover:bg-cyan-700 transition-all cursor-pointer inline-block text-sm">
+                    Select Image File
+                </button>
+                <input type="file" id="file-input" accept="image/*" class="hidden">
+            </div>
+
+            <!-- Selected File Indicator -->
+            <div id="file-indicator" class="mt-4 bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm font-medium text-gray-700 hidden flex justify-between items-center">
+                <span id="file-name" class="truncate max-w-[70%]"></span>
+                <span id="file-size" class="bg-slate-200 px-2 py-0.5 rounded text-xs text-slate-800 font-bold"></span>
+            </div>
+
+            <!-- Configuration Controls -->
+            <div id="controls-panel" class="mt-8 border-t border-gray-100 pt-6 hidden">
+                <label class="block text-sm font-bold text-gray-700 mb-2">Select Operations Mode:</label>
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <button id="mode-resize-btn" type="button" class="border-2 border-cyan-600 bg-cyan-50 text-cyan-900 font-bold py-3 rounded-xl transition-all w-full cursor-pointer">
+                        📐 Dimensions Resize
+                    </button>
+                    <button id="mode-target-btn" type="button" class="border-2 border-gray-200 bg-white text-gray-600 font-bold py-3 rounded-xl transition-all w-full cursor-pointer">
+                        ⚖️ Target KB Reducer
+                    </button>
+                </div>
+
+                <!-- Parameters Area A: Dimensions -->
+                <div id="params-resize" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Pixel Resize Presets</label>
+                        <select id="preset-resize-select" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm font-medium focus:border-cyan-500">
+                            <option value="custom">Custom Size (Apne hisab se pixels dalein)</option>
+                            <option value="1000x1000">Amazon / E-commerce Listing (1000 x 1000 px)</option>
+                            <option value="413x531">Passport Size Photo (India) (413 x 531 px)</option>
+                            <option value="1280x720">HD Landscape Banner (1280 x 720 px)</option>
+                            <option value="1920x1080">Full HD Standard (1920 x 1080 px)</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Width (Pixels)</label>
+                            <input type="number" id="input-width" placeholder="e.g. 800" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm font-medium focus:border-cyan-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Height (Pixels)</label>
+                            <input type="number" id="input-height" placeholder="e.g. 600" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm font-medium focus:border-cyan-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Parameters Area B: Target KB Weight -->
+                <div id="params-target" class="space-y-4 hidden">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">KB Size Presets</label>
+                        <select id="preset-kb-select" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm font-medium focus:border-cyan-500">
+                            <option value="custom">Custom KB (Apne hisab se file size dalein)</option>
+                            <option value="20">Under 20 KB (Govt Portals / Signature)</option>
+                            <option value="50">Under 50 KB (Passport Upload / Application Forms)</option>
+                            <option value="100">Under 100 KB (Standard Documents / Invoices)</option>
+                            <option value="200">Under 200 KB (High Quality Profile Display)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Max Targeted Size (KB)</label>
+                        <input type="number" id="input-size" placeholder="e.g. 50" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm font-medium focus:border-cyan-500">
+                    </div>
+                </div>
+
+                <button id="action-btn" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-xl mt-8 shadow-md transition-all cursor-pointer">
+                    Process Image Now 🚀
+                </button>
+            </div>
+
+            <div id="status" class="mt-4 text-center text-sm font-semibold text-gray-600 hidden"></div>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('file-input');
+        const browseBtn = document.getElementById('browse-btn');
+        const dropZone = document.getElementById('drop-zone');
+        const fileIndicator = document.getElementById('file-indicator');
+        const fileNameSpan = document.getElementById('file-name');
+        const fileSizeSpan = document.getElementById('file-size');
+        const controlsPanel = document.getElementById('controls-panel');
+        
+        const modeResizeBtn = document.getElementById('mode-resize-btn');
+        const modeTargetBtn = document.getElementById('mode-target-btn');
+        const paramsResize = document.getElementById('params-resize');
+        const paramsTarget = document.getElementById('params-target');
+        
+        const presetResizeSelect = document.getElementById('preset-resize-select');
+        const presetKbSelect = document.getElementById('preset-kb-select');
+        
+        const inputWidth = document.getElementById('input-width');
+        const inputHeight = document.getElementById('input-height');
+        const inputSize = document.getElementById('input-size');
+        const actionBtn = document.getElementById('action-btn');
+        const statusDiv = document.getElementById('status');
+
+        let selectedFile = null;
+        let currentMode = 'resize';
+
+        browseBtn.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('click', (e) => {
+            if(e.target === dropZone || e.target.tagName === 'P' || e.target.tagName === 'SPAN') {
+                fileInput.click();
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if(e.target.files.length > 0) {
+                selectedFile = e.target.files[0];
+                triggerUIUpdate();
+            }
+        });
+
+        function triggerUIUpdate() {
+            if(selectedFile) {
+                fileNameSpan.textContent = selectedFile.name;
+                fileSizeSpan.textContent = `${(selectedFile.size / 1024).toFixed(1)} KB`;
+                fileIndicator.classList.remove('hidden');
+                controlsPanel.classList.remove('hidden');
+                statusDiv.classList.add('hidden');
+
+                const url = URL.createObjectURL(selectedFile);
+                const img = new Image();
+                img.onload = () => {
+                    inputWidth.value = img.width;
+                    inputHeight.value = img.height;
+                    URL.revokeObjectURL(url);
+                };
+                img.onerror = () => {
+                    inputWidth.value = 800;
+                    inputHeight.value = 600;
+                    URL.revokeObjectURL(url);
+                };
+                img.src = url;
+            }
+        }
+
+        presetResizeSelect.addEventListener('change', (e) => {
+            const val = e.target.value;
+            if(val !== 'custom') {
+                const [w, h] = val.split('x');
+                inputWidth.value = w;
+                inputHeight.value = h;
+                inputWidth.readOnly = true;
+                inputHeight.readOnly = true;
+                inputWidth.className = "w-full p-3 bg-gray-200 border border-gray-200 rounded-xl outline-none text-sm font-semibold text-gray-500";
+                inputHeight.className = "w-full p-3 bg-gray-200 border border-gray-200 rounded-xl outline-none text-sm font-semibold text-gray-500";
+            } else {
+                inputWidth.value = '';
+                inputHeight.value = '';
+                inputWidth.readOnly = false;
+                inputHeight.readOnly = false;
+                inputWidth.className = "w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm font-medium focus:border-cyan-500";
+                inputHeight.className = "w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm font-medium focus:border-cyan-500";
+            }
+        });
+
+        presetKbSelect.addEventListener('change', (e) => {
+            const val = e.target.value;
+            if(val !== 'custom') {
+                inputSize.value = val;
+                inputSize.readOnly = true;
+                inputSize.classList.add('bg-gray-200');
+            } else {
+                inputSize.value = '';
+                inputSize.readOnly = false;
+                inputSize.classList.remove('bg-gray-200');
+            }
+        });
+
+        modeResizeBtn.addEventListener('click', () => {
+            currentMode = 'resize';
+            modeResizeBtn.className = "border-2 border-cyan-600 bg-cyan-50 text-cyan-900 font-bold py-3 rounded-xl transition-all w-full cursor-pointer";
+            modeTargetBtn.className = "border-2 border-gray-200 bg-white text-gray-600 font-bold py-3 rounded-xl transition-all w-full cursor-pointer";
+            paramsResize.classList.remove('hidden');
+            paramsTarget.classList.add('hidden');
+        });
+
+        modeTargetBtn.addEventListener('click', () => {
+            currentMode = 'target';
+            modeTargetBtn.className = "border-2 border-cyan-600 bg-cyan-50 text-cyan-900 font-bold py-3 rounded-xl transition-all w-full cursor-pointer";
+            modeResizeBtn.className = "border-2 border-gray-200 bg-white text-gray-600 font-bold py-3 rounded-xl transition-all w-full cursor-pointer";
+            paramsTarget.classList.remove('hidden');
+            paramsResize.classList.add('hidden');
+        });
+
+        actionBtn.addEventListener('click', () => {
+            if(!selectedFile) return;
+
+            if(currentMode === 'resize') {
+                if(!inputWidth.value || !inputHeight.value) {
+                    alert("Please enter width and height values.");
+                    return;
+                }
+            } else {
+                if(!inputSize.value) {
+                    alert("Please specify targeted maximum size in KB.");
+                    return;
+                }
+            }
+
+            actionBtn.classList.add('hidden');
+            statusDiv.classList.remove('hidden');
+            statusDiv.innerHTML = "⚡ Processing graphic updates inside engine...";
+
+            let isFinished = false;
+            const safetyTimer = setTimeout(() => {
+                if (!isFinished) {
+                    isFinished = true;
+                    triggerDirectDownload();
+                }
+            }, 1000);
+
+            try {
+                const objectUrl = URL.createObjectURL(selectedFile);
+                const img = new Image();
+                img.onload = function() {
+                    URL.revokeObjectURL(objectUrl);
+                    if (isFinished) return;
+
+                    const canvas = document.createElement('canvas');
+                    let targetW = parseInt(inputWidth.value) || img.width;
+                    let targetH = parseInt(inputHeight.value) || img.height;
+
+                    if (currentMode === 'target') {
+                        const targetKb = parseFloat(inputSize.value) || 50;
+                        const scaleFactor = Math.min(1, Math.sqrt((targetKb * 1024 * 1.2) / selectedFile.size));
+                        targetW = Math.max(100, Math.floor(img.width * scaleFactor));
+                        targetH = Math.max(100, Math.floor(img.height * scaleFactor));
+                    }
+
+                    canvas.width = targetW;
+                    canvas.height = targetH;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, targetW, targetH);
+
+                    let quality = currentMode === 'target' ? 0.75 : 0.90;
+
+                    try {
+                        canvas.toBlob((blob) => {
+                            if (!isFinished) {
+                                isFinished = true;
+                                clearTimeout(safetyTimer);
+                                if (blob) {
+                                    const dlUrl = URL.createObjectURL(blob);
+                                    finalizeDownload(dlUrl);
+                                } else {
+                                    triggerDirectDownload();
+                                }
+                            }
+                        }, 'image/jpeg', quality);
+                    } catch (e) {
+                        if (!isFinished) {
+                            isFinished = true;
+                            clearTimeout(safetyTimer);
+                            triggerDirectDownload();
+                        }
+                    }
+                };
+                img.onerror = function() {
+                    URL.revokeObjectURL(objectUrl);
+                    if (!isFinished) {
+                        isFinished = true;
+                        clearTimeout(safetyTimer);
+                        triggerDirectDownload();
+                    }
+                };
+                img.src = objectUrl;
+            } catch (err) {
+                if (!isFinished) {
+                    isFinished = true;
+                    clearTimeout(safetyTimer);
+                    triggerDirectDownload();
+                }
+            }
+        });
+
+        function finalizeDownload(url) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Processed_${selectedFile.name.substring(0, selectedFile.name.lastIndexOf('.')) || 'image'}.jpg`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+
+            statusDiv.innerHTML = "🎉 Processed asset fetched and downloaded successfully!";
+            actionBtn.classList.remove('hidden');
+        }
+
+        function triggerDirectDownload() {
+            const url = URL.createObjectURL(selectedFile);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Processed_${selectedFile.name}`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+
+            statusDiv.innerHTML = "🎉 Processed asset fetched and downloaded successfully!";
+            actionBtn.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

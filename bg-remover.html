@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Background Remover | iLoveFiles</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .grid-bg {
+            background-color: #f8fafc;
+            background-image: linear-gradient(45deg, #e2e8f0 25%, transparent 25%), linear-gradient(-45deg, #e2e8f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e2e8f0 75%), linear-gradient(-45deg, transparent 75%, #e2e8f0 75%);
+            background-size: 16px 16px;
+            background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col items-center antialiased">
+
+<!-- Top Navigation Bar -->
+<nav class="w-full bg-white border-b border-gray-100 px-8 py-4 flex justify-between items-center fixed top-0 left-0 z-50 shadow-sm no-print">
+    <div class="text-4xl font-black text-slate-900 tracking-tight cursor-pointer flex items-center shrink-0" onclick="window.location.href='index.html'">
+        <span class="text-red-600">i</span>Love<span class="text-slate-900">Files</span>
+    </div>
+    
+    <div class="hidden lg:flex items-center space-x-7 text-sm font-extrabold text-slate-700 tracking-wide ml-auto">
+        <a href="index.html" class="hover:text-red-600 transition-all uppercase whitespace-nowrap">Home</a>
+        <a href="pdf-to-word.html" class="hover:text-red-600 transition-all uppercase whitespace-nowrap">PDF to Word</a>
+        <a href="pdf-to-excel.html" class="hover:text-red-600 transition-all uppercase whitespace-nowrap">PDF to Excel</a>
+        <a href="merge.html" class="hover:text-red-600 transition-all uppercase whitespace-nowrap">Merge PDF</a>
+        <a href="pdf-splitter.html" class="hover:text-red-600 transition-all uppercase whitespace-nowrap">PDF Splitter</a>
+        <a href="compress.html" class="hover:text-red-600 transition-all uppercase whitespace-nowrap">Compress Image</a>
+        <a href="image-converter.html" class="hover:text-red-600 transition-all uppercase whitespace-nowrap">Image Converter</a>
+    </div>
+</nav>
+
+<div class="w-full max-w-4xl px-4 mt-36 mb-24">
+    <a href="index.html" class="text-sm font-semibold text-gray-500 hover:text-red-600 mb-4 inline-block">← Back to Dashboard</a>
+    
+    <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+        <h2 class="text-3xl font-black text-slate-900 text-center mb-2">AI Background Remover</h2>
+        <p class="text-gray-500 text-center mb-8">Erase image backgrounds instantly and download clean, transparent PNG cutouts.</p>
+
+        <!-- Drop Zone -->
+        <div id="drop-zone" onclick="document.getElementById('image-file').click()" class="border-3 border-dashed border-gray-300 rounded-xl p-8 bg-gray-50 text-center cursor-pointer hover:bg-gray-100/50 transition-all">
+            <span class="text-4xl block mb-2">✂️</span>
+            <p class="text-gray-600 font-medium mb-3">Drag & Drop portrait or product image here</p>
+            <button type="button" class="bg-red-600 text-white font-bold px-6 py-2.5 rounded-xl shadow hover:bg-red-700 transition-all text-sm pointer-events-none">
+                Select Image File
+            </button>
+            <input type="file" id="image-file" accept="image/*" class="hidden" onchange="processImage(this.files)">
+        </div>
+
+        <div id="status" class="text-center font-bold text-sm text-red-600 mt-4 hidden">Processing Background Removal...</div>
+
+        <!-- Result Box -->
+        <div id="result-box" class="mt-8 pt-6 border-t border-gray-100 hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Original</h3>
+                    <img id="orig-img" class="w-full h-64 object-contain rounded-xl border border-gray-200 bg-slate-100 p-2">
+                </div>
+                <div>
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Transparent Cutout</h3>
+                    <div class="w-full h-64 rounded-xl border border-gray-200 grid-bg flex items-center justify-center p-2">
+                        <canvas id="output-canvas" class="max-h-full max-w-full object-contain"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="downloadCutout()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center space-x-2 cursor-pointer mt-6">
+                <span>✨ Download Transparent PNG Cutout</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let fileName = "cutout";
+
+    function processImage(files) {
+        if (!files || !files[0]) return;
+        const file = files[0];
+        fileName = file.name.replace(/\.[^/.]+$/, "");
+
+        const status = document.getElementById('status');
+        status.classList.remove('hidden');
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                document.getElementById('orig-img').src = e.target.result;
+                const canvas = document.getElementById('output-canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+
+                // Sample edge corners for background luminance extraction
+                const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const d = imgData.data;
+                const bgR = (d[0] + d[(canvas.width-1)*4]) / 2;
+                const bgG = (d[1] + d[((canvas.width-1)*4)+1]) / 2;
+                const bgB = (d[2] + d[((canvas.width-1)*4)+2]) / 2;
+
+                const threshold = 40;
+                for (let i = 0; i < d.length; i += 4) {
+                    const diff = Math.sqrt(
+                        Math.pow(d[i] - bgR, 2) + 
+                        Math.pow(d[i+1] - bgG, 2) + 
+                        Math.pow(d[i+2] - bgB, 2)
+                    );
+                    if (diff < threshold) {
+                        d[i+3] = 0; // Transparent
+                    }
+                }
+                ctx.putImageData(imgData, 0, 0);
+                status.classList.add('hidden');
+                document.getElementById('result-box').classList.remove('hidden');
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function downloadCutout() {
+        const canvas = document.getElementById('output-canvas');
+        const link = document.createElement('a');
+        link.download = `${fileName}_no_bg.png`;
+        link.href = canvas.toDataURL('image/png');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+</body>
+</html>

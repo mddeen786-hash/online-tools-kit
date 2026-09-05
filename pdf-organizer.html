@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Page Organizer | iLoveFiles</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';</script>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col items-center antialiased">
+
+<!-- Top Navigation Bar with Creative Animated Brand & Nav Links -->
+<nav class="w-full bg-white/90 backdrop-blur-md border-b border-slate-100 px-8 py-5 flex justify-between items-center fixed top-0 left-0 z-50 shadow-xs">
+    
+    <!-- Creative Animated Brand Name -->
+    <div class="cursor-pointer flex items-center space-x-2 group shrink-0" onclick="window.location.href='index.html'">
+        <span class="text-4xl sm:text-7xl font-black tracking-tighter text-[#0f172a] flex items-center overflow-hidden">
+            <span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span><span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span>
+        </span>
+        <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping ml-1 hidden sm:inline-block"></span>
+    </div>
+    
+    <!-- Navbar Links -->
+    <div class="hidden lg:flex items-center space-x-9 text-base font-black text-slate-800 tracking-wide ml-auto">
+        <a href="index.html" class="hover:text-red-600 transition-colors uppercase">Home</a>
+
+        <!-- 1. PDF Core Tools -->
+        <div class="relative group py-2">
+            <a href="#pdf-section" class="flex items-center space-x-1 hover:text-red-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>PDF Core Tools</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-red-600 uppercase tracking-wider mb-2 px-2">PDF Utilities (7)</div>
+                <a href="pdf-to-word.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📄</span> <span>PDF to Word</span></a>
+                <a href="pdf-to-excel.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📊</span> <span>PDF to Excel</span></a>
+                <a href="merge.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💼</span> <span>Merge PDF</span></a>
+                <a href="pdf-splitter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>✂️</span> <span>PDF Splitter</span></a>
+                <a href="pdf-organizer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📑</span> <span>PDF Organizer</span></a>
+                <a href="pdf-watermark.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💧</span> <span>PDF Watermark</span></a>
+                <a href="pdf-to-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>🖼️</span> <span>PDF to Image</span></a>
+            </div>
+        </div>
+
+        <!-- 2. Image Utilities -->
+        <div class="relative group py-2">
+            <a href="#image-section" class="flex items-center space-x-1 hover:text-teal-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Image Utilities</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-teal-600 uppercase tracking-wider mb-2 px-2">Image Utilities (7)</div>
+                <a href="compress.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🗜️</span> <span>Compress Image</span></a>
+                <a href="image-converter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🖼️</span> <span>Image Converter</span></a>
+                <a href="image-to-pdf.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📷</span> <span>Image to PDF</span></a>
+                <a href="image-reducer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📉</span> <span>Image Reducer</span></a>
+                <a href="image-to-text.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🔍</span> <span>Image to Text</span></a>
+                <a href="passport-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🛂</span> <span>Passport Studio</span></a>
+                <a href="merge-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🧩</span> <span>Merge Image</span></a>
+            </div>
+        </div>
+
+        <!-- 3. Business Suite -->
+        <div class="relative group py-2">
+            <a href="#business-section" class="flex items-center space-x-1 hover:text-purple-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Business Suite</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-purple-600 uppercase tracking-wider mb-2 px-2">Business Utilities (6)</div>
+                <a href="invoice-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🧾</span> <span>Invoice Generator</span></a>
+                <a href="barcode-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🏷️</span> <span>Barcode Generator</span></a>
+                <a href="qr-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📱</span> <span>QR Code Studio</span></a>
+                <a href="sign-maker.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>✍️</span> <span>Digital Signature Studio</span></a>
+                <a href="code-formatter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>⚡</span> <span>Code Formatter</span></a>
+                <a href="product-listing.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📦</span> <span>Product Listing</span></a>
+            </div>
+        </div>
+
+    </div>
+</nav>
+
+<!-- Main Workspace -->
+<div class="w-full max-w-5xl px-4 mt-36 mb-24">
+    <a href="index.html" class="text-sm font-semibold text-gray-500 hover:text-red-600 mb-4 inline-block">← Back to Dashboard</a>
+    
+    <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+        <h2 class="text-3xl font-black text-slate-900 text-center mb-2">PDF Page Organizer</h2>
+        <p class="text-gray-500 text-center mb-8">Reorder pages, rotate sideways/upside-down, remove unwanted pages, and export a clean PDF.</p>
+
+        <!-- Drop Zone -->
+        <div id="drop-zone" onclick="document.getElementById('pdf-file').click()" class="border-2 border-dashed border-gray-300 rounded-xl p-8 bg-gray-50 text-center cursor-pointer hover:bg-gray-100/50 transition-all">
+            <span class="text-4xl block mb-2">📑</span>
+            <p id="file-label" class="text-gray-600 font-medium mb-3">Drag & Drop your PDF file here</p>
+            <button type="button" class="bg-red-600 text-white font-bold px-6 py-2.5 rounded-xl shadow hover:bg-red-700 transition-all text-sm pointer-events-none">
+                Select PDF File
+            </button>
+            <input type="file" id="pdf-file" accept="application/pdf" class="hidden" onchange="loadPDF(this.files)">
+        </div>
+
+        <!-- Organizer Canvas Box -->
+        <div id="organizer-panel" class="mt-8 pt-6 border-t border-gray-100 hidden">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-xs font-black text-slate-700 uppercase tracking-wider">Arrange & Rotate Pages:</span>
+                <span class="text-xs font-semibold text-gray-500">Click rotate or delete on any page</span>
+            </div>
+
+            <div id="pages-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-8"></div>
+
+            <button onclick="saveOrganizedPDF()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center space-x-2 cursor-pointer">
+                <span>⚡ Save & Download Organized PDF</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let rawPdfBuffer = null;
+    let pagesData = []; // { originalIndex, rotation, canvas }
+
+    async function loadPDF(files) {
+        if (!files || !files[0]) return;
+        const file = files[0];
+        rawPdfBuffer = await file.arrayBuffer();
+
+        const container = document.getElementById('pages-container');
+        container.innerHTML = '';
+        pagesData = [];
+
+        const pdf = await pdfjsLib.getDocument({ data: rawPdfBuffer.slice(0) }).promise;
+        const total = pdf.numPages;
+
+        for (let i = 1; i <= total; i++) {
+            const page = await pdf.getPage(i);
+            const viewport = page.getViewport({ scale: 0.35 });
+            const canvas = document.createElement('canvas');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            const ctx = canvas.getContext('2d');
+            await page.render({ canvasContext: ctx, viewport }).promise;
+
+            pagesData.push({ originalIndex: i - 1, rotation: 0, canvasUrl: canvas.toDataURL() });
+        }
+
+        renderPageCards();
+        document.getElementById('organizer-panel').classList.remove('hidden');
+    }
+
+    function renderPageCards() {
+        const container = document.getElementById('pages-container');
+        container.innerHTML = '';
+
+        pagesData.forEach((p, idx) => {
+            const card = document.createElement('div');
+            card.className = "bg-slate-50 border border-gray-200 rounded-xl p-3 flex flex-col items-center shadow-sm relative";
+            card.innerHTML = `
+                <div class="w-full h-40 flex items-center justify-center overflow-hidden mb-2">
+                    <img src="${p.canvasUrl}" style="transform: rotate(${p.rotation}deg); transition: transform 0.2s;" class="max-h-full max-w-full object-contain rounded border border-gray-200 bg-white shadow-xs">
+                </div>
+                <div class="text-xs font-bold text-slate-700 mb-2">Page ${idx + 1}</div>
+                <div class="flex items-center space-x-1.5 w-full">
+                    <button onclick="movePage(${idx}, -1)" class="flex-1 py-1 bg-white border border-gray-200 rounded text-xs font-bold hover:bg-slate-100 ${idx === 0 ? 'opacity-30 pointer-events-none' : ''}">◀</button>
+                    <button onclick="rotatePage(${idx})" class="flex-1 py-1 bg-white border border-gray-200 rounded text-xs font-bold hover:bg-slate-100" title="Rotate 90°">🔄</button>
+                    <button onclick="deletePage(${idx})" class="flex-1 py-1 bg-red-50 text-red-600 border border-red-100 rounded text-xs font-bold hover:bg-red-100" title="Delete Page">🗑️</button>
+                    <button onclick="movePage(${idx}, 1)" class="flex-1 py-1 bg-white border border-gray-200 rounded text-xs font-bold hover:bg-slate-100 ${idx === pagesData.length - 1 ? 'opacity-30 pointer-events-none' : ''}">▶</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function rotatePage(idx) {
+        pagesData[idx].rotation = (pagesData[idx].rotation + 90) % 360;
+        renderPageCards();
+    }
+
+    function movePage(idx, direction) {
+        const target = idx + direction;
+        if (target < 0 || target >= pagesData.length) return;
+        const temp = pagesData[idx];
+        pagesData[idx] = pagesData[target];
+        pagesData[target] = temp;
+        renderPageCards();
+    }
+
+    function deletePage(idx) {
+        if (pagesData.length <= 1) {
+            alert("A PDF must contain at least one page.");
+            return;
+        }
+        pagesData.splice(idx, 1);
+        renderPageCards();
+    }
+
+    async function saveOrganizedPDF() {
+        const { PDFDocument, degrees } = PDFLib;
+        const srcDoc = await PDFDocument.load(rawPdfBuffer);
+        const outDoc = await PDFDocument.create();
+
+        for (const item of pagesData) {
+            const [copiedPage] = await outDoc.copyPages(srcDoc, [item.originalIndex]);
+            if (item.rotation > 0) {
+                const currentRot = copiedPage.getRotation().angle;
+                copiedPage.setRotation(degrees((currentRot + item.rotation) % 360));
+            }
+            outDoc.addPage(copiedPage);
+        }
+
+        const outBytes = await outDoc.save();
+        const blob = new Blob([outBytes], { type: 'application/pdf' });
+        const link = document.createElement('a');
+        link.download = `organized_document_${Date.now()}.pdf`;
+        link.href = URL.createObjectURL(blob);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+</body>
+</html>

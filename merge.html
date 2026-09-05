@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merge PDF Files | Filesque</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- pdf-lib & pdf.js -->
+    <script src="https://unpkg.com/pdf-lib@1.4.0/dist/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .step-badge {
+            width: 28px; height: 28px;
+            display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 9999px; background: #0f172a; color: #ffffff;
+            font-size: 12px; font-weight: 900; margin-right: 8px;
+        }
+    </style>
+</head>
+<body class="text-slate-900 min-h-screen flex flex-col items-center antialiased">
+
+<!-- Top Navigation Bar with Creative Animated Brand & Nav Links -->
+<nav class="w-full bg-white/90 backdrop-blur-md border-b border-slate-100 px-8 py-5 flex justify-between items-center fixed top-0 left-0 z-50 shadow-xs">
+    
+    <!-- Creative Animated Brand Name -->
+    <div class="cursor-pointer flex items-center space-x-2 group shrink-0" onclick="window.location.href='index.html'">
+        <span class="text-4xl sm:text-7xl font-black tracking-tighter text-[#0f172a] flex items-center overflow-hidden">
+            <span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span><span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span>
+        </span>
+        <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping ml-1 hidden sm:inline-block"></span>
+    </div>
+    
+    <!-- Navbar Links -->
+    <div class="hidden lg:flex items-center space-x-9 text-base font-black text-slate-800 tracking-wide ml-auto">
+        <a href="index.html" class="hover:text-red-600 transition-colors uppercase">Home</a>
+
+        <!-- 1. PDF Core Tools -->
+        <div class="relative group py-2">
+            <a href="#pdf-section" class="flex items-center space-x-1 hover:text-red-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>PDF Core Tools</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-red-600 uppercase tracking-wider mb-2 px-2">PDF Utilities (7)</div>
+                <a href="pdf-to-word.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📄</span> <span>PDF to Word</span></a>
+                <a href="pdf-to-excel.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📊</span> <span>PDF to Excel</span></a>
+                <a href="merge.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💼</span> <span>Merge PDF</span></a>
+                <a href="pdf-splitter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>✂️</span> <span>PDF Splitter</span></a>
+                <a href="pdf-organizer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📑</span> <span>PDF Organizer</span></a>
+                <a href="pdf-watermark.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💧</span> <span>PDF Watermark</span></a>
+                <a href="pdf-to-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>🖼️</span> <span>PDF to Image</span></a>
+            </div>
+        </div>
+
+        <!-- 2. Image Utilities -->
+        <div class="relative group py-2">
+            <a href="#image-section" class="flex items-center space-x-1 hover:text-teal-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Image Utilities</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-teal-600 uppercase tracking-wider mb-2 px-2">Image Utilities (7)</div>
+                <a href="compress.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🗜️</span> <span>Compress Image</span></a>
+                <a href="image-converter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🖼️</span> <span>Image Converter</span></a>
+                <a href="image-to-pdf.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📷</span> <span>Image to PDF</span></a>
+                <a href="image-reducer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📉</span> <span>Image Reducer</span></a>
+                <a href="image-to-text.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🔍</span> <span>Image to Text</span></a>
+                <a href="passport-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🛂</span> <span>Passport Studio</span></a>
+                <a href="merge-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🧩</span> <span>Merge Image</span></a>
+            </div>
+        </div>
+
+        <!-- 3. Business Suite -->
+        <div class="relative group py-2">
+            <a href="#business-section" class="flex items-center space-x-1 hover:text-purple-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Business Suite</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-purple-600 uppercase tracking-wider mb-2 px-2">Business Utilities (6)</div>
+                <a href="invoice-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🧾</span> <span>Invoice Generator</span></a>
+                <a href="barcode-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🏷️</span> <span>Barcode Generator</span></a>
+                <a href="qr-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📱</span> <span>QR Code Studio</span></a>
+                <a href="sign-maker.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>✍️</span> <span>Digital Signature Studio</span></a>
+                <a href="code-formatter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>⚡</span> <span>Code Formatter</span></a>
+                <a href="product-listing.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📦</span> <span>Product Listing</span></a>
+            </div>
+        </div>
+
+    </div>
+</nav>
+
+<!-- Centered Professional Workspace Window -->
+<div class="w-full max-w-4xl px-4 mt-40 mb-24 mx-auto flex flex-col items-center">
+    <div class="w-full mb-4">
+        <a href="index.html" class="text-sm font-semibold text-gray-500 hover:text-rose-500 inline-block">← Back to Dashboard</a>
+    </div>
+    
+    <div class="bg-white p-10 rounded-2xl shadow-xl border border-slate-100 text-center w-full space-y-8">
+        <div>
+            <h2 class="text-4xl font-black text-slate-900 mb-2">Merge PDF Files</h2>
+            <p class="text-gray-500 text-sm">Select multiple PDF files, view real page previews, rotate pages, reorder sequence, and combine them securely with zero errors.</p>
+        </div>
+
+        <!-- STEP 1: Upload Box & Visual Cards Grid -->
+        <div class="bg-slate-50/50 p-6 rounded-2xl border border-slate-200 text-left">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide flex items-center m-0">
+                    <span class="step-badge">1</span> Upload & Sequence PDF Documents
+                </h3>
+                <button type="button" onclick="resetWorkspace()" class="text-xs font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-3 py-1.5 rounded-lg transition-all cursor-pointer">🔄 Reset All</button>
+            </div>
+            
+            <label for="pdf-file-input" class="border-3 border-dashed border-gray-300 rounded-xl p-8 bg-white text-center transition-all cursor-pointer hover:border-red-500 block">
+                <span class="text-5xl block mb-3">📄</span>
+                <p id="file-name-display" class="text-slate-700 font-bold text-base mb-1">Click to browse or drop multiple PDF files here</p>
+                <p class="text-slate-400 text-xs">Supports secure multi-document PDF merging with live thumbnails</p>
+                <span class="mt-4 bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 rounded-xl shadow transition-all inline-block text-xs uppercase tracking-wider">
+                    Select PDF Files
+                </span>
+                <input type="file" id="pdf-file-input" accept="application/pdf" multiple class="hidden">
+            </label>
+
+            <div id="pdf-cards-grid" class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 hidden"></div>
+        </div>
+
+        <!-- STEP 2: Merge Action Section -->
+        <div id="step-2-section" class="bg-slate-50/50 p-6 rounded-2xl border border-slate-200 text-left hidden space-y-6">
+            <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide flex items-center">
+                <span class="step-badge">2</span> Ready to Merge (Robust Hybrid Engine)
+            </h3>
+            <p class="text-xs text-slate-500 font-bold">Documents will be combined safely with automatic fallback protection against corrupt file structures.</p>
+            <button onclick="startPdfMerge()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black text-sm uppercase tracking-wider py-4 rounded-xl shadow-lg transition-all cursor-pointer flex items-center justify-center space-x-2">
+                <span>MERGE & DOWNLOAD MASTER PDF 🚀</span>
+            </button>
+        </div>
+
+        <!-- STEP 3: Progress & Download -->
+        <div id="step-3-section" class="bg-slate-50/50 p-6 rounded-2xl border border-slate-200 text-center hidden space-y-4">
+            <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide text-left flex items-center">
+                <span class="step-badge">3</span> Processing & Download
+            </h3>
+            <div id="loading-status" class="text-sm font-bold text-red-600">Merging documents securely...</div>
+            <div id="progress-container" class="w-full bg-gray-200 rounded-full h-3 overflow-hidden max-w-md mx-auto">
+                <div id="progress-bar" class="bg-red-600 h-3 rounded-full transition-all duration-150" style="width: 0%"></div>
+            </div>
+            <div id="progress-percentage" class="text-xs font-black text-red-600">0%</div>
+            <div id="download-container" class="pt-2"></div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    let pdfItems = [];
+    let finalPdfBlobUrl = "";
+
+    const pdfFileInput = document.getElementById('pdf-file-input');
+    const fileNameDisplay = document.getElementById('file-name-display');
+    const pdfCardsGrid = document.getElementById('pdf-cards-grid');
+    const step2Section = document.getElementById('step-2-section');
+    const step3Section = document.getElementById('step-3-section');
+    const loadingStatus = document.getElementById('loading-status');
+    const progressBar = document.getElementById('progress-bar');
+    const progressPercentage = document.getElementById('progress-percentage');
+    const progressContainer = document.getElementById('progress-container');
+    const downloadContainer = document.getElementById('download-container');
+
+    pdfFileInput.addEventListener('change', async (e) => {
+        if(e.target.files.length > 0) {
+            const files = Array.from(e.target.files);
+            for(let file of files) {
+                const arrayBuffer = await file.arrayBuffer();
+                const thumbnailUrl = await generatePdfThumbnail(arrayBuffer, 0);
+                pdfItems.push({
+                    id: Math.random().toString(36).substring(2, 9),
+                    file: file,
+                    arrayBuffer: arrayBuffer,
+                    thumbnailUrl: thumbnailUrl,
+                    rotation: 0
+                });
+            }
+            pdfFileInput.value = "";
+            renderPdfCards();
+        }
+    });
+
+    async function generatePdfThumbnail(arrayBuffer, rotation) {
+        try {
+            const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+            const pdfDoc = await loadingTask.promise;
+            const page = await pdfDoc.getPage(1);
+            
+            const viewport = page.getViewport({ scale: 0.6, rotation: rotation });
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            await page.render({ canvasContext: context, viewport: viewport }).promise;
+            return canvas.toDataURL('image/jpeg', 0.90);
+        } catch (err) {
+            console.error("Thumbnail generation error:", err);
+            return null;
+        }
+    }
+
+    function renderPdfCards() {
+        if(pdfItems.length === 0) {
+            pdfCardsGrid.classList.add('hidden');
+            step2Section.classList.add('hidden');
+            fileNameDisplay.textContent = "Click to browse or drop multiple PDF files here";
+            return;
+        }
+        pdfCardsGrid.classList.remove('hidden');
+        step2Section.classList.remove('hidden');
+        fileNameDisplay.textContent = `${pdfItems.length} PDF documents loaded successfully with visual previews.`;
+
+        let html = '';
+        pdfItems.forEach((item, idx) => {
+            html += `
+                <div class="bg-white border-2 border-slate-200 rounded-2xl p-4 flex flex-col items-center shadow-sm relative group hover:border-red-500 transition-all">
+                    <!-- Sequence Badge -->
+                    <span class="absolute top-3 left-3 bg-slate-900 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs font-black shadow">P${idx + 1}</span>
+                    
+                    <!-- Delete Button -->
+                    <button type="button" onclick="deletePdf(${idx})" class="absolute top-3 right-3 bg-rose-50 hover:bg-rose-100 text-rose-600 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all" title="Remove PDF">🗑️</button>
+
+                    <!-- Real PDF Thumbnail Preview Box -->
+                    <div class="w-full h-44 bg-slate-100 rounded-xl flex items-center justify-center overflow-hidden my-3 border border-slate-100 relative">
+                        ${item.thumbnailUrl ? 
+                            `<img src="${item.thumbnailUrl}" class="max-h-full max-w-full object-contain" alt="PDF Preview">` : 
+                            `<div class="flex flex-col items-center"><span class="text-3xl mb-1">📄</span><span class="text-[10px] font-bold text-slate-400">Loading Preview...</span></div>`
+                        }
+                    </div>
+
+                    <!-- File Details -->
+                    <div class="text-center w-full mb-3 truncate">
+                        <p class="text-xs font-black text-slate-800 truncate px-2">${item.file.name}</p>
+                        <p class="text-[11px] font-bold text-slate-500 mt-0.5">Rotation: ${item.rotation}° | Size: ${(item.file.size / 1024).toFixed(1)} KB</p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex items-center justify-center space-x-2 w-full pt-2 border-t border-slate-100">
+                        <button type="button" onclick="rotatePdf(${idx})" class="px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg text-xs font-black cursor-pointer transition-all flex items-center space-x-1">
+                            <span>🔄</span><span>Rotate 90°</span>
+                        </button>
+                        <button type="button" onclick="movePdf(${idx}, -1)" ${idx === 0 ? 'disabled class="opacity-30 cursor-not-allowed px-3 py-1.5 bg-slate-50 text-slate-400 rounded-lg text-xs font-bold"' : 'class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold cursor-pointer"'} title="Move Left">⬅️ Move</button>
+                        <button type="button" onclick="movePdf(${idx}, 1)" ${idx === pdfItems.length - 1 ? 'disabled class="opacity-30 cursor-not-allowed px-3 py-1.5 bg-slate-50 text-slate-400 rounded-lg text-xs font-bold"' : 'class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold cursor-pointer"'} title="Move Right">Move ➡️</button>
+                    </div>
+                </div>
+            `;
+        });
+        pdfCardsGrid.innerHTML = html;
+    }
+
+    async function rotatePdf(index) {
+        const item = pdfItems[index];
+        item.rotation = (item.rotation + 90) % 360;
+        
+        try {
+            const pdfDoc = await PDFLib.PDFDocument.load(item.arrayBuffer);
+            const pages = pdfDoc.getPages();
+            pages.forEach(page => {
+                page.setRotation(PDFLib.degrees(item.rotation));
+            });
+            item.arrayBuffer = await pdfDoc.save();
+            item.thumbnailUrl = await generatePdfThumbnail(item.arrayBuffer, item.rotation);
+        } catch(err) {
+            console.error("Rotation error:", err);
+        }
+        renderPdfCards();
+    }
+
+    function movePdf(index, direction) {
+        const target = index + direction;
+        if(target < 0 || target >= pdfItems.length) return;
+        const temp = pdfItems[index];
+        pdfItems[index] = pdfItems[target];
+        pdfItems[target] = temp;
+        renderPdfCards();
+    }
+
+    function deletePdf(index) {
+        pdfItems.splice(index, 1);
+        renderPdfCards();
+    }
+
+    function resetWorkspace() {
+        pdfItems = [];
+        pdfFileInput.value = "";
+        step3Section.classList.add('hidden');
+        renderPdfCards();
+    }
+
+    async function startPdfMerge() {
+        if(pdfItems.length === 0) return;
+        step2Section.classList.add('hidden');
+        step3Section.classList.remove('hidden');
+        progressContainer.classList.remove('hidden');
+        progressPercentage.classList.remove('hidden');
+        downloadContainer.innerHTML = '';
+        loadingStatus.textContent = "⏳ Merging PDF documents securely...";
+
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 20;
+            if(progress > 90) progress = 90;
+            progressBar.style.width = progress + '%';
+            progressPercentage.textContent = progress + '%';
+        }, 100);
+
+        try {
+            const mergedPdf = await PDFLib.PDFDocument.create();
+
+            for (let item of pdfItems) {
+                let mergedSuccessfully = false;
+                
+                // Attempt 1: Try lightning-fast native vector copy
+                try {
+                    const pdf = await PDFLib.PDFDocument.load(item.arrayBuffer);
+                    const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                    copiedPages.forEach((page) => mergedPdf.addPage(page));
+                    mergedSuccessfully = true;
+                } catch (nativeErr) {
+                    console.warn("Native copy failed for a file, switching to safe hybrid page rendering...", nativeErr);
+                }
+
+                // Attempt 2: Safe Hybrid Fallback for any file that failed native copy
+                if (!mergedSuccessfully) {
+                    const loadingTask = pdfjsLib.getDocument({ data: item.arrayBuffer });
+                    const pdfDoc = await loadingTask.promise;
+                    
+                    for (let i = 1; i <= pdfDoc.numPages; i++) {
+                        const page = await pdfDoc.getPage(i);
+                        const viewport = page.getViewport({ scale: 1.5, rotation: item.rotation });
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d');
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+
+                        await page.render({ canvasContext: context, viewport: viewport }).promise;
+
+                        const imgDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                        const jpegBytes = await fetch(imgDataUrl).then(res => res.arrayBuffer());
+                        const embeddedImage = await mergedPdf.embedJpg(jpegBytes);
+
+                        const pdfPage = mergedPdf.addPage([viewport.width, viewport.height]);
+                        pdfPage.drawImage(embeddedImage, {
+                            x: 0,
+                            y: 0,
+                            width: viewport.width,
+                            height: viewport.height,
+                        });
+                    }
+                }
+            }
+
+            const mergedPdfFile = await mergedPdf.save({ useObjectStreams: true });
+            const blob = new Blob([mergedPdfFile], { type: 'application/pdf' });
+            finalPdfBlobUrl = URL.createObjectURL(blob);
+
+            clearInterval(interval);
+            progressBar.style.width = '100%';
+            progressPercentage.textContent = '100%';
+
+            const displaySizeKB = (blob.size / 1024).toFixed(1);
+            const displaySizeMB = (blob.size / (1024 * 1024)).toFixed(2);
+            const sizeFormatted = blob.size > 1024 * 1024 ? `${displaySizeMB} MB` : `${displaySizeKB} KB`;
+
+            setTimeout(() => {
+                progressContainer.classList.add('hidden');
+                progressPercentage.classList.add('hidden');
+                loadingStatus.textContent = `✅ Successfully merged! Size: ${sizeFormatted} (Secure & Verified)`;
+                
+                const btnElem = document.createElement('a');
+                btnElem.href = finalPdfBlobUrl;
+                btnElem.download = "merged-master.pdf";
+                btnElem.className = "bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-8 py-4 rounded-xl shadow-lg cursor-pointer inline-flex items-center space-x-2 text-base";
+                btnElem.innerHTML = `<span>📥 Download Master PDF</span>`;
+                downloadContainer.appendChild(btnElem);
+            }, 300);
+
+        } catch (err) {
+            console.error(err);
+            clearInterval(interval);
+            loadingStatus.textContent = "❌ Error merging PDF files.";
+        }
+    }
+</script>
+</body>
+</html>

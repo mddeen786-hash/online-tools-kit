@@ -1,0 +1,39 @@
+{
+  "dependencies": {
+    "@imgly/background-removal-node": "^1.4.5",
+    "@tailwindcss/vite": "^4.3.3",
+    "archiver": "^8.0.0",
+    "canvas": "^3.2.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-fileupload": "^1.5.2",
+    "jszip": "^3.10.1",
+    "mammoth": "^1.12.2",
+    "mongoose": "^9.7.4",
+    "multer": "^2.2.0",
+    "pdf-lib": "^1.17.1",
+    "pdf-parse": "^2.4.5",
+    "pdf-poppler": "^0.2.3",
+    "pdf-to-img": "^6.2.0",
+    "pdfjs-dist": "^2.16.105",
+    "pdfkit": "^0.20.2",
+    "sharp": "^0.35.4",
+    "stripe": "^22.3.2",
+    "tailwindcss": "^4.3.3",
+    "tesseract.js": "^7.0.0",
+    "xlsx": "^0.18.5"
+  },
+  "name": "online-tool-kit",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

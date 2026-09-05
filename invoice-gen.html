@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Tax Invoice | Filesque</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 5mm 8mm;
+            }
+            .no-print { display: none !important; }
+            body { 
+                background: white !important; 
+                padding: 0 !important; 
+                margin: 0 !important; 
+                width: 210mm; 
+            }
+            #invoice-paper { 
+                box-shadow: none !important; 
+                border: none !important; 
+                width: 100% !important; 
+                max-width: 100% !important; 
+                margin: 0 !important; 
+                padding: 2mm !important;
+            }
+            .print-grid-2 {
+                display: grid !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 1.5rem !important;
+            }
+            .print-right {
+                text-align: right !important;
+            }
+            .print-right input {
+                text-align: right !important;
+            }
+            input, select { border: none !important; background: transparent !important; padding: 0 !important; }
+            
+            /* Repeat Table Header on every printed page */
+            thead { display: table-header-group !important; }
+            tr { page-break-inside: avoid !important; break-inside: avoid !important; }
+            
+            .unbreakable-footer {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen flex flex-col items-center antialiased">
+
+<!-- Top Navigation Bar (Hidden during print) -->
+<nav class="w-full bg-white/90 backdrop-blur-md border-b border-slate-100 px-8 py-5 flex justify-between items-center fixed top-0 left-0 z-50 shadow-xs no-print">
+    
+    <!-- Creative Animated Brand Name -->
+    <div class="cursor-pointer flex items-center space-x-2 group shrink-0" onclick="window.location.href='index.html'">
+        <span class="text-4xl sm:text-7xl font-black tracking-tighter text-[#0f172a] flex items-center overflow-hidden">
+            <span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span><span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span>
+        </span>
+        <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping ml-1 hidden sm:inline-block"></span>
+    </div>
+    
+    <!-- Navbar Links -->
+    <div class="hidden lg:flex items-center space-x-9 text-base font-black text-slate-800 tracking-wide ml-auto">
+        <a href="index.html" class="hover:text-red-600 transition-colors uppercase">Home</a>
+
+        <!-- 1. PDF Core Tools -->
+        <div class="relative group py-2">
+            <a href="#pdf-section" class="flex items-center space-x-1 hover:text-red-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>PDF Core Tools</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-red-600 uppercase tracking-wider mb-2 px-2">PDF Utilities (7)</div>
+                <a href="pdf-to-word.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📄</span> <span>PDF to Word</span></a>
+                <a href="pdf-to-excel.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📊</span> <span>PDF to Excel</span></a>
+                <a href="merge.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💼</span> <span>Merge PDF</span></a>
+                <a href="pdf-splitter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>✂️</span> <span>PDF Splitter</span></a>
+                <a href="pdf-organizer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📑</span> <span>PDF Organizer</span></a>
+                <a href="pdf-watermark.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💧</span> <span>PDF Watermark</span></a>
+                <a href="pdf-to-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>🖼️</span> <span>PDF to Image</span></a>
+            </div>
+        </div>
+
+        <!-- 2. Image Utilities -->
+        <div class="relative group py-2">
+            <a href="#image-section" class="flex items-center space-x-1 hover:text-teal-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Image Utilities</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-teal-600 uppercase tracking-wider mb-2 px-2">Image Utilities (7)</div>
+                <a href="compress.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🗜️</span> <span>Compress Image</span></a>
+                <a href="image-converter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🖼️</span> <span>Image Converter</span></a>
+                <a href="image-to-pdf.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📷</span> <span>Image to PDF</span></a>
+                <a href="image-reducer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📉</span> <span>Image Reducer</span></a>
+                <a href="image-to-text.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🔍</span> <span>Image to Text</span></a>
+                <a href="passport-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🛂</span> <span>Passport Studio</span></a>
+                <a href="merge-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🧩</span> <span>Merge Image</span></a>
+            </div>
+        </div>
+
+        <!-- 3. Business Suite -->
+        <div class="relative group py-2">
+            <a href="#business-section" class="flex items-center space-x-1 hover:text-purple-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Business Suite</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-purple-600 uppercase tracking-wider mb-2 px-2">Business Utilities (6)</div>
+                <a href="invoice-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🧾</span> <span>Invoice Generator</span></a>
+                <a href="barcode-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🏷️</span> <span>Barcode Generator</span></a>
+                <a href="qr-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📱</span> <span>QR Code Studio</span></a>
+                <a href="sign-maker.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>✍️</span> <span>Digital Signature Studio</span></a>
+                <a href="code-formatter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>⚡</span> <span>Code Formatter</span></a>
+                <a href="product-listing.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📦</span> <span>Product Listing</span></a>
+            </div>
+        </div>
+
+    </div>
+</nav>
+
+<!-- Main Workspace -->
+<div class="w-full max-w-4xl px-4 mt-28 mb-16">
+    <div class="flex justify-between items-center mb-3 no-print">
+        <a href="index.html" class="text-sm font-semibold text-gray-500 hover:text-red-600">← Back to Dashboard</a>
+        <div class="flex items-center space-x-3 flex-wrap gap-y-2">
+            <button onclick="downloadExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl shadow transition-all text-xs uppercase cursor-pointer flex items-center space-x-1.5">
+                <span>📥 Download Excel</span>
+            </button>
+            <button onclick="window.print()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-2.5 rounded-xl shadow-md transition-all text-xs uppercase flex items-center space-x-2 cursor-pointer">
+                <span>🖨️ Download / Print PDF</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Corporate Tax Invoice Sheet -->
+    <div id="invoice-paper" class="bg-white p-5 rounded-2xl shadow-xl border border-gray-200">
+        
+        <!-- Centered TAX INVOICE Header -->
+        <div class="text-center pb-2 mb-3 border-b border-gray-100">
+            <h1 class="text-2xl font-black text-red-600 tracking-tight">TAX INVOICE</h1>
+        </div>
+
+        <!-- Top Header: Business Details & Invoice Metadata -->
+        <div class="grid grid-cols-1 md:grid-cols-2 print-grid-2 gap-4 border-b border-gray-200 pb-3 mb-3">
+            <div class="space-y-1">
+                <input type="text" id="bus-name" value="" oninput="updateSignCompany(this.value)" autocomplete="off" placeholder="YOUR BUSINESS NAME" class="text-lg font-black text-slate-900 border-b border-dashed border-gray-300 focus:border-red-500 outline-none w-full">
+                <div class="text-xs font-bold text-slate-600 flex items-center space-x-2">
+                    <span class="text-slate-400 w-20">Owner:</span>
+                    <input type="text" id="bus-prop" value="" autocomplete="off" placeholder="Proprietor Name" class="border-b border-dashed border-gray-200 outline-none w-full">
+                </div>
+                <div class="text-xs font-bold text-slate-600 flex items-center space-x-2">
+                    <span class="text-slate-400 w-20">GSTIN:</span>
+                    <input type="text" id="bus-gst" value="" autocomplete="off" placeholder="GSTIN Number" class="border-b border-dashed border-gray-200 outline-none w-full uppercase">
+                </div>
+                <div class="text-xs text-slate-500 flex items-center space-x-2">
+                    <span class="text-slate-400 w-20">Email:</span>
+                    <input type="text" id="bus-email" value="" autocomplete="off" placeholder="business@email.com" class="border-b border-dashed border-gray-200 outline-none w-full">
+                </div>
+                <div class="text-xs text-slate-500 flex items-center space-x-2">
+                    <span class="text-slate-400 w-20">Mobile:</span>
+                    <input type="text" id="bus-mobile" value="" autocomplete="off" placeholder="+91 0000000000" class="border-b border-dashed border-gray-200 outline-none w-full">
+                </div>
+            </div>
+
+            <div class="text-right print-right space-y-1 flex flex-col items-end justify-center">
+                <div class="text-xs font-bold text-slate-700 space-y-1 w-72">
+                    <div class="flex justify-between items-center">
+                        <span class="text-left">Invoice No:</span>
+                        <input type="text" id="inv-no" value="" autocomplete="off" class="border-b border-dashed border-gray-300 w-44 text-right outline-none">
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-left">Invoice Date:</span>
+                        <input type="date" id="inv-date" class="border-b border-dashed border-gray-300 w-44 text-right outline-none">
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-left">State Code:</span>
+                        <input type="text" id="inv-state" value="" autocomplete="off" class="border-b border-dashed border-gray-300 w-44 text-right outline-none">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bill To & Ship To Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 print-grid-2 gap-4 bg-slate-50 p-3 rounded-xl border border-gray-200 mb-3">
+            <div>
+                <span class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-1">Billed To (Customer):</span>
+                <input type="text" id="bill-name" placeholder="Client / Company Name" value="" autocomplete="off" class="text-xs font-extrabold text-slate-900 border-b border-dashed border-gray-300 w-full block outline-none mb-0.5">
+                <input type="text" id="bill-addr" placeholder="Billing Address / City" value="" autocomplete="off" class="text-xs text-slate-600 border-b border-dashed border-gray-200 w-full block outline-none mb-0.5">
+                <input type="text" id="bill-gst" placeholder="Client GSTIN" value="" autocomplete="off" class="text-xs font-semibold text-slate-700 border-b border-dashed border-gray-200 w-full block outline-none uppercase">
+            </div>
+
+            <div>
+                <span class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-1">Shipped To (Delivery Address):</span>
+                <input type="text" id="ship-name" placeholder="Receiver Name / Location" value="" autocomplete="off" class="text-xs font-extrabold text-slate-900 border-b border-dashed border-gray-300 w-full block outline-none mb-0.5">
+                <input type="text" id="ship-addr" placeholder="Shipping Address" value="" autocomplete="off" class="text-xs text-slate-600 border-b border-dashed border-gray-200 w-full block outline-none mb-0.5">
+                <input type="text" id="ship-supply" placeholder="Place of Supply" value="" autocomplete="off" class="text-xs font-semibold text-slate-700 border-b border-dashed border-gray-200 w-full block outline-none">
+            </div>
+        </div>
+
+        <!-- Line Items Table -->
+        <table class="w-full text-left mb-3 border-collapse">
+            <thead>
+                <tr class="bg-slate-900 text-white text-[11px] font-black uppercase tracking-wider">
+                    <th class="py-2 px-3 rounded-l-lg">Item Description / HSN</th>
+                    <th class="py-2 px-2 text-center w-16">Qty</th>
+                    <th class="py-2 px-2 text-right w-24">Price (₹)</th>
+                    <th class="py-2 px-2 text-right w-20">GST %</th>
+                    <th class="py-2 px-3 text-right w-28 rounded-r-lg">Total (₹)</th>
+                    <th class="w-6 no-print"></th>
+                </tr>
+            </thead>
+            <tbody id="items-tbody" class="divide-y divide-gray-100">
+                <tr class="item-row text-xs font-semibold">
+                    <td class="py-1.5 px-3">
+                        <input type="text" value="Product Description" autocomplete="off" class="item-desc w-full outline-none font-bold text-slate-800">
+                        <input type="text" value="HSN: 00000000" autocomplete="off" class="item-hsn w-full outline-none text-[10px] text-slate-400 font-mono">
+                    </td>
+                    <td class="py-1.5 px-2 text-center"><input type="number" value="1" min="1" oninput="calcTotals()" class="item-qty w-12 text-center bg-slate-50 border border-gray-200 rounded p-0.5 text-xs"></td>
+                    <td class="py-1.5 px-2 text-right"><input type="number" value="1000" oninput="calcTotals()" class="item-price w-20 text-right bg-slate-50 border border-gray-200 rounded p-0.5 text-xs"></td>
+                    <td class="py-1.5 px-2 text-right">
+                        <select onchange="calcTotals()" class="item-tax w-16 bg-slate-50 border border-gray-200 rounded p-0.5 text-center font-bold text-xs">
+                            <option value="18" selected>18%</option>
+                            <option value="12">12%</option>
+                            <option value="5">5%</option>
+                            <option value="0">0%</option>
+                        </select>
+                    </td>
+                    <td class="py-1.5 px-3 text-right font-black text-slate-900 item-total">1180.00</td>
+                    <td class="py-1.5 text-center no-print"><button onclick="removeItem(this)" class="text-red-500 font-bold hover:text-red-700">✕</button></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <button type="button" onclick="addItem()" class="no-print text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-xl transition-all mb-3 cursor-pointer flex items-center space-x-1">
+            <span>+ Add Line Item</span>
+        </button>
+
+        <!-- Summary, Totals & Footer Locked Together -->
+        <div class="unbreakable-footer">
+            <div class="grid grid-cols-1 md:grid-cols-2 print-grid-2 gap-6 border-t border-gray-200 pt-3">
+                <!-- Bank Details -->
+                <div class="space-y-1.5 text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-gray-200">
+                    <span class="font-black text-slate-800 uppercase tracking-wider block mb-1">Bank Account Details:</span>
+                    
+                    <div class="flex items-center space-x-2">
+                        <span class="w-24 text-slate-400">Bank Name:</span>
+                        <select id="bank-select" onchange="handleBankSelection()" class="font-bold text-slate-900 bg-white border border-gray-200 rounded p-0.5 outline-none text-xs flex-1">
+                            <option value="" disabled selected>Select Bank</option>
+                            <option value="HDFC Bank">HDFC Bank</option>
+                            <option value="State Bank of India (SBI)">State Bank of India (SBI)</option>
+                            <option value="ICICI Bank">ICICI Bank</option>
+                            <option value="Axis Bank">Axis Bank</option>
+                            <option value="Kotak Mahindra Bank">Kotak Mahindra Bank</option>
+                            <option value="Bank of Baroda">Bank of Baroda</option>
+                            <option value="Punjab National Bank (PNB)">Punjab National Bank (PNB)</option>
+                            <option value="Canara Bank">Canara Bank</option>
+                            <option value="Union Bank of India">Union Bank of India</option>
+                            <option value="Bank of India">Bank of India</option>
+                            <option value="IndusInd Bank">IndusInd Bank</option>
+                            <option value="IDBI Bank">IDBI Bank</option>
+                            <option value="Federal Bank">Federal Bank</option>
+                            <option value="Yes Bank">Yes Bank</option>
+                            <option value="RBL Bank">RBL Bank</option>
+                            <option value="Bandhan Bank">Bandhan Bank</option>
+                            <option value="IDFC First Bank">IDFC First Bank</option>
+                            <option value="Indian Bank">Indian Bank</option>
+                            <option value="Central Bank of India">Central Bank of India</option>
+                            <option value="UCO Bank">UCO Bank</option>
+                            <option value="Paytm Payments Bank">Paytm Payments Bank</option>
+                            <option value="Airtel Payments Bank">Airtel Payments Bank</option>
+                            <option value="Fino Payments Bank">Fino Payments Bank</option>
+                            <option value="Other">Other (Manual Entry)...</option>
+                        </select>
+                    </div>
+
+                    <div id="manual-bank-container" class="flex items-center space-x-2 hidden">
+                        <span class="w-24 text-slate-400">Custom Bank:</span>
+                        <input type="text" id="manual-bank-name" autocomplete="off" placeholder="Enter Bank Name" class="font-bold text-slate-900 bg-white border border-gray-200 rounded p-0.5 outline-none text-xs flex-1">
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <span class="w-24 text-slate-400">A/C Number:</span>
+                        <input type="text" id="bank-acc" value="" autocomplete="off" placeholder="Account Number" class="font-bold text-slate-900 bg-white border border-gray-200 rounded p-0.5 outline-none text-xs flex-1">
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <span class="w-24 text-slate-400">IFSC Code:</span>
+                        <input type="text" id="bank-ifsc" value="" autocomplete="off" placeholder="IFSC Code" class="font-bold text-slate-900 bg-white border border-gray-200 rounded p-0.5 outline-none text-xs flex-1 uppercase">
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <span class="w-24 text-slate-400">Branch:</span>
+                        <input type="text" id="bank-branch" value="" autocomplete="off" placeholder="Branch Name" class="font-bold text-slate-900 bg-white border border-gray-200 rounded p-0.5 outline-none text-xs flex-1">
+                    </div>
+                </div>
+
+                <!-- Calculated Totals -->
+                <div class="space-y-1 text-xs font-bold text-slate-700">
+                    <div class="flex justify-between py-1">
+                        <span>Taxable Subtotal:</span>
+                        <span id="sub-total">₹1000.00</span>
+                    </div>
+                    <div class="flex justify-between py-1">
+                        <span>CGST (9%):</span>
+                        <span id="cgst-total">₹90.00</span>
+                    </div>
+                    <div class="flex justify-between py-1">
+                        <span>SGST (9%):</span>
+                        <span id="sgst-total">₹90.00</span>
+                    </div>
+                    <div class="flex justify-between border-t border-gray-200 pt-2 text-base font-black text-slate-900">
+                        <span>Grand Total:</span>
+                        <span id="grand-total" class="text-red-600">₹1180.00</span>
+                    </div>
+                    <div class="text-[10px] font-normal text-slate-500 pt-0.5 italic" id="amount-in-words">
+                        Amount in words: One Thousand One Hundred and Eighty Rupees Only
+                    </div>
+                </div>
+            </div>
+
+            <!-- Corporate Footer / Signatory -->
+            <div class="mt-5 pt-3 border-t border-gray-200 flex justify-between items-end">
+                <div class="text-[10px] text-slate-500 space-y-0.5">
+                    <p class="font-bold">Terms & Conditions:</p>
+                    <p>1. Goods once sold will not be taken back.</p>
+                    <p>2. Subject to State Jurisdiction.</p>
+                </div>
+                <div class="text-center space-y-3">
+                    <div class="text-xs font-bold text-slate-800" id="sign-company">For YOUR BUSINESS NAME</div>
+                    <div class="text-[10px] text-slate-400">(Authorized Signatory)</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    document.getElementById('inv-date').valueAsDate = new Date();
+
+    function showToast(msg) {
+        const toast = document.createElement('div');
+        toast.className = "fixed bottom-5 right-5 bg-slate-900 text-white text-xs font-bold px-4 py-3 rounded-xl shadow-2xl z-50 transition-all flex items-center space-x-2";
+        toast.innerHTML = `<span>${msg}</span>`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    function updateSignCompany(val) {
+        const trimmed = val.trim();
+        const signEl = document.getElementById('sign-company');
+        if (trimmed.length > 0) {
+            signEl.textContent = `For ${trimmed}`;
+        } else {
+            signEl.textContent = `For YOUR BUSINESS NAME`;
+        }
+    }
+
+    function handleBankSelection() {
+        const val = document.getElementById('bank-select').value;
+        const manualContainer = document.getElementById('manual-bank-container');
+        if (val === 'Other') {
+            manualContainer.classList.remove('hidden');
+            document.getElementById('manual-bank-name').focus();
+        } else {
+            manualContainer.classList.add('hidden');
+        }
+    }
+
+    function numberToWords(num) {
+        if (isNaN(num)) return '';
+        if (num === 0) return 'Zero Rupees Only';
+        
+        const a = ['','One ','Two ','Three ','Four ', 'Five ','Six ','Seven ','Eight ','Nine ','Ten ','Eleven ','Twelve ','Thirteen ','Fourteen ','Fifteen ','Sixteen ','Seventeen ','Eighteen ','Nineteen '];
+        const b = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+
+        function inWords(n) {
+            if ((n = n.toString()).length > 9) return 'overflow';
+            let nMask = ('000000000' + n).substr(-9,9);
+            let crore = parseInt(nMask.substr(0,2),10);
+            let lakh = parseInt(nMask.substr(2,2),10);
+            let thousand = parseInt(nMask.substr(4,2),10);
+            let hundred = parseInt(nMask.substr(6,1),10);
+            let resto = parseInt(nMask.substr(7,2),10);
+            
+            let str = '';
+            str += (crore !== 0) ? (a[crore] || b[crore.toString()[0]] + ' ' + a[crore % 10]) + 'Crore ' : '';
+            str += (lakh !== 0) ? (a[lakh] || b[lakh.toString()[0]] + ' ' + a[lakh % 10]) + 'Lakh ' : '';
+            str += (thousand !== 0) ? (a[thousand] || b[thousand.toString()[0]] + ' ' + a[thousand % 10]) + 'Thousand ' : '';
+            str += (hundred !== 0) ? (a[hundred] || b[hundred.toString()[0]] + ' ' + a[hundred % 10]) + 'Hundred ' : '';
+            str += (resto !== 0) ? ((str !== '') ? 'and ' : '') + (a[resto] || b[resto.toString()[0]] + ' ' + a[resto % 10]) : '';
+            return str;
+        }
+
+        const rupees = Math.floor(num);
+        const paise = Math.round((num - rupees) * 100);
+        let res = inWords(rupees).trim() + ' Rupees';
+        if (paise > 0) {
+            res += ' and ' + inWords(paise).trim() + ' Paise';
+        }
+        return res + ' Only';
+    }
+
+    function calcTotals() {
+        let subtotal = 0;
+        let totalTaxAmount = 0;
+
+        document.querySelectorAll('.item-row').forEach(row => {
+            const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+            const price = parseFloat(row.querySelector('.item-price').value) || 0;
+            const taxRate = parseFloat(row.querySelector('.item-tax').value) || 0;
+            
+            const rowBase = qty * price;
+            const rowTax = (rowBase * taxRate) / 100;
+            const rowTotal = rowBase + rowTax;
+
+            row.querySelector('.item-total').textContent = rowTotal.toFixed(2);
+            subtotal += rowBase;
+            totalTaxAmount += rowTax;
+        });
+
+        const halfTax = totalTaxAmount / 2;
+        const grandTotal = subtotal + totalTaxAmount;
+
+        document.getElementById('sub-total').textContent = '₹' + subtotal.toFixed(2);
+        document.getElementById('cgst-total').textContent = '₹' + halfTax.toFixed(2);
+        document.getElementById('sgst-total').textContent = '₹' + halfTax.toFixed(2);
+        document.getElementById('grand-total').textContent = '₹' + grandTotal.toFixed(2);
+        document.getElementById('amount-in-words').textContent = 'Amount in words: ' + numberToWords(grandTotal);
+    }
+
+    function addItem() {
+        const tbody = document.getElementById('items-tbody');
+        const tr = document.createElement('tr');
+        tr.className = "item-row text-xs font-semibold";
+        tr.innerHTML = `
+            <td class="py-1.5 px-3">
+                <input type="text" placeholder="Item name / Description" autocomplete="off" class="item-desc w-full outline-none font-bold text-slate-800">
+                <input type="text" placeholder="HSN/SAC Code" autocomplete="off" class="item-hsn w-full outline-none text-[10px] text-slate-400 font-mono">
+            </td>
+            <td class="py-1.5 px-2 text-center"><input type="number" value="1" min="1" oninput="calcTotals()" class="item-qty w-12 text-center bg-slate-50 border border-gray-200 rounded p-0.5 text-xs"></td>
+            <td class="py-1.5 px-2 text-right"><input type="number" value="1000" oninput="calcTotals()" class="item-price w-20 text-right bg-slate-50 border border-gray-200 rounded p-0.5 text-xs"></td>
+            <td class="py-1.5 px-2 text-right">
+                <select onchange="calcTotals()" class="item-tax w-16 bg-slate-50 border border-gray-200 rounded p-0.5 text-center font-bold text-xs">
+                    <option value="18" selected>18%</option>
+                    <option value="12">12%</option>
+                    <option value="5">5%</option>
+                    <option value="0">0%</option>
+                </select>
+            </td>
+            <td class="py-1.5 px-3 text-right font-black text-slate-900 item-total">1180.00</td>
+            <td class="py-1.5 text-center no-print"><button onclick="removeItem(this)" class="text-red-500 font-bold hover:text-red-700">✕</button></td>
+        `;
+        tbody.appendChild(tr);
+        calcTotals();
+    }
+
+    function removeItem(btn) {
+        if (document.querySelectorAll('.item-row').length > 1) {
+            btn.closest('tr').remove();
+            calcTotals();
+        }
+    }
+
+    function downloadExcel() {
+        const busNameVal = document.getElementById('bus-name').value.trim() || 'YOUR BUSINESS NAME';
+        const bankName = document.getElementById('bank-select').value === 'Other' ? document.getElementById('manual-bank-name').value : document.getElementById('bank-select').value;
+
+        const aoa = [
+            ["", "", "TAX INVOICE", "", ""],
+            ["Business Name:", document.getElementById('bus-name').value, "", "Invoice No:", document.getElementById('inv-no').value],
+            ["Proprietor:", document.getElementById('bus-prop').value, "", "Invoice Date:", document.getElementById('inv-date').value],
+            ["GSTIN:", document.getElementById('bus-gst').value, "", "State Code:", document.getElementById('inv-state').value],
+            ["Email:", document.getElementById('bus-email').value, "", "", ""],
+            ["Mobile:", document.getElementById('bus-mobile').value, "", "", ""],
+            ["", "", "", "", ""],
+            ["", "", "", "", ""],
+            ["", "", "", "", ""],
+            ["", "", "", "", ""],
+            ["", "", "", "", ""],
+            ["Billed To:", document.getElementById('bill-name').value, "", "Shipped To:", document.getElementById('ship-name').value],
+            ["Billing Address:", document.getElementById('bill-addr').value, "", "Shipping Address:", document.getElementById('ship-addr').value],
+            ["Client GSTIN:", document.getElementById('bill-gst').value, "", "Place of Supply:", document.getElementById('ship-supply').value],
+            ["", "", "", "", ""],
+            ["", "", "", "", ""],
+            ["", "", "", "", ""],
+            ["Item Description & HSN", "Quantity", "Price (₹)", "GST %", "Total (₹)"]
+        ];
+
+        document.querySelectorAll('.item-row').forEach(row => {
+            const desc = row.querySelector('.item-desc').value;
+            const hsn = row.querySelector('.item-hsn').value;
+            const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+            const price = parseFloat(row.querySelector('.item-price').value) || 0;
+            const tax = row.querySelector('.item-tax').value + "%";
+            const total = parseFloat(row.querySelector('.item-total').textContent) || 0;
+            aoa.push([`${desc} (${hsn})`, qty, price, tax, total]);
+        });
+
+        aoa.push(
+            ["", "", "", "", ""],
+            ["", "", "", "", ""],
+            ["", "", "", "", ""]
+        );
+
+        aoa.push(
+            ["Bank Name:", bankName, "", "Taxable Subtotal:", parseFloat(document.getElementById('sub-total').textContent.replace('₹','')) || 0],
+            ["A/C Number:", document.getElementById('bank-acc').value, "", "CGST (9%):", parseFloat(document.getElementById('cgst-total').textContent.replace('₹','')) || 0],
+            ["IFSC Code:", document.getElementById('bank-ifsc').value, "", "SGST (9%):", parseFloat(document.getElementById('sgst-total').textContent.replace('₹','')) || 0],
+            ["Branch:", document.getElementById('bank-branch').value, "", "Grand Total:", parseFloat(document.getElementById('grand-total').textContent.replace('₹','')) || 0],
+            ["", "", "", "", ""],
+            ["", "", "", "", ""],
+            ["", "", "", "", ""],
+            ["", "", "", "", ""],
+            ["", "", "", "", ""],
+            ["", "", "", "", ""],
+            ["", "", "", "", ""],
+            ["", "", "", "", ""],
+            ["Terms & Conditions:", "", "", "", `For ${busNameVal}`],
+            ["1. Goods once sold will not be taken back.", "", "", "", ""],
+            ["2. Subject to State Jurisdiction.", "", "", "", "(Authorized Signatory)"]
+        );
+
+        const ws = XLSX.utils.aoa_to_sheet(aoa);
+        
+        if(!ws['C1']) ws['C1'] = { t: 's', v: 'TAX INVOICE' };
+        ws['C1'].s = { 
+            font: { bold: true, sz: 14, color: { rgb: "C00000" } }, 
+            alignment: { horizontal: "center", vertical: "center" } 
+        };
+
+        ws['!cols'] = [
+            {wch: 25},
+            {wch: 30},
+            {wch: 10},
+            {wch: 18},
+            {wch: 25}
+        ];
+
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Tax Invoice");
+        
+        const fileName = `Invoice_${(document.getElementById('inv-no').value || 'INV').replace(/[\/]/g, '_')}.xlsx`;
+        XLSX.writeFile(wb, fileName);
+        
+        showToast("📥 Excel (.xlsx) Downloaded Successfully!");
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        calcTotals();
+    });
+</script>
+</body>
+</html>

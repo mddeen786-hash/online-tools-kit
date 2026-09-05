@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Splitter | iLoveFiles</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Client-side PDF rendering, extraction & ZIP libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col items-center">
+
+<!-- Top Navigation Bar with Creative Animated Brand & Nav Links -->
+<nav class="w-full bg-white/90 backdrop-blur-md border-b border-slate-100 px-8 py-5 flex justify-between items-center fixed top-0 left-0 z-50 shadow-xs">
+    
+    <!-- Creative Animated Brand Name -->
+    <div class="cursor-pointer flex items-center space-x-2 group shrink-0" onclick="window.location.href='index.html'">
+        <span class="text-4xl sm:text-7xl font-black tracking-tighter text-[#0f172a] flex items-center overflow-hidden">
+            <span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span><span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span>
+        </span>
+        <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping ml-1 hidden sm:inline-block"></span>
+    </div>
+    
+    <!-- Navbar Links -->
+    <div class="hidden lg:flex items-center space-x-9 text-base font-black text-slate-800 tracking-wide ml-auto">
+        <a href="index.html" class="hover:text-red-600 transition-colors uppercase">Home</a>
+
+        <!-- 1. PDF Core Tools -->
+        <div class="relative group py-2">
+            <a href="#pdf-section" class="flex items-center space-x-1 hover:text-red-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>PDF Core Tools</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-red-600 uppercase tracking-wider mb-2 px-2">PDF Utilities (7)</div>
+                <a href="pdf-to-word.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📄</span> <span>PDF to Word</span></a>
+                <a href="pdf-to-excel.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📊</span> <span>PDF to Excel</span></a>
+                <a href="merge.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💼</span> <span>Merge PDF</span></a>
+                <a href="pdf-splitter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>✂️</span> <span>PDF Splitter</span></a>
+                <a href="pdf-organizer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📑</span> <span>PDF Organizer</span></a>
+                <a href="pdf-watermark.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💧</span> <span>PDF Watermark</span></a>
+                <a href="pdf-to-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>🖼️</span> <span>PDF to Image</span></a>
+            </div>
+        </div>
+
+        <!-- 2. Image Utilities -->
+        <div class="relative group py-2">
+            <a href="#image-section" class="flex items-center space-x-1 hover:text-teal-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Image Utilities</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-teal-600 uppercase tracking-wider mb-2 px-2">Image Utilities (7)</div>
+                <a href="compress.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🗜️</span> <span>Compress Image</span></a>
+                <a href="image-converter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🖼️</span> <span>Image Converter</span></a>
+                <a href="image-to-pdf.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📷</span> <span>Image to PDF</span></a>
+                <a href="image-reducer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📉</span> <span>Image Reducer</span></a>
+                <a href="image-to-text.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🔍</span> <span>Image to Text</span></a>
+                <a href="passport-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🛂</span> <span>Passport Studio</span></a>
+                <a href="merge-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🧩</span> <span>Merge Image</span></a>
+            </div>
+        </div>
+
+        <!-- 3. Business Suite -->
+        <div class="relative group py-2">
+            <a href="#business-section" class="flex items-center space-x-1 hover:text-purple-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Business Suite</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-purple-600 uppercase tracking-wider mb-2 px-2">Business Utilities (6)</div>
+                <a href="invoice-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🧾</span> <span>Invoice Generator</span></a>
+                <a href="barcode-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🏷️</span> <span>Barcode Generator</span></a>
+                <a href="qr-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📱</span> <span>QR Code Studio</span></a>
+                <a href="sign-maker.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>✍️</span> <span>Digital Signature Studio</span></a>
+                <a href="code-formatter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>⚡</span> <span>Code Formatter</span></a>
+                <a href="product-listing.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📦</span> <span>Product Listing</span></a>
+            </div>
+        </div>
+
+    </div>
+</nav>
+
+<!-- Main Workspace -->
+<div class="w-full max-w-6xl px-4 mt-36 mb-24">
+    <a href="index.html" class="text-sm font-semibold text-gray-500 hover:text-teal-600 mb-4 inline-block">← Back to Dashboard</a>
+    
+    <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+        <h2 class="text-3xl font-black text-slate-900 text-center mb-2">PDF Splitter</h2>
+        <p class="text-gray-500 text-center mb-8">Extract specific pages or split all pages into separate PDF files instantly.</p>
+
+        <!-- Drop Zone Area -->
+        <div id="drop-zone" onclick="document.getElementById('file-input').click()" class="border-3 border-dashed border-gray-300 rounded-xl p-8 bg-gray-50 text-center relative cursor-pointer hover:bg-gray-100/50 transition-all">
+            <span class="text-4xl block mb-2">✂️</span>
+            <p class="text-gray-600 font-medium mb-3">Drag & Drop PDF file here to split</p>
+            <button type="button" onclick="event.stopPropagation(); document.getElementById('file-input').click();" class="bg-teal-600 text-white font-bold px-6 py-2.5 rounded-xl shadow hover:bg-teal-700 transition-all cursor-pointer inline-block text-sm">
+                Select PDF File
+            </button>
+            <input type="file" id="file-input" accept="application/pdf" class="hidden" onchange="handleFileSelected(this.files)">
+        </div>
+
+        <!-- Processing Status Bar -->
+        <div id="scan-status" class="mt-6 hidden">
+            <div class="flex justify-between text-xs font-bold text-slate-700 mb-2">
+                <span id="status-text">Rendering PDF pages...</span>
+                <span id="status-percent">0%</span>
+            </div>
+            <div class="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden">
+                <div id="progress-bar" class="bg-teal-600 h-full w-0 transition-all duration-200"></div>
+            </div>
+        </div>
+
+        <!-- Split Controls & Page Preview Panel -->
+        <div id="result-panel" class="mt-8 border-t border-gray-100 pt-6 hidden">
+            
+            <!-- Mode Toggle Tabs -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-slate-50 p-2 rounded-xl border border-gray-200 mb-6 gap-3">
+                <div class="flex space-x-2 w-full sm:w-auto">
+                    <button id="mode-range-btn" onclick="setSplitMode('range')" class="flex-1 sm:flex-initial px-5 py-2.5 rounded-lg text-xs font-bold bg-white shadow-sm text-slate-900 border border-gray-200 transition-all">
+                        Custom Extract Range
+                    </button>
+                    <button id="mode-all-btn" onclick="setSplitMode('all')" class="flex-1 sm:flex-initial px-5 py-2.5 rounded-lg text-xs font-bold text-gray-500 hover:text-slate-900 transition-all">
+                        Split All Pages (ZIP)
+                    </button>
+                </div>
+                <span id="page-count-badge" class="text-xs font-bold text-teal-700 bg-teal-50 px-3 py-1.5 rounded-lg border border-teal-200">
+                    0 Pages Found
+                </span>
+            </div>
+
+            <!-- Custom Range Input Box -->
+            <div id="range-input-box" class="mb-6 bg-slate-50 p-4 rounded-xl border border-gray-200">
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                    Pages to Extract (e.g. 1-3, 5, 7-10) or Click Thumbnails Below:
+                </label>
+                <div class="flex gap-3">
+                    <input type="text" id="range-text-input" placeholder="e.g. 1-3, 5" class="flex-1 p-3 bg-white border border-gray-300 rounded-lg text-sm outline-none focus:border-teal-500 font-semibold text-slate-800">
+                    <button onclick="selectAllPages()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-slate-800 font-bold text-xs rounded-lg transition-all">
+                        Select All
+                    </button>
+                    <button onclick="deselectAllPages()" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-slate-800 font-bold text-xs rounded-lg transition-all">
+                        Deselect All
+                    </button>
+                </div>
+            </div>
+
+            <!-- Scrollable Interactive Thumbnails Grid -->
+            <div class="w-full max-h-[480px] border border-gray-200 rounded-xl overflow-y-auto p-4 bg-slate-100 shadow-inner mb-6">
+                <div id="thumbnails-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                </div>
+            </div>
+
+            <!-- Action Button -->
+            <button id="split-submit-btn" onclick="executePDFSplit()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-4 rounded-xl shadow-md transition-all flex items-center justify-center space-x-2 cursor-pointer text-base">
+                <span>✂️ Split PDF & Download</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    if (typeof pdfjsLib !== 'undefined') {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+
+    const scanStatus = document.getElementById('scan-status');
+    const progressBar = document.getElementById('progress-bar');
+    const statusText = document.getElementById('status-text');
+    const statusPercent = document.getElementById('status-percent');
+    const resultPanel = document.getElementById('result-panel');
+    const pageCountBadge = document.getElementById('page-count-badge');
+    const thumbnailsGrid = document.getElementById('thumbnails-grid');
+    const rangeTextInput = document.getElementById('range-text-input');
+    const rangeInputBox = document.getElementById('range-input-box');
+    const modeRangeBtn = document.getElementById('mode-range-btn');
+    const modeAllBtn = document.getElementById('mode-all-btn');
+    const splitSubmitBtn = document.getElementById('split-submit-btn');
+
+    let currentFile = null;
+    let pdfArrayBuffer = null;
+    let totalPdfPages = 0;
+    let selectedPageIndices = new Set();
+    let currentMode = 'range';
+
+    function handleFileSelected(files) {
+        if (files && files.length > 0) {
+            loadPDFDocument(files[0]);
+        }
+    }
+
+    const dropZone = document.getElementById('drop-zone');
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false);
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
+        if (files && files.length > 0) loadPDFDocument(files[0]);
+    }, false);
+
+    async function loadPDFDocument(file) {
+        if (!file || file.type !== 'application/pdf') {
+            alert('Please select a valid PDF file.');
+            return;
+        }
+
+        currentFile = file;
+        scanStatus.classList.remove('hidden');
+        resultPanel.classList.add('hidden');
+        progressBar.style.width = '0%';
+        statusPercent.textContent = '0%';
+        statusText.textContent = 'Loading PDF pages...';
+
+        try {
+            pdfArrayBuffer = await file.arrayBuffer();
+            const pdfDoc = await pdfjsLib.getDocument({ data: pdfArrayBuffer.slice(0) }).promise;
+            totalPdfPages = pdfDoc.numPages;
+
+            pageCountBadge.textContent = `${totalPdfPages} Total Pages`;
+            thumbnailsGrid.innerHTML = '';
+            selectedPageIndices.clear();
+
+            for (let i = 0; i < totalPdfPages; i++) selectedPageIndices.add(i);
+            updateRangeInputFromSet();
+
+            for (let pageNum = 1; pageNum <= totalPdfPages; pageNum++) {
+                const progress = Math.round((pageNum / totalPdfPages) * 100);
+                progressBar.style.width = progress + '%';
+                statusPercent.textContent = progress + '%';
+
+                const page = await pdfDoc.getPage(pageNum);
+                await renderPageThumbnail(page, pageNum);
+            }
+
+            scanStatus.classList.add('hidden');
+            resultPanel.classList.remove('hidden');
+
+        } catch (err) {
+            console.error(err);
+            scanStatus.classList.add('hidden');
+            alert("Error loading PDF document. Please try another file.");
+        }
+    }
+
+    async function renderPageThumbnail(page, pageNum) {
+        const viewport = page.getViewport({ scale: 0.25 });
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+        const wrapper = document.createElement('div');
+        wrapper.id = `thumb-page-${pageNum}`;
+        wrapper.className = `p-2 bg-white border-2 rounded-xl flex flex-col items-center cursor-pointer transition-all relative select-none ${selectedPageIndices.has(pageNum - 1) ? 'border-teal-500 shadow-md ring-2 ring-teal-200' : 'border-gray-200 opacity-60'}`;
+        
+        wrapper.onclick = () => togglePageSelection(pageNum - 1);
+
+        const badge = document.createElement('span');
+        badge.className = "text-[11px] font-bold text-slate-700 mt-2";
+        badge.textContent = `Page ${pageNum}`;
+
+        wrapper.appendChild(canvas);
+        wrapper.appendChild(badge);
+        thumbnailsGrid.appendChild(wrapper);
+    }
+
+    function togglePageSelection(index) {
+        if (currentMode === 'all') return;
+
+        if (selectedPageIndices.has(index)) {
+            selectedPageIndices.delete(index);
+        } else {
+            selectedPageIndices.add(index);
+        }
+        
+        updateThumbnailStyles();
+        updateRangeInputFromSet();
+    }
+
+    function updateThumbnailStyles() {
+        for (let i = 1; i <= totalPdfPages; i++) {
+            const el = document.getElementById(`thumb-page-${i}`);
+            if (!el) continue;
+
+            if (currentMode === 'all' || selectedPageIndices.has(i - 1)) {
+                el.className = "p-2 bg-white border-2 rounded-xl flex flex-col items-center cursor-pointer transition-all relative select-none border-teal-500 shadow-md ring-2 ring-teal-200 opacity-100";
+            } else {
+                el.className = "p-2 bg-white border-2 rounded-xl flex flex-col items-center cursor-pointer transition-all relative select-none border-gray-200 opacity-50";
+            }
+        }
+    }
+
+    function setSplitMode(mode) {
+        currentMode = mode;
+        if (mode === 'range') {
+            modeRangeBtn.className = "flex-1 sm:flex-initial px-5 py-2.5 rounded-lg text-xs font-bold bg-white shadow-sm text-slate-900 border border-gray-200 transition-all";
+            modeAllBtn.className = "flex-1 sm:flex-initial px-5 py-2.5 rounded-lg text-xs font-bold text-gray-500 hover:text-slate-900 transition-all";
+            rangeInputBox.classList.remove('hidden');
+            splitSubmitBtn.innerHTML = "<span>✂️ Extract Selected Pages (.pdf)</span>";
+        } else {
+            modeAllBtn.className = "flex-1 sm:flex-initial px-5 py-2.5 rounded-lg text-xs font-bold bg-white shadow-sm text-slate-900 border border-gray-200 transition-all";
+            modeRangeBtn.className = "flex-1 sm:flex-initial px-5 py-2.5 rounded-lg text-xs font-bold text-gray-500 hover:text-slate-900 transition-all";
+            rangeInputBox.classList.add('hidden');
+            splitSubmitBtn.innerHTML = "<span>📦 Split Every Page to ZIP (.zip)</span>";
+        }
+        updateThumbnailStyles();
+    }
+
+    function selectAllPages() {
+        for (let i = 0; i < totalPdfPages; i++) selectedPageIndices.add(i);
+        updateThumbnailStyles();
+        updateRangeInputFromSet();
+    }
+
+    function deselectAllPages() {
+        selectedPageIndices.clear();
+        updateThumbnailStyles();
+        updateRangeInputFromSet();
+    }
+
+    function updateRangeInputFromSet() {
+        const sorted = Array.from(selectedPageIndices).sort((a, b) => a - b).map(i => i + 1);
+        if (sorted.length === 0) {
+            rangeTextInput.value = "";
+            return;
+        }
+
+        let ranges = [];
+        let start = sorted[0], prev = sorted[0];
+
+        for (let i = 1; i < sorted.length; i++) {
+            if (sorted[i] === prev + 1) {
+                prev = sorted[i];
+            } else {
+                ranges.push(start === prev ? `${start}` : `${start}-${prev}`);
+                start = sorted[i];
+                prev = sorted[i];
+            }
+        }
+        ranges.push(start === prev ? `${start}` : `${start}-${prev}`);
+        rangeTextInput.value = ranges.join(', ');
+    }
+
+    rangeTextInput.addEventListener('input', () => {
+        const val = rangeTextInput.value.trim();
+        selectedPageIndices.clear();
+
+        if (val) {
+            const parts = val.split(',');
+            parts.forEach(part => {
+                const sub = part.trim();
+                if (sub.includes('-')) {
+                    const [s, e] = sub.split('-').map(n => parseInt(n.trim()));
+                    if (!isNaN(s) && !isNaN(e)) {
+                        for (let p = Math.min(s, e); p <= Math.max(s, e); p++) {
+                            if (p >= 1 && p <= totalPdfPages) selectedPageIndices.add(p - 1);
+                        }
+                    }
+                } else {
+                    const p = parseInt(sub);
+                    if (!isNaN(p) && p >= 1 && p <= totalPdfPages) {
+                        selectedPageIndices.add(p - 1);
+                    }
+                }
+            });
+        }
+        updateThumbnailStyles();
+    });
+
+    async function executePDFSplit() {
+        if (!pdfArrayBuffer) return;
+
+        const baseFileName = currentFile.name.substring(0, currentFile.name.lastIndexOf('.')) || 'split_document';
+
+        try {
+            const srcDoc = await PDFLib.PDFDocument.load(pdfArrayBuffer);
+
+            if (currentMode === 'range') {
+                if (selectedPageIndices.size === 0) {
+                    alert("Please select at least one page to extract.");
+                    return;
+                }
+
+                const indices = Array.from(selectedPageIndices).sort((a, b) => a - b);
+                const newPdf = await PDFLib.PDFDocument.create();
+                const copiedPages = await newPdf.copyPages(srcDoc, indices);
+                copiedPages.forEach(p => newPdf.addPage(p));
+
+                const pdfBytes = await newPdf.save();
+                downloadBlob(new Blob([pdfBytes], { type: 'application/pdf' }), `${baseFileName}_split.pdf`);
+            } else {
+                splitSubmitBtn.disabled = true;
+                splitSubmitBtn.innerHTML = "<span>⏳ Packing Single PDFs into ZIP...</span>";
+
+                const zip = new JSZip();
+
+                for (let i = 0; i < totalPdfPages; i++) {
+                    const singlePdf = await PDFLib.PDFDocument.create();
+                    const [copiedPage] = await singlePdf.copyPages(srcDoc, [i]);
+                    singlePdf.addPage(copiedPage);
+
+                    const pdfBytes = await singlePdf.save();
+                    zip.file(`${baseFileName}_page_${i + 1}.pdf`, pdfBytes);
+                }
+
+                const zipBlob = await zip.generateAsync({ type: "blob" });
+                downloadBlob(zipBlob, `${baseFileName}_all_pages.zip`);
+
+                splitSubmitBtn.disabled = false;
+                splitSubmitBtn.innerHTML = "<span>📦 Split Every Page to ZIP (.zip)</span>";
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Error splitting PDF document.");
+            splitSubmitBtn.disabled = false;
+        }
+    }
+
+    function downloadBlob(blob, filename) {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+
+</body>
+</html>

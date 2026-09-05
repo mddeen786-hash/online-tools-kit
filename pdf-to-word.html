@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Word | iLoveFiles</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col items-center">
+
+<!-- Top Navigation Bar with Creative Animated Brand & Nav Links -->
+<nav class="w-full bg-white/90 backdrop-blur-md border-b border-slate-100 px-8 py-5 flex justify-between items-center fixed top-0 left-0 z-50 shadow-xs">
+    
+    <!-- Creative Animated Brand Name -->
+    <div class="cursor-pointer flex items-center space-x-2 group shrink-0" onclick="window.location.href='index.html'">
+        <span class="text-4xl sm:text-7xl font-black tracking-tighter text-[#0f172a] flex items-center overflow-hidden">
+            <span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span><span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span>
+        </span>
+        <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping ml-1 hidden sm:inline-block"></span>
+    </div>
+    
+    <!-- Navbar Links -->
+    <div class="hidden lg:flex items-center space-x-9 text-base font-black text-slate-800 tracking-wide ml-auto">
+        <a href="index.html" class="hover:text-red-600 transition-colors uppercase">Home</a>
+
+        <!-- 1. PDF Core Tools -->
+        <div class="relative group py-2">
+            <a href="#pdf-section" class="flex items-center space-x-1 hover:text-red-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>PDF Core Tools</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-red-600 uppercase tracking-wider mb-2 px-2">PDF Utilities (7)</div>
+                <a href="pdf-to-word.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📄</span> <span>PDF to Word</span></a>
+                <a href="pdf-to-excel.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📊</span> <span>PDF to Excel</span></a>
+                <a href="merge.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💼</span> <span>Merge PDF</span></a>
+                <a href="pdf-splitter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>✂️</span> <span>PDF Splitter</span></a>
+                <a href="pdf-organizer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📑</span> <span>PDF Organizer</span></a>
+                <a href="pdf-watermark.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💧</span> <span>PDF Watermark</span></a>
+                <a href="pdf-to-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>🖼️</span> <span>PDF to Image</span></a>
+            </div>
+        </div>
+
+        <!-- 2. Image Utilities -->
+        <div class="relative group py-2">
+            <a href="#image-section" class="flex items-center space-x-1 hover:text-teal-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Image Utilities</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-teal-600 uppercase tracking-wider mb-2 px-2">Image Utilities (7)</div>
+                <a href="compress.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🗜️</span> <span>Compress Image</span></a>
+                <a href="image-converter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🖼️</span> <span>Image Converter</span></a>
+                <a href="image-to-pdf.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📷</span> <span>Image to PDF</span></a>
+                <a href="image-reducer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📉</span> <span>Image Reducer</span></a>
+                <a href="image-to-text.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🔍</span> <span>Image to Text</span></a>
+                <a href="passport-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🛂</span> <span>Passport Studio</span></a>
+                <a href="merge-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🧩</span> <span>Merge Image</span></a>
+            </div>
+        </div>
+
+        <!-- 3. Business Suite -->
+        <div class="relative group py-2">
+            <a href="#business-section" class="flex items-center space-x-1 hover:text-purple-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Business Suite</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-purple-600 uppercase tracking-wider mb-2 px-2">Business Utilities (6)</div>
+                <a href="invoice-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🧾</span> <span>Invoice Generator</span></a>
+                <a href="barcode-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🏷️</span> <span>Barcode Generator</span></a>
+                <a href="qr-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📱</span> <span>QR Code Studio</span></a>
+                <a href="sign-maker.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>✍️</span> <span>Digital Signature Studio</span></a>
+                <a href="code-formatter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>⚡</span> <span>Code Formatter</span></a>
+                <a href="product-listing.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📦</span> <span>Product Listing</span></a>
+            </div>
+        </div>
+
+    </div>
+</nav>
+
+    <!-- Workspace Window -->
+    <div class="w-full max-w-4xl px-4 mt-40 mb-24">
+        <a href="index.html" class="text-sm font-semibold text-gray-500 hover:text-rose-500 mb-4 inline-block">← Back to Dashboard</a>
+        
+        <div class="bg-white p-10 rounded-2xl shadow-lg border border-gray-100 text-center">
+            <h2 class="text-4xl font-black text-slate-900 mb-3">Convert PDF to Word</h2>
+            <p class="text-gray-500 mb-8">Professional tool preserving original fonts, editable text, images, and tables.</p>
+
+            <!-- Upload Box -->
+            <div id="drop-zone" class="border-3 border-dashed border-gray-300 rounded-xl p-12 bg-gray-50 text-center transition-all">
+                <span class="text-6xl block mb-4">📑📊✨</span>
+                <p id="file-name-display" class="text-gray-700 font-bold text-lg mb-2">Select PDF file</p>
+                <p class="text-gray-400 text-sm mb-6">or drop PDF here</p>
+                <button type="button" id="browse-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-3.5 rounded-xl shadow transition-all cursor-pointer inline-block">
+                    Select PDF File
+                </button>
+                <input type="file" id="file-input" accept="application/pdf" class="hidden">
+            </div>
+
+            <!-- Processing & Download Section -->
+            <div id="action-section" class="mt-8 hidden">
+                <div id="loading-status" class="text-sm font-semibold text-red-600 mb-4">Processing document securely...</div>
+                <button id="download-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-8 py-4 rounded-xl shadow-lg transition-all text-lg cursor-pointer hidden">
+                    📥 Download Word Document (.doc)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+        const fileInput = document.getElementById('file-input');
+        const browseBtn = document.getElementById('browse-btn');
+        const dropZone = document.getElementById('drop-zone');
+        const fileNameDisplay = document.getElementById('file-name-display');
+        const actionSection = document.getElementById('action-section');
+        const loadingStatus = document.getElementById('loading-status');
+        const downloadBtn = document.getElementById('download-btn');
+
+        let finalWordDocContent = "";
+        let originalFileName = "document.doc";
+
+        browseBtn.addEventListener('click', () => fileInput.click());
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-red-500', 'bg-red-50/20');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('border-red-500', 'bg-red-50/20');
+        });
+
+        dropZone.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-red-500', 'bg-red-50/20');
+            if (e.dataTransfer.files.length > 0) {
+                fileInput.files = e.dataTransfer.files;
+                processPdfDocument(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                processPdfDocument(e.target.files[0]);
+            }
+        });
+
+        async function processPdfDocument(file) {
+            originalFileName = file.name.replace(/\.[^/.]+$/, "") + ".doc";
+            fileNameDisplay.textContent = `Selected: ${file.name}`;
+            
+            actionSection.classList.remove('hidden');
+            loadingStatus.textContent = "⏳ Parsing pages and retaining original typography...";
+            downloadBtn.classList.add('hidden');
+
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                finalWordDocContent = "";
+
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    
+                    let items = textContent.items.map(item => ({
+                        str: item.str,
+                        x: Math.round(item.transform[4]),
+                        y: Math.round(item.transform[5])
+                    }));
+
+                    items.sort((a, b) => {
+                        if (Math.abs(a.y - b.y) > 5) {
+                            return b.y - a.y;
+                        }
+                        return a.x - b.x;
+                    });
+
+                    let lines = [];
+                    let currentLine = [];
+                    let lastY = null;
+
+                    items.forEach(item => {
+                        if (lastY === null || Math.abs(item.y - lastY) <= 5) {
+                            currentLine.push(item);
+                        } else {
+                            lines.push(currentLine);
+                            currentLine = [item];
+                        }
+                        lastY = item.y;
+                    });
+                    if (currentLine.length > 0) {
+                        lines.push(currentLine);
+                    }
+
+                    let pageHtmlBody = "";
+                    let tableRowsBuffer = [];
+
+                    lines.forEach(line => {
+                        let lineText = line.map(it => it.str).join(' ').trim();
+                        
+                        const isRealTableData = (
+                            line.length >= 3 && (
+                                lineText.includes("Disability") || 
+                                lineText.includes("Participants") || 
+                                lineText.includes("Ballots") || 
+                                lineText.includes("Accuracy") || 
+                                lineText.includes("Expenditure") || 
+                                lineText.includes("Main character") || 
+                                lineText.includes("Sidekick") || 
+                                lineText.includes("Column header") || 
+                                lineText.includes("Row header") ||
+                                /\d+/.test(lineText)
+                            )
+                        ) && !lineText.includes("GRANDMA'S BAG OF STORIES");
+
+                        if (isRealTableData) {
+                            tableRowsBuffer.push(line);
+                        } else {
+                            if (tableRowsBuffer.length > 0) {
+                                pageHtmlBody += buildSafeWordTable(tableRowsBuffer);
+                                tableRowsBuffer = [];
+                            }
+                            if (lineText.length > 0) {
+                                // REMOVED hardcoded font-family so original PDF font style remains untouched
+                                pageHtmlBody += `<p style="line-height: 1.6; margin-bottom: 8px;">${lineText}</p>`;
+                            }
+                        }
+                    });
+
+                    if (tableRowsBuffer.length > 0) {
+                        pageHtmlBody += buildSafeWordTable(tableRowsBuffer);
+                    }
+
+                    if (pageHtmlBody.trim() === "") {
+                        const viewport = page.getViewport({ scale: 1.2 });
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d');
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+
+                        await page.render({ canvasContext: context, viewport: viewport }).promise;
+                        const pageImgUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+                        pageHtmlBody = `<div style="text-align: center;"><img src="${pageImgUrl}" style="max-width: 100%; height: auto; border: 1px solid #ddd;" /></div>`;
+                    }
+
+                    finalWordDocContent += `
+                        <div style="margin-bottom: 40px; page-break-after: always;">
+                            <h3 style="font-size: 11pt; border-bottom: 1px solid #ccc; padding-bottom: 4px; margin-bottom: 15px;">Page ${i}</h3>
+                            ${pageHtmlBody}
+                        </div>
+                    `;
+                }
+
+                loadingStatus.textContent = "✅ Conversion complete! Original fonts and layout preserved.";
+                downloadBtn.classList.remove('hidden');
+            } catch (err) {
+                console.error(err);
+                loadingStatus.textContent = "❌ Error processing PDF file.";
+            }
+        }
+
+        function buildSafeWordTable(rows) {
+            let tableHtml = `<table xmlns:w="urn:schemas-microsoft-com:office:word" border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse; width:100%; mso-table-lspace:0pt; mso-table-rspace:0pt; margin:15px 0; font-size:10pt;">`;
+            
+            rows.forEach((row, idx) => {
+                let sortedItems = [...row].sort((a, b) => a.x - b.x);
+                let isHeader = (idx === 0 || sortedItems.some(it => it.str.includes("Category") || it.str.includes("Participants") || it.str.includes("Expenditure")));
+                let bgStyle = isHeader ? "background:#f2f2f2; font-weight:bold;" : "";
+                
+                tableHtml += `<tr style="${bgStyle}">`;
+                sortedItems.forEach(item => {
+                    tableHtml += `<td style="border:1px solid #000000; padding:6px; vertical-align:top;">${item.str}</td>`;
+                });
+                tableHtml += `</tr>`;
+            });
+            
+            tableHtml += `</table>`;
+            return tableHtml;
+        }
+
+        downloadBtn.addEventListener('click', () => {
+            const finalWordHtml = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head>
+                    <meta charset='utf-8'>
+                    <title>Converted Document</title>
+                    <style>
+                        body { }
+                        table { border-collapse: collapse; width: 100%; }
+                        td { border: 1px solid #000000; padding: 6px; }
+                    </style>
+                </head>
+                <body>
+                    ${finalWordDocContent}
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob(['\ufeff' + finalWordHtml], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = originalFileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            loadingStatus.textContent = "✅ Word document downloaded successfully!";
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR & Intelligent Data Extractor | Filesque</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tesseract.js for browser-side OCR recognition -->
+    <script src="https://unpkg.com/tesseract.js@v2.1.0/dist/tesseract.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .step-badge {
+            width: 28px; height: 28px;
+            display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 9999px; background: #0f172a; color: #ffffff;
+            font-size: 12px; font-weight: 900; margin-right: 8px;
+        }
+    </style>
+</head>
+<body class="text-slate-900 min-h-screen flex flex-col items-center antialiased">
+
+<!-- Professional Top Navigation Bar -->
+<nav class="w-full bg-white/95 backdrop-blur-md border-b border-slate-100 px-8 py-4 flex justify-between items-center fixed top-0 left-0 z-50 shadow-xs">
+    <div class="cursor-pointer flex items-center space-x-2 group shrink-0" onclick="window.location.href='index.html'">
+        <span class="text-4xl sm:text-5xl font-black tracking-tighter text-[#0f172a] flex items-center overflow-hidden">
+            <span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span><span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span>
+        </span>
+    </div>
+    <div class="hidden md:flex items-center space-x-8 text-xs font-black uppercase tracking-wider text-slate-700">
+        <a href="index.html" class="hover:text-red-600 transition-colors">Home</a>
+        <div class="relative group py-2">
+            <button class="hover:text-teal-600 transition-colors flex items-center space-x-1 cursor-pointer text-teal-600">
+                <span>Image Utilities & OCR</span>
+                <span class="text-[10px]">▲</span>
+            </button>
+            <div class="absolute top-full right-0 w-64 bg-white border border-slate-100 rounded-2xl shadow-xl py-2 hidden group-hover:block z-50 text-left">
+                <a href="ocr-extraction.html" class="block px-4 py-2 bg-teal-50 text-teal-700 font-black text-xs">OCR Data Extractor</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Centered Professional Workspace Window -->
+<div class="w-full max-w-5xl px-4 mt-40 mb-24 mx-auto flex flex-col items-center">
+    <div class="w-full mb-4">
+        <a href="index.html" class="text-sm font-semibold text-gray-500 hover:text-rose-500 inline-block">← Back to Dashboard</a>
+    </div>
+    
+    <div class="bg-white p-10 rounded-2xl shadow-xl border border-slate-100 text-center w-full space-y-8">
+        <div>
+            <h2 class="text-4xl font-black text-slate-900 mb-2">OCR & Intelligent Data Extraction</h2>
+            <p class="text-gray-500 text-sm">Upload invoices, ID proofs, receipts, or documents to automatically extract structured fields, entities, and formatted tables.</p>
+        </div>
+
+        <!-- STEP 1: Upload Workspace -->
+        <div class="bg-slate-50/50 p-6 rounded-2xl border border-slate-200 text-left">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide flex items-center m-0">
+                    <span class="step-badge">1</span> Upload Document / Scanned Image
+                </h3>
+                <button type="button" onclick="resetWorkspace()" class="text-xs font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-3 py-1.5 rounded-lg transition-all cursor-pointer">🔄 Reset All</button>
+            </div>
+            
+            <label for="ocr-file-input" class="border-3 border-dashed border-gray-300 rounded-xl p-8 bg-white text-center transition-all cursor-pointer hover:border-teal-500 block">
+                <span class="text-5xl block mb-3">📑</span>
+                <p id="file-name-display" class="text-slate-700 font-bold text-base mb-1">Click to browse or drop document image here (PNG, JPG, JPEG)</p>
+                <p class="text-slate-400 text-xs">Enterprise-grade optical recognition with smart field structuring</p>
+                <span class="mt-4 bg-teal-600 hover:bg-teal-700 text-white font-bold px-6 py-3 rounded-xl shadow transition-all inline-block text-xs uppercase tracking-wider">
+                    Select Document
+                </span>
+                <input type="file" id="ocr-file-input" accept="image/*" class="hidden">
+            </label>
+
+            <!-- Document Preview & Mode Selection -->
+            <div id="preview-workspace" class="mt-6 hidden grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-slate-100 rounded-xl p-3 flex items-center justify-center overflow-hidden border border-slate-200 h-48">
+                    <img id="image-preview" class="max-h-full max-w-full object-contain rounded-lg" alt="Document Preview">
+                </div>
+                <div class="md:col-span-2 flex flex-col justify-between space-y-4">
+                    <div>
+                        <p id="file-meta" class="text-xs font-black text-slate-800 mb-2"></p>
+                        <label class="block text-xs font-black text-slate-600 uppercase tracking-wider mb-2">Select Extraction Profile:</label>
+                        <select id="extraction-profile" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-teal-500 shadow-xs">
+                            <option value="auto">Automatic Smart Extraction (General / Universal)</option>
+                            <option value="invoice">Invoice / Bill Parsing (Totals, Tax, Dates, Vendors)</option>
+                            <option value="idcard">ID Card / Certificate Parsing (Names, IDs, Numbers)</option>
+                            <option value="raw">Full Raw Text Dump</option>
+                        </select>
+                    </div>
+                    <button onclick="startAdvancedExtraction()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-black text-xs uppercase tracking-wider py-3.5 rounded-xl shadow transition-all cursor-pointer flex items-center justify-center space-x-2">
+                        <span>RUN INTELLIGENT EXTRACTION 🚀</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 2: Progress & Processing -->
+        <div id="step-2-section" class="bg-slate-50/50 p-6 rounded-2xl border border-slate-200 text-center hidden space-y-4">
+            <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide text-left flex items-center">
+                <span class="step-badge">2</span> Processing Document Extraction
+            </h3>
+            <div id="loading-status" class="text-sm font-bold text-teal-600">Initializing OCR neural engine & parsing fields...</div>
+            <div id="progress-container" class="w-full bg-gray-200 rounded-full h-3 overflow-hidden max-w-md mx-auto">
+                <div id="progress-bar" class="bg-teal-600 h-3 rounded-full transition-all duration-150" style="width: 0%"></div>
+            </div>
+            <div id="progress-percentage" class="text-xs font-black text-teal-600">0%</div>
+        </div>
+
+        <!-- STEP 3: Structured Extraction Results Dashboard -->
+        <div id="step-3-section" class="bg-slate-50/50 p-6 rounded-2xl border border-slate-200 text-left hidden space-y-6">
+            <div class="flex justify-between items-center border-b border-slate-200 pb-4">
+                <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide flex items-center m-0">
+                    <span class="step-badge">3</span> Extracted Structured Data Results
+                </h3>
+                <div class="flex items-center space-x-2">
+                    <button onclick="exportAsJSON()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-4 py-2 rounded-lg transition-all cursor-pointer">📦 Export JSON</button>
+                    <button onclick="exportAsCSV()" class="bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs px-4 py-2 rounded-lg transition-all cursor-pointer">📊 Export CSV</button>
+                    <button onclick="copyAllText()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs px-4 py-2 rounded-lg transition-all cursor-pointer">📋 Copy All</button>
+                </div>
+            </div>
+
+            <!-- Tabs Header -->
+            <div class="flex space-x-4 border-b border-slate-200 text-xs font-black">
+                <button onclick="switchTab('structured')" id="tab-btn-structured" class="pb-2 text-teal-600 border-b-2 border-teal-600 cursor-pointer">Structured Fields</button>
+                <button onclick="switchTab('raw')" id="tab-btn-raw" class="pb-2 text-slate-500 hover:text-slate-800 cursor-pointer">Raw OCR Text</button>
+            </div>
+
+            <!-- Tab Content: Structured Fields View -->
+            <div id="tab-content-structured" class="space-y-4">
+                <div id="structured-fields-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Dynamic key-value cards injected here -->
+                </div>
+            </div>
+
+            <!-- Tab Content: Raw Text View -->
+            <div id="tab-content-raw" class="hidden space-y-2">
+                <textarea id="raw-text-area" rows="10" class="w-full bg-white border border-slate-200 rounded-xl p-4 text-xs font-mono text-slate-800 focus:outline-none focus:border-teal-500 shadow-inner" readonly></textarea>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    let selectedFile = null;
+    let extractedRawText = "";
+    let extractedFields = {};
+
+    const ocrFileInput = document.getElementById('ocr-file-input');
+    const fileNameDisplay = document.getElementById('file-name-display');
+    const previewWorkspace = document.getElementById('preview-workspace');
+    const imagePreview = document.getElementById('image-preview');
+    const fileMeta = document.getElementById('file-meta');
+    const extractionProfile = document.getElementById('extraction-profile');
+    const step2Section = document.getElementById('step-2-section');
+    const step3Section = document.getElementById('step-3-section');
+    const loadingStatus = document.getElementById('loading-status');
+    const progressBar = document.getElementById('progress-bar');
+    const progressPercentage = document.getElementById('progress-percentage');
+    const progressContainer = document.getElementById('progress-container');
+    const rawTextArea = document.getElementById('raw-text-area');
+    const structuredFieldsGrid = document.getElementById('structured-fields-grid');
+
+    ocrFileInput.addEventListener('change', (e) => {
+        if(e.target.files.length > 0) {
+            selectedFile = e.target.files[0];
+            const imageUrl = URL.createObjectURL(selectedFile);
+            
+            imagePreview.src = imageUrl;
+            previewWorkspace.classList.remove('hidden');
+            step2Section.classList.add('hidden');
+            step3Section.classList.add('hidden');
+            
+            fileNameDisplay.textContent = `Selected Document: ${selectedFile.name}`;
+            fileMeta.innerHTML = `<strong>File Name:</strong> ${selectedFile.name}<br><strong>Size:</strong> ${(selectedFile.size / 1024).toFixed(1)} KB`;
+        }
+    });
+
+    function resetWorkspace() {
+        selectedFile = null;
+        ocrFileInput.value = "";
+        previewWorkspace.classList.add('hidden');
+        step2Section.classList.add('hidden');
+        step3Section.classList.add('hidden');
+        fileNameDisplay.textContent = "Click to browse or drop document image here (PNG, JPG, JPEG)";
+    }
+
+    async function startAdvancedExtraction() {
+        if(!selectedFile) return;
+        previewWorkspace.classList.add('hidden');
+        step2Section.classList.remove('hidden');
+        step3Section.classList.add('hidden');
+        progressContainer.classList.remove('hidden');
+        progressPercentage.classList.remove('hidden');
+        loadingStatus.textContent = "⏳ Initializing Tesseract neural OCR engine...";
+
+        try {
+            const worker = Tesseract.createWorker();
+            await worker.load();
+            await worker.loadLanguage('eng');
+            await worker.initialize('eng');
+
+            loadingStatus.textContent = "🔍 Scanning and parsing document content...";
+            
+            let currentProg = 15;
+            const progInterval = setInterval(() => {
+                if(currentProg < 85) {
+                    currentProg += 20;
+                    progressBar.style.width = currentProg + '%';
+                    progressPercentage.textContent = currentProg + '%';
+                }
+            }, 250);
+
+            const { data: { text } } = await worker.recognize(selectedFile);
+            await worker.terminate();
+
+            clearInterval(progInterval);
+            progressBar.style.width = '100%';
+            progressPercentage.textContent = '100%';
+
+            extractedRawText = text.trim();
+            parseEnhancedData(extractedRawText, extractionProfile.value);
+
+            setTimeout(() => {
+                step2Section.classList.add('hidden');
+                step3Section.classList.remove('hidden');
+            }, 400);
+
+        } catch (err) {
+            console.error("OCR Extraction Error:", err);
+            loadingStatus.textContent = "❌ Error processing document extraction.";
+        }
+    }
+
+   function parseEnhancedData(text, profile) {
+        rawTextArea.value = text ? text : "No text recognized.";
+        extractedFields = {};
+
+        const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+        
+        // 1. Precise Business Name Extraction
+        let companyName = "Not Detected";
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i];
+            let upper = line.toUpperCase();
+            if (upper.includes("ENTERPRISES") || upper.includes("LTD") || upper.includes("PVT") || upper.includes("LLP") || upper.includes("CORP") || upper.includes("STORE")) {
+                let cleanLine = line.split(/Invoice|GSTIN|Date/i)[0].trim();
+                if (cleanLine.length > 2) {
+                    companyName = cleanLine;
+                    break;
+                }
+            }
+        }
+
+        // 2. Bill To / Customer Parser
+        let billedTo = "Not Detected";
+        for (let i = 0; i < lines.length; i++) {
+            if (lines[i].toUpperCase().includes("BILLED TO") || lines[i].toUpperCase().includes("BILL TO")) {
+                if (i + 1 < lines.length) {
+                    billedTo = lines[i + 1].replace(/^Client[:\s]*/i, '').trim();
+                }
+                break;
+            }
+        }
+
+        // 3. Bank Details Parsers
+        let bankName = "Not Detected";
+        let bankAcc = "Not Detected";
+        let bankIfsc = "Not Detected";
+
+        for (let line of lines) {
+            let upper = line.toUpperCase();
+            if (upper.includes("BANK") && !upper.includes("DETAILS")) {
+                bankName = line.replace(/Bank Name[:\s]*/i, '').trim();
+            }
+            if (upper.includes("A/C") || upper.includes("ACCOUNT") || upper.includes("ACC NO")) {
+                let matchAcc = line.match(/\b\d{9,18}\b/);
+                if (matchAcc) bankAcc = matchAcc[0];
+            }
+            if (upper.includes("IFSC")) {
+                let matchIfsc = line.match(/\b[A-Z]{4}0[A-Z0-9]{6}\b/i);
+                if (matchIfsc) bankIfsc = matchIfsc[0].toUpperCase();
+            }
+        }
+
+        // 4. Entities & Patterns
+        const emails = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g) || [];
+        const phones = text.match(/(\+\d{1,3}[- ]?)?\b\d{10}\b/g) || [];
+        const dates = text.match(/\b\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}\b/g) || [];
+        const amounts = text.match(/(?:[₹$€£]|Rs\.?)\s*[\d,]+(\.\d{2})?|\b\d{1,3}(?:,\d{3})+(?:\.\d{2})?\b/g) || [];
+
+        // 5. Flexible GSTIN Matcher
+        let gstinFound = "Not Detected";
+        const gstinRegex = /\b\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1}\b/gi;
+        const strictGstin = text.match(gstinRegex);
+        if (strictGstin && strictGstin.length > 0) {
+            gstinFound = [...new Set(strictGstin)].join(', ');
+        } else {
+            const potentialGstins = text.match(/\b\d{2}[A-Z0-9]{13}\b/g);
+            if (potentialGstins && potentialGstins.length > 0) {
+                gstinFound = potentialGstins[0];
+            }
+        }
+
+        // 6. Invoice Number Matcher
+        let invoiceNo = "Not Detected";
+        const invMatch = text.match(/(?:Invoice\s*(?:No|Number)?[:#]?\s*)([A-Za-z0-9\/\-]+)/i);
+        if (invMatch) {
+            invoiceNo = invMatch[1];
+        } else {
+            const slashPattern = text.match(/\b[A-Z]+\/\d{4}\/\d+\b/);
+            if (slashPattern) invoiceNo = slashPattern[0];
+        }
+
+        extractedFields['Document Type'] = profile.toUpperCase();
+        extractedFields['Company / Business Name'] = companyName;
+        extractedFields['Invoice Number'] = invoiceNo;
+        extractedFields['Billed To (Customer)'] = billedTo;
+        extractedFields['GSTIN Identified'] = gstinFound;
+        extractedFields['Bank Name'] = bankName;
+        extractedFields['A/C Number'] = bankAcc;
+        extractedFields['IFSC Code'] = bankIfsc;
+        extractedFields['Detected Emails'] = emails.length > 0 ? [...new Set(emails)].join(', ') : 'None Found';
+        extractedFields['Detected Phones'] = phones.length > 0 ? [...new Set(phones)].join(', ') : 'None Found';
+        extractedFields['Detected Dates'] = dates.length > 0 ? [...new Set(dates)].join(', ') : 'None Found';
+        extractedFields['Extracted Amounts / Totals'] = amounts.length > 0 ? [...new Set(amounts)].join(' | ') : 'None Found';
+
+        let html = '';
+        for (const [key, val] of Object.entries(extractedFields)) {
+            html += `
+                <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-xs flex flex-col justify-between">
+                    <span class="text-[11px] font-black text-teal-700 uppercase tracking-wider">${key}</span>
+                    <span class="text-xs font-bold text-slate-800 mt-1 break-words">${val}</span>
+                </div>
+            `;
+        }
+        structuredFieldsGrid.innerHTML = html;
+    }
+
+    function switchTab(tabName) {
+        const btnStruct = document.getElementById('tab-btn-structured');
+        const btnRaw = document.getElementById('tab-btn-raw');
+        const contentStruct = document.getElementById('tab-content-structured');
+        const contentRaw = document.getElementById('tab-content-raw');
+
+        if(tabName === 'structured') {
+            btnStruct.className = "pb-2 text-teal-600 border-b-2 border-teal-600 cursor-pointer";
+            btnRaw.className = "pb-2 text-slate-500 hover:text-slate-800 cursor-pointer";
+            contentStruct.classList.remove('hidden');
+            contentRaw.classList.add('hidden');
+        } else {
+            btnRaw.className = "pb-2 text-teal-600 border-b-2 border-teal-600 cursor-pointer";
+            btnStruct.className = "pb-2 text-slate-500 hover:text-slate-800 cursor-pointer";
+            contentRaw.classList.remove('hidden');
+            contentStruct.classList.add('hidden');
+        }
+    }
+
+    function copyAllText() {
+        rawTextArea.select();
+        document.execCommand('copy');
+        alert("Raw OCR text copied to clipboard!");
+    }
+
+    function exportAsJSON() {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ fields: extractedFields, rawText: extractedRawText }, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", "extracted-ocr-data.json");
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    }
+
+    function exportAsCSV() {
+        let csvContent = "data:text/csv;charset=utf-8,Field,Value\n";
+        for (const [key, val] of Object.entries(extractedFields)) {
+            csvContent += `"${key}","${String(val).replace(/"/g, '""')}"\n`;
+        }
+        const encodedUri = encodeURI(csvContent);
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", encodedUri);
+        downloadAnchor.setAttribute("download", "extracted-ocr-data.csv");
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    }
+</script>
+</body>
+</html>

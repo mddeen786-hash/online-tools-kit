@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passport Photo Studio | iLoveFiles</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col items-center">
+
+<!-- Top Navigation Bar with Creative Animated Brand & Nav Links -->
+<nav class="w-full bg-white/90 backdrop-blur-md border-b border-slate-100 px-8 py-5 flex justify-between items-center fixed top-0 left-0 z-50 shadow-xs">
+    
+    <!-- Creative Animated Brand Name -->
+    <div class="cursor-pointer flex items-center space-x-2 group shrink-0" onclick="window.location.href='index.html'">
+        <span class="text-4xl sm:text-7xl font-black tracking-tighter text-[#0f172a] flex items-center overflow-hidden">
+            <span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span><span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span>
+        </span>
+        <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping ml-1 hidden sm:inline-block"></span>
+    </div>
+    
+    <!-- Navbar Links -->
+    <div class="hidden lg:flex items-center space-x-9 text-base font-black text-slate-800 tracking-wide ml-auto">
+        <a href="index.html" class="hover:text-red-600 transition-colors uppercase">Home</a>
+
+        <!-- 1. PDF Core Tools -->
+        <div class="relative group py-2">
+            <a href="#pdf-section" class="flex items-center space-x-1 hover:text-red-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>PDF Core Tools</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-red-600 uppercase tracking-wider mb-2 px-2">PDF Utilities (7)</div>
+                <a href="pdf-to-word.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📄</span> <span>PDF to Word</span></a>
+                <a href="pdf-to-excel.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📊</span> <span>PDF to Excel</span></a>
+                <a href="merge.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💼</span> <span>Merge PDF</span></a>
+                <a href="pdf-splitter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>✂️</span> <span>PDF Splitter</span></a>
+                <a href="pdf-organizer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📑</span> <span>PDF Organizer</span></a>
+                <a href="pdf-watermark.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💧</span> <span>PDF Watermark</span></a>
+                <a href="pdf-to-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>🖼️</span> <span>PDF to Image</span></a>
+            </div>
+        </div>
+
+        <!-- 2. Image Utilities -->
+        <div class="relative group py-2">
+            <a href="#image-section" class="flex items-center space-x-1 hover:text-teal-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Image Utilities</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-teal-600 uppercase tracking-wider mb-2 px-2">Image Utilities (7)</div>
+                <a href="compress.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🗜️</span> <span>Compress Image</span></a>
+                <a href="image-converter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🖼️</span> <span>Image Converter</span></a>
+                <a href="image-to-pdf.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📷</span> <span>Image to PDF</span></a>
+                <a href="image-reducer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📉</span> <span>Image Reducer</span></a>
+                <a href="image-to-text.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🔍</span> <span>Image to Text</span></a>
+                <a href="passport-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🛂</span> <span>Passport Studio</span></a>
+                <a href="merge-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🧩</span> <span>Merge Image</span></a>
+            </div>
+        </div>
+
+        <!-- 3. Business Suite -->
+        <div class="relative group py-2">
+            <a href="#business-section" class="flex items-center space-x-1 hover:text-purple-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Business Suite</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-purple-600 uppercase tracking-wider mb-2 px-2">Business Utilities (6)</div>
+                <a href="invoice-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🧾</span> <span>Invoice Generator</span></a>
+                <a href="barcode-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🏷️</span> <span>Barcode Generator</span></a>
+                <a href="qr-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📱</span> <span>QR Code Studio</span></a>
+                <a href="sign-maker.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>✍️</span> <span>Digital Signature Studio</span></a>
+                <a href="code-formatter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>⚡</span> <span>Code Formatter</span></a>
+                <a href="product-listing.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📦</span> <span>Product Listing</span></a>
+            </div>
+        </div>
+
+    </div>
+</nav>
+
+    <!-- Workspace Window -->
+    <div class="w-full max-w-5xl px-4 mt-36 mb-24 no-print">
+        <div class="flex justify-between items-center mb-4">
+            <a href="index.html" class="text-sm font-semibold text-gray-500 hover:text-rose-500">← Back to Dashboard</a>
+            
+            <!-- Bada aur Prominent Start New Photo Button -->
+            <button id="new-photo-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-6 py-3 rounded-xl shadow-md transition-all text-sm flex items-center space-x-2 hidden cursor-pointer">
+                <span class="text-lg">🔄</span> <span>Start New Photo / Reset Studio</span>
+            </button>
+        </div>
+        
+        <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+            <h2 class="text-3xl font-black text-slate-900 text-center mb-2">Passport Photo Studio Pro (300 DPI Print HD)</h2>
+            <p class="text-gray-500 text-center mb-8">Professional Studio: Cloud AI background removal, color palette, and perfect cutting grid lines.</p>
+
+            <!-- Editor Options Layout -->
+            <div id="editor-panel" class="mt-4 border-t border-gray-100 pt-6 hidden space-y-6">
+                
+                <!-- Cloud API Background Removal Bar -->
+                <div class="bg-indigo-50 border border-indigo-100 p-4 rounded-xl flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <h4 class="font-bold text-indigo-900 text-sm">🔥 Cutout.pro Level Cloud AI Remover</h4>
+                        <p class="text-xs text-indigo-700">Removes background cleanly from hair, beard, and clothes without any spots.</p>
+                    </div>
+                    <button id="cloud-remove-bg-btn" class="bg-gradient-to-r from-rose-600 to-indigo-600 hover:from-rose-700 hover:to-indigo-700 text-white font-bold px-6 py-2.5 rounded-xl shadow transition-all text-sm flex items-center space-x-2 cursor-pointer">
+                        <span>✨</span> <span>Remove Background Pro</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">1. Background Color Palette</label>
+                            <div class="flex space-x-2">
+                                <select id="bg-color-select" class="flex-1 p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm font-medium">
+                                    <option value="#ffffff">Pure White</option>
+                                    <option value="#a5cbf7">Light Blue (Govt Form)</option>
+                                    <option value="#3b82f6">Royal Blue</option>
+                                    <option value="#f87171" selected>Soft Red</option>
+                                    <option value="custom">Custom Color Palette</option>
+                                </select>
+                                <input type="color" id="custom-color-picker" value="#f87171" class="w-12 h-12 p-1 bg-white border border-gray-200 rounded-xl cursor-pointer shadow-sm" title="Choose Custom Color">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">2. Passport Size Preset</label>
+                            <select id="size-preset" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm font-medium">
+                                <option value="3.5x4.5">Standard Indian Passport (3.5 x 4.5 cm)</option>
+                                <option value="2x2">US Visa Layout (2 x 2 inch)</option>
+                                <option value="3.5x3.5">Indian PAN Card Size (3.5 x 3.5 cm)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">3. Zoom & Face Position</label>
+                            <input type="range" id="zoom-slider" min="50" max="250" value="100" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-rose-600">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">4. Total Copies & Grid Layout</label>
+                            <select id="copies-count" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm font-medium">
+                                <!-- Dynamic options populated by JS based on size preset -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Rendering Box Preview -->
+                    <div class="md:col-span-2 flex flex-col items-center justify-center bg-slate-100 p-6 rounded-xl border border-gray-200 relative min-h-[350px]">
+                        <span id="status-badge" class="text-xs font-bold text-gray-500 uppercase mb-4 absolute top-2 left-2">Live Studio Preview (Original)</span>
+                        <div id="preview-container" class="shadow-xl border border-slate-300 overflow-hidden relative bg-white" style="width: 140px; height: 180px;">
+                            <canvas id="studio-canvas" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 origin-center cursor-move"></canvas>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-3">Click and drag inside preview to reposition photo</p>
+                    </div>
+                </div>
+
+                <button id="print-btn" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black py-4 rounded-xl shadow-md transition-all text-lg cursor-pointer">
+                    🖨️ Generate & Print A4 Sheet with Grid Lines
+                </button>
+            </div>
+
+            <!-- Upload Zone Matrix -->
+            <div id="drop-zone" class="border-3 border-dashed border-gray-300 rounded-xl p-12 bg-gray-50 text-center relative">
+                <span class="text-5xl block mb-3">📁</span>
+                <p class="text-gray-700 font-bold text-lg mb-1">Upload Portrait Photo</p>
+                <p class="text-gray-400 text-sm mb-4">Upload photo to start cloud professional background removal.</p>
+                <button type="button" id="browse-btn" class="bg-rose-600 text-white font-bold px-6 py-3 rounded-xl shadow hover:bg-rose-700 transition-all cursor-pointer inline-block text-sm">
+                    Select Photo File
+                </button>
+                <input type="file" id="file-input" accept="image/*" class="hidden">
+            </div>
+
+            <div id="cloud-loading-status" class="mt-4 text-center text-sm font-semibold text-indigo-600 hidden"></div>
+        </div>
+    </div>
+
+    <!-- Hidden Grid Layer for Printer -->
+    <div id="a4-print-sheet" class="print-only bg-white"></div>
+
+    <!-- Strict Print Styles with Dynamic Columns & Solid Cutting Grid Lines -->
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 10mm 8mm !important; 
+        }
+        @media print {
+            body, .bg-slate-50 { background: white !important; margin: 0 !important; padding: 0 !important; }
+            .no-print, nav { display: none !important; }
+            .print-only { display: block !important; }
+            
+            #a4-print-sheet {
+                width: 194mm;
+                box-sizing: border-box;
+                display: grid !important;
+                gap: 0.8mm 0.8mm !important; 
+                -webkit-print-color-adjust: exact !important; 
+                print-color-adjust: exact !important;
+            }
+            .print-photo-box {
+                position: relative;
+                overflow: hidden;
+                box-sizing: border-box;
+                page-break-inside: avoid;
+                border: 1px solid #000000 !important;
+                background: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .print-photo-box canvas {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 100% !important;
+                height: 100% !important;
+                image-rendering: -webkit-optimize-contrast !important;
+                image-rendering: crisp-edges !important;
+            }
+        }
+        @media screen { .print-only { display: none !important; } }
+    </style>
+
+    <script>
+        const fileInput = document.getElementById('file-input');
+        const browseBtn = document.getElementById('browse-btn');
+        const dropZone = document.getElementById('drop-zone');
+        const editorPanel = document.getElementById('editor-panel');
+        const previewContainer = document.getElementById('preview-container');
+        const bgColorSelect = document.getElementById('bg-color-select');
+        const customColorPicker = document.getElementById('custom-color-picker');
+        const sizePreset = document.getElementById('size-preset');
+        const zoomSlider = document.getElementById('zoom-slider');
+        const copiesCount = document.getElementById('copies-count');
+        const printBtn = document.getElementById('print-btn');
+        const cloudRemoveBgBtn = document.getElementById('cloud-remove-bg-btn');
+        const newPhotoBtn = document.getElementById('new-photo-btn');
+        const a4PrintSheet = document.getElementById('a4-print-sheet');
+        const cloudLoadingStatus = document.getElementById('cloud-loading-status');
+        const statusBadge = document.getElementById('status-badge');
+        
+        const canvas = document.getElementById('studio-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let originalImageElement = new Image();
+        let activeWorkingCanvas = document.createElement('canvas');
+        let targetBgColor = "#f87171";
+        let isDragging = false;
+        
+        let imgXOffset = 0;
+        let imgYOffset = 0;
+        let startDragX = 0;
+        let startDragY = 0;
+
+        function updateCopiesOptions() {
+            const size = sizePreset.value;
+            copiesCount.innerHTML = "";
+            
+            if (size === '2x2') {
+                copiesCount.innerHTML = `
+                    <option value="4">4 Photos Grid</option>
+                    <option value="8">8 Photos Grid</option>
+                    <option value="16" selected>16 Photos Grid</option>
+                `;
+            } else {
+                copiesCount.innerHTML = `
+                    <option value="4">4 Photos Grid</option>
+                    <option value="8">8 Photos Grid</option>
+                    <option value="16">16 Photos Grid</option>
+                    <option value="24">24 Photos Grid</option>
+                    <option value="32" selected>32 Photos Grid (Full A4 Sheet)</option>
+                `;
+            }
+        }
+
+        sizePreset.addEventListener('change', () => {
+            updateCopiesOptions();
+            renderStudioView();
+        });
+
+        updateCopiesOptions();
+
+        browseBtn.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            if(e.target.files.length === 0) return;
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(event) {
+                originalImageElement.src = event.target.result;
+                originalImageElement.onload = function() {
+                    activeWorkingCanvas.width = originalImageElement.width;
+                    activeWorkingCanvas.height = originalImageElement.height;
+                    const wCtx = activeWorkingCanvas.getContext('2d');
+                    wCtx.drawImage(originalImageElement, 0, 0);
+
+                    dropZone.classList.add('hidden');
+                    editorPanel.classList.remove('hidden');
+                    newPhotoBtn.classList.remove('hidden');
+                    imgXOffset = 0;
+                    imgYOffset = 0;
+                    zoomSlider.value = 100;
+                    statusBadge.textContent = "Live Studio Preview (Original)";
+                    renderStudioView();
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+
+        newPhotoBtn.addEventListener('click', () => {
+            fileInput.value = "";
+            editorPanel.classList.add('hidden');
+            newPhotoBtn.classList.add('hidden');
+            dropZone.classList.remove('hidden');
+            cloudLoadingStatus.classList.add('hidden');
+        });
+
+        cloudRemoveBgBtn.addEventListener('click', async () => {
+            cloudLoadingStatus.classList.remove('hidden');
+            cloudLoadingStatus.innerHTML = "✨ Processing professional background removal via Cloud AI...";
+
+            try {
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = originalImageElement.width;
+                tempCanvas.height = originalImageElement.height;
+                tempCanvas.getContext('2d').drawImage(originalImageElement, 0, 0);
+                
+                tempCanvas.toBlob(async (blob) => {
+                    const formData = new FormData();
+                    formData.append('image_file', blob, 'photo.jpg');
+                    formData.append('size', 'auto');
+
+                    const apiKey = "hiKEsbZArnK8g4kkV1fc7VXg"; 
+
+                    const response = await fetch('https://api.remove.bg/v1.0/removebg', {
+                        method: 'POST',
+                        headers: { 'X-Api-Key': apiKey },
+                        body: formData
+                    });
+
+                    if (!response.ok) throw new Error('Cloud API processing failed');
+
+                    const resultBlob = await response.blob();
+                    const imageUrl = URL.createObjectURL(resultBlob);
+                    
+                    const cleanedImage = new Image();
+                    cleanedImage.src = imageUrl;
+                    cleanedImage.onload = function() {
+                        activeWorkingCanvas.width = cleanedImage.width;
+                        activeWorkingCanvas.height = cleanedImage.height;
+                        const wCtx = activeWorkingCanvas.getContext('2d');
+                        wCtx.clearRect(0, 0, activeWorkingCanvas.width, activeWorkingCanvas.height);
+                        wCtx.drawImage(cleanedImage, 0, 0);
+
+                        cloudLoadingStatus.classList.add('hidden');
+                        statusBadge.textContent = "Live Studio Preview (Pro Cloud Removed)";
+                        renderStudioView();
+                    }
+                }, 'image/jpeg');
+
+            } catch(err) {
+                console.error(err);
+                cloudLoadingStatus.innerHTML = "❌ Error connecting to Cloud AI API. Please check your internet connection or API credits.";
+            }
+        });
+
+        bgColorSelect.addEventListener('change', () => { 
+            if (bgColorSelect.value !== 'custom') { 
+                targetBgColor = bgColorSelect.value; 
+                customColorPicker.value = targetBgColor; 
+            } else { 
+                targetBgColor = customColorPicker.value; 
+            }
+            renderStudioView(); 
+        });
+
+        customColorPicker.addEventListener('input', () => { 
+            targetBgColor = customColorPicker.value; 
+            bgColorSelect.value = 'custom'; 
+            renderStudioView(); 
+        });
+
+        zoomSlider.addEventListener('input', renderStudioView);
+
+        let currentWidth = 140, currentHeight = 180;
+
+        function renderStudioView() {
+            const size = sizePreset.value;
+            if(size === '3.5x4.5') { currentWidth = 140; currentHeight = 180; } 
+            else if(size === '3.5x3.5') { currentWidth = 140; currentHeight = 140; } 
+            else if(size === '2x2') { currentWidth = 160; currentHeight = 160; }
+            
+            previewContainer.style.width = `${currentWidth}px`;
+            previewContainer.style.height = `${currentHeight}px`;
+
+            canvas.width = currentWidth;
+            canvas.height = currentHeight;
+
+            ctx.fillStyle = targetBgColor;
+            ctx.fillRect(0, 0, currentWidth, currentHeight);
+
+            const aspectImageRatio = originalImageElement.height / originalImageElement.width;
+            const zoomVal = zoomSlider.value / 100;
+            
+            const targetW = currentWidth * zoomVal;
+            const targetH = targetW * aspectImageRatio;
+
+            const baseLeft = (currentWidth - targetW) / 2;
+            const baseTop = (currentHeight - targetH) / 2;
+            
+            const finalX = baseLeft + imgXOffset;
+            const finalY = baseTop + imgYOffset;
+            
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(activeWorkingCanvas, finalX, finalY, targetW, targetH);
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startDragX = e.clientX;
+            startDragY = e.clientY;
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const deltaX = e.clientX - startDragX;
+            const deltaY = e.clientY - startDragY;
+            
+            imgXOffset += deltaX;
+            imgYOffset += deltaY;
+            
+            startDragX = e.clientX;
+            startDragY = e.clientY;
+            
+            renderStudioView();
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        printBtn.addEventListener('click', () => {
+            a4PrintSheet.innerHTML = "";
+            const totalCopies = parseInt(copiesCount.value);
+            const size = sizePreset.value;
+            
+            let wMm = "35mm", hMm = "45mm";
+            let cols = 6; 
+
+            if(size === '3.5x4.5') { 
+                wMm = "35mm"; hMm = "45mm"; cols = 6; 
+            } else if(size === '3.5x3.5') { 
+                wMm = "35mm"; hMm = "35mm"; cols = 6; 
+            } else if(size === '2x2') { 
+                wMm = "51mm"; hMm = "51mm"; cols = 4; 
+            }
+
+            a4PrintSheet.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+
+            const printMultiplier = 4; 
+            const printCanvasW = currentWidth * printMultiplier;
+            const printCanvasH = currentHeight * printMultiplier;
+
+            for(let i = 0; i < totalCopies; i++) {
+                const containerBox = document.createElement('div');
+                containerBox.className = "print-photo-box";
+                containerBox.style.width = wMm;
+                containerBox.style.height = hMm;
+
+                const printCanvas = document.createElement('canvas');
+                printCanvas.width = printCanvasW;
+                printCanvas.height = printCanvasH;
+                
+                const printCtx = printCanvas.getContext('2d');
+                printCtx.scale(printMultiplier, printMultiplier);
+
+                printCtx.fillStyle = targetBgColor;
+                printCtx.fillRect(0, 0, currentWidth, currentHeight);
+                
+                const aspectImageRatio = originalImageElement.height / originalImageElement.width;
+                const zoomVal = zoomSlider.value / 100;
+                const targetW = currentWidth * zoomVal;
+                const targetH = targetW * aspectImageRatio;
+                const baseLeft = (currentWidth - targetW) / 2;
+                const baseTop = (currentHeight - targetH) / 2;
+                const finalX = baseLeft + imgXOffset;
+                const finalY = baseTop + imgYOffset;
+
+                printCtx.imageSmoothingEnabled = true;
+                printCtx.imageSmoothingQuality = 'high';
+                printCtx.drawImage(activeWorkingCanvas, finalX, finalY, targetW, targetH);
+                
+                containerBox.appendChild(printCanvas);
+                a4PrintSheet.appendChild(containerBox);
+            }
+            window.print();
+        });
+    </script>
+</body>
+</html>
