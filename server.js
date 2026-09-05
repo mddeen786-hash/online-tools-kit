@@ -443,10 +443,32 @@ function parseComplexPDFTables(items) {
 async function runOCRFallback(inputPath) {
   const rows = [];
   if (!Tesseract) return rows;
+  let worker = null;
   try {
-    const worker = await Tesseract.createWorker('eng', 1);
-    const { data } = await worker.recognize(inputPath);
-    await worker.terminate();
+    let imageToRecognize = inputPath;
+    const ext = path.extname(inputPath).toLowerCase();
+    
+    // If input is a PDF, render page 1 to an image buffer first using pdfjs + canvas
+    if (ext === '.pdf') {
+      try {
+        const data = new Uint8Array(fs.readFileSync(inputPath));
+        const pdf = await pdfjsLib.getDocument({ data }).promise;
+        if (pdf.numPages > 0) {
+          const page = await pdf.getPage(1);
+          const viewport = page.getViewport({ scale: 2.0 });
+          const canvas = createCanvas(viewport.width, viewport.height);
+          const ctx = canvas.getContext('2d');
+          await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+          imageToRecognize = canvas.toBuffer('image/jpeg', { quality: 0.9 });
+        }
+      } catch (pdfErr) {
+        console.log('PDF page render for OCR failed:', pdfErr.message);
+        return rows;
+      }
+    }
+
+    worker = await Tesseract.createWorker('eng', 1);
+    const { data } = await worker.recognize(imageToRecognize);
     if (data && data.text) {
       const lines = data.text.split('\n');
       lines.forEach(l => {
@@ -454,7 +476,13 @@ async function runOCRFallback(inputPath) {
         if (cols.length > 0) rows.push(cols);
       });
     }
-  } catch (e) { console.log('OCR Error:', e.message); }
+  } catch (e) {
+    console.log('OCR Error:', e.message);
+  } finally {
+    if (worker) {
+      try { await worker.terminate(); } catch (_) {}
+    }
+  }
   return rows;
 }
 
@@ -1512,17 +1540,7 @@ app.post('/api/workflow/execute/:id', async (req, res) => {
 });
 
 // ========== Frontend & Workflow Builder UI with Gorgeous Multi-Color Studio Modal & Live Preview ==========
-app.get('/', (req, res) => {
-  const indexPath = path.join(__dirname, 'public', 'index.html');
-  if (fs.existsSync(indexPath)) {
-    return res.sendFile(indexPath);
-  }
-  const rootIndex = path.join(__dirname, 'index.html');
-  if (fs.existsSync(rootIndex)) {
-    return res.sendFile(rootIndex);
-  }
-  res.send('<!DOCTYPE html><html><head><title>Filesque</title><style>body{font-family:system-ui,sans-serif;text-align:center;padding:4rem 2rem;background:#f8fafc;color:#0f172a;}.card{background:white;padding:2.5rem;border-radius:1rem;max-width:500px;margin:0 auto;box-shadow:0 4px 20px rgba(0,0,0,0.05);border:1px solid #e2e8f0;}.btn{background:#dc2626;color:white;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:bold;display:inline-block;margin-top:1.5rem;}</style></head><body><div class="card"><h1>⚡ Filesque Live</h1><p style="color:#64748b;margin-top:0.8rem;">Please upload the <b>public</b> folder (with <code>index.html</code>) to GitHub.</p><a href="/workflow-builder" class="btn">⚡ Open Workflow Builder Page</a></div></body></html>');
-});
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
 app.get('/workflow-builder', (req, res) => {
   const toolsListHTML = toolRegistry.map(tool => {
@@ -1532,15 +1550,12 @@ app.get('/workflow-builder', (req, res) => {
       '</div>';
   }).join('');
 
-  res.send('<!DOCTYPE html><html><head><title>Workflow Builder - Filesque</title>' +
-    '<script src="https://cdn.tailwindcss.com"></script>' +
-    '<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">' +
-    '<style>' +
+  res.send('<!DOCTYPE html><html><head><title>Workflow Builder - Filesque</title><style>' +
     '*{margin:0;padding:0;box-sizing:border-box}' +
     'body{font-family:"Plus Jakarta Sans",sans-serif;background:#f8fafc;min-height:100vh}' +
-    '.navbar{background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-bottom:1px solid #f1f5f9;padding:1rem 2.5rem;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,0.03)}' +
-    '.back-link{color:#dc2626;text-decoration:none;font-weight:800;font-size:0.95rem;padding:0.6rem 1.2rem;border-radius:0.75rem;background:#fef2f2;border:1px solid #fecaca;transition:all 0.2s;display:flex;align-items:center;gap:0.4rem}' +
-    '.back-link:hover{background:#dc2626;color:white;transform:translateX(-3px);box-shadow:0 4px 12px rgba(220,38,38,0.2)}' +
+    '.navbar{background:white;border-bottom:1px solid #e2e8f0;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center}' +
+    '.logo{font-size:1.8rem;font-weight:900;color:#0f172a}.logo span{color:#dc2626}' +
+    '.back-link{color:#dc2626;text-decoration:none;font-weight:700}' +
     '.container{display:flex;gap:2rem;max-width:1400px;margin:2rem auto;padding:0 1rem}' +
     '.panel{background:white;border-radius:1rem;box-shadow:0 2px 10px rgba(0,0,0,0.05);padding:1.5rem}' +
     '.tools-panel{flex:1;max-height:80vh;overflow-y:auto}.workflow-panel{flex:2}' +
@@ -1560,7 +1575,7 @@ app.get('/workflow-builder', (req, res) => {
     '.file-upload-section{margin-top:1.5rem;padding:1rem;background:#f8fafc;border-radius:0.5rem}' +
     '.file-upload-section input[type="file"]{margin-top:0.5rem}' +
     '</style></head><body>' +
-    '<div class="navbar"><div class="cursor-pointer flex items-center space-x-2 group shrink-0" onclick="location.href=\'/\'"><span class="text-5xl font-black tracking-tighter text-[#0f172a] flex items-center overflow-hidden"><span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span><span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span></span><span class="w-3 h-3 rounded-full bg-red-600 animate-ping ml-1 inline-block"></span></div><a href="/" class="back-link">&larr; Back to Home</a></div>' +
+    '<div class="navbar"><div class="logo">Files<span>que</span></div><a href="/" class="back-link">← Back to Home</a></div>' +
     '<div class="container">' +
     '<div class="panel tools-panel"><div class="panel-title">🛠️ Tools (' + toolRegistry.length + ')</div>' + toolsListHTML + '</div>' +
     '<div class="panel workflow-panel"><div class="panel-title">📋 Your Workflow</div>' +
