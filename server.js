@@ -29,6 +29,7 @@ const tempDir = path.join(__dirname, 'temp');
 if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname));
 
 const toolRegistry = [
   { id: 'pdf-to-word',         name: 'PDF to Word',             icon: '📄', file: 'pdf-to-word.html', outputExt: '.doc' },
@@ -1540,7 +1541,13 @@ app.post('/api/workflow/execute/:id', async (req, res) => {
 });
 
 // ========== Frontend & Workflow Builder UI with Gorgeous Multi-Color Studio Modal & Live Preview ==========
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.get('/', (req, res) => {
+  const publicIndex = path.join(__dirname, 'public', 'index.html');
+  if (fs.existsSync(publicIndex)) {
+    return res.sendFile(publicIndex);
+  }
+  return res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 app.get('/workflow-builder', (req, res) => {
   const toolsListHTML = toolRegistry.map(tool => {
