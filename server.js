@@ -1532,34 +1532,15 @@ app.get('/workflow-builder', (req, res) => {
       '</div>';
   }).join('');
 
-  res.send('<!DOCTYPE html><html><head><title>Workflow Builder - Filesque</title><style>' +
+  res.send('<!DOCTYPE html><html><head><title>Workflow Builder - Filesque</title>' +
+    '<script src="https://cdn.tailwindcss.com"></script>' +
+    '<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">' +
+    '<style>' +
     '*{margin:0;padding:0;box-sizing:border-box}' +
     'body{font-family:"Plus Jakarta Sans",sans-serif;background:#f8fafc;min-height:100vh}' +
-    '@keyframes ping{75%,100%{transform:scale(2.2);opacity:0}}' +
-    '.navbar{background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-bottom:1px solid #f1f5f9;padding:1.2rem 2.5rem;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,0.03)}' +
-    '.brand-logo{font-size:2.8rem;font-weight:900;letter-spacing:-0.05em;color:#0f172a;display:flex;align-items:center;cursor:pointer;user-select:none}' +
-    '.brand-logo .files-part{display:inline-block;transition:transform 0.3s ease}' +
-    '.brand-logo .que-part{color:#dc2626;display:inline-block;transition:all 0.3s ease}' +
-    '.brand-logo:hover .files-part{transform:translateY(-2px)}' +
-    '.brand-logo:hover .que-part{transform:translateY(2px) scale(1.05)}' +
-    '.ping-dot-wrap{position:relative;display:inline-flex;width:10px;height:10px;margin-left:6px}' +
-    '.ping-dot-wrap::before{content:"";position:absolute;top:0;left:0;width:100%;height:100%;border-radius:50%;background-color:#dc2626;animation:ping 1.5s cubic-bezier(0,0,0.2,1) infinite}' +
-    '.ping-dot-wrap::after{content:"";position:relative;width:10px;height:10px;border-radius:50%;background-color:#dc2626;display:inline-block}' +
+    '.navbar{background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-bottom:1px solid #f1f5f9;padding:1rem 2.5rem;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,0.03)}' +
     '.back-link{color:#dc2626;text-decoration:none;font-weight:800;font-size:0.95rem;padding:0.6rem 1.2rem;border-radius:0.75rem;background:#fef2f2;border:1px solid #fecaca;transition:all 0.2s;display:flex;align-items:center;gap:0.4rem}' +
     '.back-link:hover{background:#dc2626;color:white;transform:translateX(-3px);box-shadow:0 4px 12px rgba(220,38,38,0.2)}' +
-    '@keyframes ping{75%,100%{transform:scale(2.2);opacity:0}}' +
-    '.navbar{background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-bottom:1px solid #f1f5f9;padding:1.2rem 2.5rem;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,0.03)}' +
-    '.brand-logo{font-size:2.8rem;font-weight:900;letter-spacing:-0.05em;color:#0f172a;display:flex;align-items:center;cursor:pointer;user-select:none}' +
-    '.brand-logo .files-part{display:inline-block;transition:transform 0.3s ease}' +
-    '.brand-logo .que-part{color:#dc2626;display:inline-block;transition:all 0.3s ease}' +
-    '.brand-logo:hover .files-part{transform:translateY(-2px)}' +
-    '.brand-logo:hover .que-part{transform:translateY(2px) scale(1.05)}' +
-    '.ping-dot-wrap{position:relative;display:inline-flex;width:10px;height:10px;margin-left:6px}' +
-    '.ping-dot-wrap::before{content:"";position:absolute;top:0;left:0;width:100%;height:100%;border-radius:50%;background-color:#dc2626;animation:ping 1.5s cubic-bezier(0,0,0.2,1) infinite}' +
-    '.ping-dot-wrap::after{content:"";position:relative;width:10px;height:10px;border-radius:50%;background-color:#dc2626;display:inline-block}' +
-    '.back-link{color:#dc2626;text-decoration:none;font-weight:800;font-size:0.95rem;padding:0.6rem 1.2rem;border-radius:0.75rem;background:#fef2f2;border:1px solid #fecaca;transition:all 0.2s;display:flex;align-items:center;gap:0.4rem}' +
-    '.back-link:hover{background:#dc2626;color:white;transform:translateX(-3px);box-shadow:0 4px 12px rgba(220,38,38,0.2)}' +
-    '.back-link{color:#dc2626;text-decoration:none;font-weight:700}' +
     '.container{display:flex;gap:2rem;max-width:1400px;margin:2rem auto;padding:0 1rem}' +
     '.panel{background:white;border-radius:1rem;box-shadow:0 2px 10px rgba(0,0,0,0.05);padding:1.5rem}' +
     '.tools-panel{flex:1;max-height:80vh;overflow-y:auto}.workflow-panel{flex:2}' +
@@ -1579,7 +1560,7 @@ app.get('/workflow-builder', (req, res) => {
     '.file-upload-section{margin-top:1.5rem;padding:1rem;background:#f8fafc;border-radius:0.5rem}' +
     '.file-upload-section input[type="file"]{margin-top:0.5rem}' +
     '</style></head><body>' +
-    '<div class="navbar"><div class="brand-logo" onclick="location.href=\'/\'"><span class="files-part">Files</span><span class="que-part">que</span><span class="ping-dot-wrap"></span></div><a href="/" class="back-link">&larr; Back to Home</a></div>' +
+    '<div class="navbar"><div class="cursor-pointer flex items-center space-x-2 group shrink-0" onclick="location.href=\'/\'"><span class="text-5xl font-black tracking-tighter text-[#0f172a] flex items-center overflow-hidden"><span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span><span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span></span><span class="w-3 h-3 rounded-full bg-red-600 animate-ping ml-1 inline-block"></span></div><a href="/" class="back-link">&larr; Back to Home</a></div>' +
     '<div class="container">' +
     '<div class="panel tools-panel"><div class="panel-title">🛠️ Tools (' + toolRegistry.length + ')</div>' + toolsListHTML + '</div>' +
     '<div class="panel workflow-panel"><div class="panel-title">📋 Your Workflow</div>' +
