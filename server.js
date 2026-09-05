@@ -1541,299 +1541,269 @@ app.get('/workflow-builder', (req, res) => {
       '</div>';
   }).join('');
 
-  res.send('<!DOCTYPE html><html><head><title>Workflow Builder - Filesque</title><style>' +
-    '*{margin:0;padding:0;box-sizing:border-box}' +
-    'body{font-family:"Plus Jakarta Sans",sans-serif;background:#f8fafc;min-height:100vh}' +
-    '.navbar{background:white;border-bottom:1px solid #e2e8f0;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center}' +
-    '.navbar{background:white;border-bottom:1px solid #e2e8f0;padding:1.2rem 2.5rem;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 4px rgba(0,0,0,0.04)}' +
-'.logo{font-size:3.2rem;font-weight:900;letter-spacing:-0.06em;color:#0f172a;display:flex;align-items:center;cursor:pointer;user-select:none}' +
-'.logo span.red-text{color:#dc2626;display:inline-block;transition:transform 0.3s ease}' +
-'.logo:hover span.red-text{transform:translateY(2px) scale(1.05)}' +
-'.logo-dot{width:12px;height:12px;background-color:#dc2626;border-radius:50%;margin-left:8px;display:inline-block;animation:pulse-dot 1.8s infinite}' +
-'@keyframes pulse-dot{0%{transform:scale(0.95);box-shadow:0 0 0 0 rgba(220,38,38,0.7)}70%{transform:scale(1.15);box-shadow:0 0 0 10px rgba(220,38,38,0)}100%{transform:scale(0.95);box-shadow:0 0 0 0 rgba(220,38,38,0)}}' +
-'.back-link{color:#dc2626;text-decoration:none;font-weight:800;font-size:1rem;padding:0.6rem 1.2rem;border-radius:0.75rem;background:#fef2f2;border:1px solid #fecaca;transition:all 0.2s;display:flex;align-items:center;gap:0.4rem}' +
-'.back-link:hover{background:#dc2626;color:white;transform:translateX(-3px);box-shadow:0 4px 12px rgba(220,38,38,0.2)}' +
-    '.back-link{color:#dc2626;text-decoration:none;font-weight:700}' +
-    '.container{display:flex;gap:2rem;max-width:1400px;margin:2rem auto;padding:0 1rem}' +
-    '.panel{background:white;border-radius:1rem;box-shadow:0 2px 10px rgba(0,0,0,0.05);padding:1.5rem}' +
-    '.tools-panel{flex:1;max-height:80vh;overflow-y:auto}.workflow-panel{flex:2}' +
-    '.panel-title{font-size:1.3rem;font-weight:800;margin-bottom:1rem}' +
-    '.tool-item{display:flex;align-items:center;gap:0.8rem;padding:0.8rem 1rem;background:#f1f5f9;border-radius:0.5rem;margin-bottom:0.5rem;cursor:pointer;transition:0.2s}' +
-    '.tool-item:hover{background:#e2e8f0;transform:translateX(5px)}' +
-    '.tool-icon{font-size:1.4rem}.tool-name{font-weight:600}' +
-    '.workflow-area{min-height:200px;border:2px dashed #cbd5e1;border-radius:0.75rem;padding:1rem;margin-bottom:1rem}' +
-    '.step{display:flex;align-items:center;gap:1rem;padding:0.8rem;background:#f1f5f9;border-radius:0.5rem;margin-bottom:0.5rem}' +
-    '.step-number{width:30px;height:30px;background:#dc2626;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold}' +
-    '.remove-btn{background:#ef4444;color:white;border:none;border-radius:0.25rem;padding:0.3rem 0.7rem;cursor:pointer}' +
-    '.controls{display:flex;gap:0.8rem;margin-bottom:1rem}' +
-    'input[type="text"]{flex:1;padding:0.7rem 1rem;border:1px solid #cbd5e1;border-radius:0.5rem;font-size:1rem}' +
-    '.btn{padding:0.7rem 1.5rem;background:#dc2626;color:white;border:none;border-radius:0.5rem;cursor:pointer;font-weight:700}' +
-    '.btn:hover{background:#b91c1c}.btn-secondary{background:#64748b}.btn-secondary:hover{background:#475569}' +
-    '.saved-list{margin-top:1rem}.saved-item{padding:0.6rem;background:#f8fafc;border-radius:0.4rem;margin-bottom:0.4rem}' +
-    '.file-upload-section{margin-top:1.5rem;padding:1rem;background:#f8fafc;border-radius:0.5rem}' +
-    '.file-upload-section input[type="file"]{margin-top:0.5rem}' +
-    '</style></head><body>' +
-    '<div class="navbar"><div class="logo" onclick="window.location.href='/'">Files<span class="red-text">que</span><span class="logo-dot"></span></div><a href="/" class="back-link">← Back to Home</a></div>' +
-    '<div class="container">' +
-    '<div class="panel tools-panel"><div class="panel-title">🛠️ Tools (' + toolRegistry.length + ')</div>' + toolsListHTML + '</div>' +
-    '<div class="panel workflow-panel"><div class="panel-title">📋 Your Workflow</div>' +
-    '<div class="workflow-area" id="workflowArea"><p style="color:#94a3b8;">Click on tools to add steps</p></div>' +
-    '<div class="controls"><input type="text" id="wfName" placeholder="Workflow Name">' +
-    '<button class="btn" onclick="saveWorkflow()">💾 Save</button>' +
-    '<button class="btn btn-secondary" onclick="clearWorkflow()">🗑️ Clear</button></div>' +
-    '<div class="file-upload-section"><h3>📁 Test Your Workflow</h3>' +
-    '<input type="file" id="wfFile" multiple>' + 
-    '<button class="btn" onclick="executeWorkflow()" style="margin-left: 10px;">▶️ Execute Workflow</button>' +
-    '<div id="executionResult" style="margin-top:10px;"></div></div>' +
-    '<div class="saved-list"><h3>Saved Workflows</h3><div id="savedList"></div></div>' +
-    '</div></div>' +
-    '<div id="modalContainer"></div>' +
-    '<script>' +
-    'let steps = [];' +
-    'let selectedFiles = [];' +
-    'document.getElementById("wfFile").addEventListener("change", function(e) { selectedFiles = e.target.files; });' +
-    'function updateStepConfig(idx, key, val) { steps[idx][key] = val; }' +
-    'function addToWorkflow(id, name, icon) { ' +
-    '  steps.push({ id: id, name: name, icon: icon, isComplex: false, mode: "all", range: "", sortOrder: "upload", customSequence: "", pageOrder: "", rotatePages: "", rotateDegree: "90", watermarkText: "CONFIDENTIAL", watermarkMode: "diagonal", compressQuality: "0.70", convertFormat: "jpg", convertQuality: "0.92", reducerMode: "resize", reducerWidth: "800", reducerHeight: "600", reducerTargetKb: "50", sizePreset: "3.5x4.5", bgColor: "#f87171", zoom: "100", copies: "32", removeBg: false });' +
-    '  renderSteps();' +
-    '}' +
-    'function renderSteps() {' +
-    '  const area = document.getElementById("workflowArea");' +
-    '  if (steps.length === 0) { area.innerHTML = "<p style=\'color:#94a3b8;\'>Click on tools to add steps</p>"; return; }' +
-    '  let html = "";' +
-    '  for (let i = 0; i < steps.length; i++) {' +
-    '    let toggleHtml = "";' +
-    '    if (steps[i].id === "pdf-to-excel") {' +
-    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '        "<span style=\'font-size:12px; font-weight:bold; color:#475569;\'>Mode:</span>" +' +
-    '        "<select onchange=\'updateStepConfig(" + i + ", \\\"isComplex\\\", this.value === \\\"complex\\\")\' style=\'padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
-    '          "<option value=\\\"simple\\\" " + (!steps[i].isComplex ? "selected" : "") + ">Simple Table</option>" +' +
-    '          "<option value=\\\"complex\\\" " + (steps[i].isComplex ? "selected" : "") + ">Complex Table</option>" +' +
-    '        "</select>" +' +
-    '      "</div>";' +
-    '    } else if (steps[i].id === "pdf-splitter") {' +
-    '      let mode = steps[i].mode || "all";' +
-    '      let rangeVal = steps[i].range || "";' +
-    '      let displayRange = mode === "all" ? "display:none;" : "";' +
-    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '        "<span style=\'font-size:12px; font-weight:bold; color:#475569;\'>Mode:</span>" +' +
-    '        "<select onchange=\'updateStepConfig(" + i + ", \\\"mode\\\", this.value); renderSteps();\' style=\'padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
-    '          "<option value=\\\"all\\\" " + (mode === "all" ? "selected" : "") + ">Split All (ZIP)</option>" +' +
-    '          "<option value=\\\"range\\\" " + (mode === "range" ? "selected" : "") + ">Custom Range</option>" +' +
-    '        "</select>" +' +
-    '        "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"range\\\", this.value)\' value=\'" + rangeVal + "\' placeholder=\'e.g. 1-3, 5\' style=\'padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; width:100px; outline:none; " + displayRange + "\'>" + ' +
-    '      "</div>";' +
-    '    } else if (steps[i].id === "merge-pdf" || steps[i].id === "image-to-pdf") {' +
-    '      let sOrder = steps[i].sortOrder || "upload";' +
-    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '        "<span style=\'font-size:12px; font-weight:bold; color:#475569;\'>Combine Order:</span>" +' +
-    '        "<select onchange=\'updateStepConfig(" + i + ", \\\"sortOrder\\\", this.value)\' style=\'padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
-    '          "<option value=\\\"upload\\\" " + (sOrder === "upload" ? "selected" : "") + ">As Uploaded</option>" +' +
-    '          "<option value=\\\"az\\\" " + (sOrder === "az" ? "selected" : "") + ">Alphabetical (A-Z)</option>" +' +
-    '          "<option value=\\\"za\\\" " + (sOrder === "za" ? "selected" : "") + ">Alphabetical (Z-A)</option>" +' +
-    '        "</select>" +' +
-    '      "</div>";' +
-    '    } else if (steps[i].id === "pdf-organizer") {' +
-    '      let pOrder = steps[i].pageOrder || "";' +
-    '      let rPages = steps[i].rotatePages || "";' +
-    '      let rDeg = steps[i].rotateDegree || "90";' +
-    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px;\'>" +' +
-    '        "<div style=\'display:flex; align-items:flex-start; gap:5px; background:#e2e8f0; padding:6px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '          "<span style=\'font-size:11px; font-weight:bold; color:#475569; margin-top:2px;\'>Page Order:</span>" +' +
-    '          "<div style=\'display:flex; flex-direction:column; gap:2px;\'>" +' +
-    '            "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"pageOrder\\\", this.value)\' value=\'" + pOrder + "\' placeholder=\'e.g. 1, 3, 2, 5-7\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; width:120px; outline:none;\' title=\'Leave blank to keep all pages original order\'>" +' +
-    '            "<span style=\'font-size:9px; color:#64748b; line-height:1;\'>e.g., 1, 3, 2, 5-7</span>" +' +
-    '          "</div>" +' +
-    '        "</div>" +' +
-    '        "<div style=\'display:flex; align-items:flex-start; gap:5px; background:#e2e8f0; padding:6px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '          "<span style=\'font-size:11px; font-weight:bold; color:#475569; margin-top:2px;\'>Rotate:</span>" +' +
-    '          "<div style=\'display:flex; flex-direction:column; gap:2px;\'>" +' +
-    '            "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"rotatePages\\\", this.value)\' value=\'" + rPages + "\' placeholder=\'e.g. 2, 4 or all\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; width:110px; outline:none;\'>" +' +
-    '            "<span style=\'font-size:9px; color:#64748b; line-height:1;\'>e.g. 2, 4 or all</span>" +' +
-    '          "</div>" +' +
-    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"rotateDegree\\\", this.value)\' style=\'padding:1px 4px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
-    '             "<option value=\\\"90\\\" " + (rDeg === "90" ? "selected" : "") + ">90°</option>" +' +
-    '             "<option value=\\\"180\\\" " + (rDeg === "180" ? "selected" : "") + ">180°</option>" +' +
-    '             "<option value=\\\"270\\\" " + (rDeg === "270" ? "selected" : "") + ">270°</option>" +' +
-    '          "</select>" +' +
-    '        "</div>" +' +
-    '      "</div>";' +
-    '    } else if (steps[i].id === "pdf-watermark") {' +
-    '      let wmText = steps[i].watermarkText || "CONFIDENTIAL";' +
-    '      let wmMode = steps[i].watermarkMode || "diagonal";' +
-    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px;\'>" +' +
-    '        "<div style=\'display:flex; align-items:flex-start; gap:5px; background:#e2e8f0; padding:6px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '          "<span style=\'font-size:11px; font-weight:bold; color:#475569; margin-top:2px;\'>Text:</span>" +' +
-    '          "<div style=\'display:flex; flex-direction:column; gap:2px;\'>" +' +
-    '            "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"watermarkText\\\", this.value)\' value=\'" + wmText + "\' placeholder=\'e.g. CONFIDENTIAL\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; width:110px; outline:none;\'>" +' +
-    '            "<span style=\'font-size:9px; color:#64748b; line-height:1;\'>e.g. DRAFT</span>" +' +
-    '          "</div>" +' +
-    '        "</div>" +' +
-    '        "<div style=\'display:flex; align-items:flex-start; gap:5px; background:#e2e8f0; padding:6px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '          "<span style=\'font-size:11px; font-weight:bold; color:#475569; margin-top:2px;\'>Mode:</span>" +' +
-    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"watermarkMode\\\", this.value)\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
-    '             "<option value=\\\"diagonal\\\" " + (wmMode === "diagonal" ? "selected" : "") + ">Watermark Only</option>" +' +
-    '             "<option value=\\\"footer_num\\\" " + (wmMode === "footer_num" ? "selected" : "") + ">Page Numbers Only</option>" +' +
-    '             "<option value=\\\"both\\\" " + (wmMode === "both" ? "selected" : "") + ">Both</option>" +' +
-    '          "</select>" +' +
-    '        "</div>" +' +
-    '      "</div>";' +
-    '    } else if (steps[i].id === "compress-image") {' +
-    '      let qual = steps[i].compressQuality || "0.70";' +
-    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '        "<span style=\'font-size:12px; font-weight:bold; color:#475569;\'>Quality:</span>" +' +
-    '        "<select onchange=\'updateStepConfig(" + i + ", \\\"compressQuality\\\", this.value)\' style=\'padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
-    '          "<option value=\\\"0.90\\\" " + (qual === "0.90" ? "selected" : "") + ">High (Less Compression)</option>" +' +
-    '          "<option value=\\\"0.70\\\" " + (qual === "0.70" ? "selected" : "") + ">Medium (Default)</option>" +' +
-    '          "<option value=\\\"0.50\\\" " + (qual === "0.50" ? "selected" : "") + ">Low (Max Compression)</option>" +' +
-    '        "</select>" +' +
-    '      "</div>";' +
-    '    } else if (steps[i].id === "image-converter") {' +
-    '      let fmt = steps[i].convertFormat || "jpg";' +
-    '      let qual = steps[i].convertQuality || "0.92";' +
-    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px;\'>" +' +
-    '        "<div style=\'display:flex; align-items:center; gap:5px; background:#e2e8f0; padding:6px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '          "<span style=\'font-size:11px; font-weight:bold; color:#475569;\'>Format:</span>" +' +
-    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"convertFormat\\\", this.value)\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
-    '            "<option value=\\\"jpg\\\" " + (fmt === "jpg" ? "selected" : "") + ">JPG</option>" +' +
-    '            "<option value=\\\"jpeg\\\" " + (fmt === "jpeg" ? "selected" : "") + ">JPEG</option>" +' +
-    '            "<option value=\\\"png\\\" " + (fmt === "png" ? "selected" : "") + ">PNG</option>" +' +
-    '            "<option value=\\\"webp\\\" " + (fmt === "webp" ? "selected" : "") + ">WEBP</option>" +' +
-    '            "<option value=\\\"bmp\\\" " + (fmt === "bmp" ? "selected" : "") + ">BMP</option>" +' +
-    '            "<option value=\\\"ico\\\" " + (fmt === "ico" ? "selected" : "") + ">ICO</option>" +' +
-    '          "</select>" +' +
-    '        "</div>" +' +
-    '        "<div style=\'display:flex; align-items:center; gap:5px; background:#e2e8f0; padding:6px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '          "<span style=\'font-size:11px; font-weight:bold; color:#475569;\'>Quality:</span>" +' +
-    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"convertQuality\\\", this.value)\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
-    '            "<option value=\\\"1.00\\\" " + (qual === "1.00" ? "selected" : "") + ">100% (Max)</option>" +' +
-    '            "<option value=\\\"0.92\\\" " + (qual === "0.92" ? "selected" : "") + ">92% (High)</option>" +' +
-    '            "<option value=\\\"0.70\\\" " + (qual === "0.70" ? "selected" : "") + ">70% (Medium)</option>" +' +
-    '            "<option value=\\\"0.50\\\" " + (qual === "0.50" ? "selected" : "") + ">50% (Low)</option>" +' +
-    '          "</select>" +' +
-    '        "</div>" +' +
-    '      "</div>";' +
-    '    } else if (steps[i].id === "image-reducer") {' +
-    '      let rMode = steps[i].reducerMode || "resize";' +
-    '      let rW = steps[i].reducerWidth || "800";' +
-    '      let rH = steps[i].reducerHeight || "600";' +
-    '      let rKb = steps[i].reducerTargetKb || "50";' +
-    '      let showResize = rMode === "resize" ? "inline-block" : "none";' +
-    '      let showTarget = rMode === "target" ? "inline-block" : "none";' +
-    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px;\'>" +' +
-    '        "<div style=\'display:flex; align-items:center; gap:5px; background:#e2e8f0; padding:6px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '          "<span style=\'font-size:11px; font-weight:bold; color:#475569;\'>Mode:</span>" +' +
-    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"reducerMode\\\", this.value); renderSteps();\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
-    '            "<option value=\\\"resize\\\" " + (rMode === "resize" ? "selected" : "") + ">Resize (W x H)</option>" +' +
-    '            "<option value=\\\"target\\\" " + (rMode === "target" ? "selected" : "") + ">Target KB</option>" +' +
-    '          "</select>" +' +
-    '          "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"reducerWidth\\\", this.value)\' value=\'" + rW + "\' placeholder=\'W\' style=\'display:" + showResize + "; padding:2px 4px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; width:45px; outline:none;\'>" +' +
-    '          "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"reducerHeight\\\", this.value)\' value=\'" + rH + "\' placeholder=\'H\' style=\'display:" + showResize + "; padding:2px 4px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; width:45px; outline:none;\'>" +' +
-    '          "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"reducerTargetKb\\\", this.value)\' value=\'" + rKb + "\' placeholder=\'KB\' style=\'display:" + showTarget + "; padding:2px 4px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; width:60px; outline:none;\'>" +' +
-    '        "</div>" +' +
-    '      "</div>";' +
-    '    } else if (steps[i].id === "passport-studio") {' +
-    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:linear-gradient(135deg, #4f46e5, #e11d48); padding:6px 14px; border-radius:8px; color:white; font-weight:bold; font-size:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1);\'>" + ' +
-    '        "<span>✨ Auto Studio Dialog Ready</span>" + ' +
-    '      "</div>";' +
-    '    }' +
-    '    html += "<div class=\'step\'><div class=\'step-number\'>" + (i+1) + "</div><span style=\'font-size:1.2rem;\'>" + steps[i].icon + "</span><strong style=\'font-size:1.1rem;\'>" + steps[i].name + "</strong>" + (toggleHtml ? toggleHtml : "<div style=\'margin-left:auto;\'></div>") + "<button class=\'remove-btn\' style=\'margin-left:10px;\' onclick=\'removeStep(" + i + ")\'>✕</button></div>";' +
-    '  }' +
-    '  area.innerHTML = html;' +
-    '}' +
-    'function removeStep(index) { steps.splice(index, 1); renderSteps(); }' +
-    'function clearWorkflow() { steps = []; renderSteps(); }' +
-    'async function saveWorkflow() {' +
-    '  const name = document.getElementById("wfName").value.trim() || "My Workflow";' +
-    '  if (steps.length === 0) { alert("Please add at least one tool"); return; }' +
-    '  const payload = { name: name, steps: steps.map(s => ({ toolId: s.id, isComplex: !!s.isComplex, mode: s.mode, range: s.range, sortOrder: s.sortOrder, customSequence: s.customSequence, pageOrder: s.pageOrder, rotatePages: s.rotatePages, rotateDegree: s.rotateDegree, watermarkText: s.watermarkText, watermarkMode: s.watermarkMode, compressQuality: s.compressQuality, convertFormat: s.convertFormat, convertQuality: s.convertQuality, reducerMode: s.reducerMode, reducerWidth: s.reducerWidth, reducerHeight: s.reducerHeight, reducerTargetKb: s.reducerTargetKb, sizePreset: s.sizePreset, bgColor: s.bgColor, zoom: s.zoom, copies: s.copies, removeBg: s.removeBg, printSheet: s.printSheet })) };' +
-    '  try {' +
-    '    const res = await fetch("/api/workflow/create", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });' +
-    '    const data = await res.json();' +
-    '    if (data.success) { alert("✅ Workflow saved!"); loadSavedWorkflows(); } else { alert("Error: " + data.error); }' +
-    '  } catch(e) { alert("Network error: " + e.message); }' +
-    '}' +
-    'async function loadSavedWorkflows() {' +
-    '  try {' +
-    '    const res = await fetch("/api/workflow/list");' +
-    '    const data = await res.json();' +
-    '    const list = document.getElementById("savedList");' +
-    '    let html = "";' +
-    '    for (const w of data.workflows) { html += "<div class=\'saved-item\'><strong>" + w.name + "</strong> - " + w.steps.length + " steps</div>"; }' +
-    '    list.innerHTML = html;' +
-    '  } catch(e) { console.error(e); }' +
-    '}' +
-    'async function executeWorkflow() {' +
-    '  if (selectedFiles.length === 0 || steps.length === 0) { alert("Please select file(s) and add workflow steps."); return; }' +
-    '  const passportStepIdx = steps.findIndex(s => s.id === "passport-studio");' +
-    '  if (passportStepIdx !== -1) {' +
-    '    openProfessionalStudioModal(selectedFiles[0], passportStepIdx);' +
-    '    return;' +
-    '  }' +
-    '  sendWorkflowExecution();' +
-    '}' +
-    'function openProfessionalStudioModal(file, stepIdx) {' +
-    '  const reader = new FileReader();' +
-    '  reader.onload = function(e) {' +
-    '    const imgSrc = e.target.result;' +
-    '    const modalHtml = \'<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.8);backdrop-filter:blur(8px);display:flex;justify-content:center;align-items:center;z-index:9999;font-family:\\\'Plus Jakarta Sans\\\',sans-serif;"><div style="background:white;padding:2.5rem;border-radius:1.75rem;width:820px;max-width:96%;box-shadow:0 25px 60px rgba(0,0,0,0.4);max-height:92vh;overflow-y:auto;border:1px solid #e2e8f0;"><div style="display:flex;align-items:center;margin-bottom:1.5rem;"><div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#4f46e5,#e11d48);display:flex;align-items:center;justify-content:center;color:white;font-size:24px;box-shadow:0 10px 20px rgba(79,70,229,0.3);margin-right:1rem;">🛂</div><div><h2 style="font-size:24px;font-weight:900;color:#0f172a;margin:0;letter-spacing:-0.5px;">Passport Photo Studio Pro</h2><p style="font-size:12px;color:#64748b;font-weight:600;margin:2px 0 0 0;">Professional Studio: Cloud AI Background Removal & HD Print Layout</p></div></div><hr style="border:0;border-top:1px solid #e2e8f0;margin-bottom:1.5rem;"><div style="display:grid;grid-template-columns:1.2fr 1fr;gap:2rem;margin-bottom:2rem;"><div style="display:flex;flex-direction:column;gap:1.2rem;"><div><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">1. Background Color Palette</label><select id="studioBg" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="#ffffff">Pure White (#FFFFFF)</option><option value="#a5cbf7">Light Blue (#A5CBF7)</option><option value="#3b82f6">Royal Blue (#3B82F6)</option><option value="#f87171" selected>Soft Red (#F87171)</option></select></div><div><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">2. Passport Size Preset</label><select id="studioSize" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="3.5x4.5">Standard Indian Passport (3.5 x 4.5 cm)</option><option value="2x2">US Visa Layout (2 x 2 inch)</option><option value="3.5x3.5">Indian PAN Card Size (3.5 x 3.5 cm)</option></select></div><div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><label style="font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;">3. Zoom & Face Position</label><span id="zoomValBadge" style="font-size:11px;font-weight:800;color:#4f46e5;background:#e0e7ff;padding:2px 8px;border-radius:6px;">100%</span></div><input type="range" id="studioZoom" min="50" max="250" value="100" style="width:100%;height:6px;background:#cbd5e1;border-radius:4px;accent-color:#4f46e5;cursor:pointer;"></div><div><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">4. Copies & Grid Layout</label><select id="studioCopies" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="4">4 Photos Grid</option><option value="8">8 Photos Grid</option><option value="16">16 Photos Grid</option><option value="32" selected>32 Photos Grid (Full A4 Sheet)</option></select></div><div style="background:#e0e7ff;border:1px solid #c7d2fe;padding:12px 14px;border-radius:12px;display:flex;align-items:center;gap:10px;"><input type="checkbox" id="studioRemoveBg" style="width:18px;height:18px;accent-color:#4f46e5;cursor:pointer;"><label for="studioRemoveBg" style="font-size:12px;font-weight:800;color:#3730a3;cursor:pointer;">Remove Background Pro (Cloud AI Engine)</label></div></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f1f5f9;padding:1.5rem;border-radius:16px;border:1px solid #e2e8f0;position:relative;"><span style="font-size:11px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Live Studio Preview</span><div id="modalPreviewBox" style="width:160px;height:200px;background:#f87171;box-shadow:0 20px 30px rgba(0,0,0,0.15);border:2px solid white;overflow:hidden;position:relative;border-radius:8px;transition:background 0.3s;display:flex;align-items:center;justify-content:center;"><img src="\' + imgSrc + \'" id="modalPreviewImg" style="width:100%;height:100%;object-fit:contain;transform:scale(1);transform-origin:center;transition:transform 0.1s;" /></div><p style="font-size:11px;color:#64748b;font-weight:600;margin-top:12px;text-align:center;">Interactive preview updates instantly</p></div></div><div style="display:flex;justify-content:flex-end;gap:12px;padding-top:1rem;border-top:1px solid #e2e8f0;"><button onclick="closeModal()" style="padding:12px 24px;background:#f1f5f9;color:#334155;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;transition:0.2s;">Cancel</button><button onclick="applyStudioAndExecute(\' + stepIdx + \')" style="padding:12px 28px;background:linear-gradient(135deg,#4f46e5,#e11d48);color:white;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;box-shadow:0 10px 20px rgba(79,70,229,0.3);transition:0.2s;">✨ Apply & Execute Workflow</button></div></div></div>\';' +
-    '    document.getElementById("modalContainer").innerHTML = modalHtml;' +
-    '    document.getElementById("studioZoom").addEventListener("input", function(e) {' +
-    '       const val = e.target.value;' +
-    '       document.getElementById("zoomValBadge").textContent = val + "%";' +
-    '       document.getElementById("modalPreviewImg").style.transform = "scale(" + (val / 100) + ")";' +
-    '    });' +
-    '    document.getElementById("studioBg").addEventListener("change", function(e) {' +
-    '       document.getElementById("modalPreviewBox").style.backgroundColor = e.target.value;' +
-    '    });' +
-    '  };' +
-    '  reader.readAsDataURL(file);' +
-    '}' +
-    'function closeModal() { document.getElementById("modalContainer").innerHTML = ""; }' +
-    'function applyStudioAndExecute(stepIdx) {' +
-    '  steps[stepIdx].sizePreset = document.getElementById("studioSize").value;' +
-    '  steps[stepIdx].bgColor = document.getElementById("studioBg").value;' +
-    '  steps[stepIdx].zoom = document.getElementById("studioZoom").value;' +
-    '  steps[stepIdx].copies = document.getElementById("studioCopies").value;' +
-    '  steps[stepIdx].removeBg = document.getElementById("studioRemoveBg").checked;' +
-    '  steps[stepIdx].printSheet = true;' +
-    '  closeModal();' +
-    '  sendWorkflowExecution();' +
-    '}' +
-    'async function sendWorkflowExecution() {' +
-    '  const name = document.getElementById("wfName").value.trim() || "My Workflow";' +
-    '  let saveRes;' +
-    '  try { saveRes = await fetch("/api/workflow/create", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name, steps: steps.map(s => ({ toolId: s.id, isComplex: !!s.isComplex, mode: s.mode, range: s.range, sortOrder: s.sortOrder, customSequence: s.customSequence, pageOrder: s.pageOrder, rotatePages: s.rotatePages, rotateDegree: s.rotateDegree, watermarkText: s.watermarkText, watermarkMode: s.watermarkMode, compressQuality: s.compressQuality, convertFormat: s.convertFormat, convertQuality: s.convertQuality, reducerMode: s.reducerMode, reducerWidth: s.reducerWidth, reducerHeight: s.reducerHeight, reducerTargetKb: s.reducerTargetKb, sizePreset: s.sizePreset, bgColor: s.bgColor, zoom: s.zoom, copies: s.copies, removeBg: s.removeBg, printSheet: s.printSheet })) }) }); }' +
-    '  catch(e) { alert("Save failed: " + e.message); return; }' +
-    '  const saveData = await saveRes.json();' +
-    '  if (!saveData.success) { alert("Save error: " + saveData.error); return; }' +
-    '  const formData = new FormData();' +
-    '  for (let i = 0; i < selectedFiles.length; i++) { formData.append("file", selectedFiles[i]); }' +
-    '  try {' +
-    '    document.getElementById("executionResult").innerHTML = "<p style=\'color:blue;\'>⏳ Processing workflow steps...</p>";' +
-    '    const execRes = await fetch("/api/workflow/execute/" + saveData.workflow.id, { method: "POST", body: formData });' +
-    '    if (execRes.ok) {' +
-    '      const blob = await execRes.blob();' +
-    '      let fname = "workflow_output";' +
-    '      const cd = execRes.headers.get("content-disposition");' +
-    '      if (cd) { const m = cd.match(/filename="?([^";]+)"?/i); if (m && m[1]) fname = m[1]; }' +
-    '      else {' +
-    '        const mimeExtMap = { "application/pdf": ".pdf", "image/jpeg": ".jpg", "image/png": ".png", "image/webp": ".webp", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": ".xlsx", "application/zip": ".zip", "application/msword": ".doc" };' +
-    '        fname = "workflow_output" + (mimeExtMap[blob.type] || "");' +
-    '      }' +
-    '      const url = window.URL.createObjectURL(blob);' +
-    '      const a = document.createElement("a");' +
-    '      a.href = url; a.download = fname; a.click(); window.URL.revokeObjectURL(url);' +
-    '      document.getElementById("executionResult").innerHTML = "<p style=\'color:green;\'>✅ Workflow executed successfully! Check download.</p>";' +
-    '    } else {' +
-    '      const errorData = await execRes.json().catch(() => ({ error: "Execution failed" }));' +
-    '      document.getElementById("executionResult").innerHTML = "<p style=\'color:red;\'>❌ " + (errorData.error || "Execution failed") + "</p>";' +
-    '    }' +
-    '  } catch(e) { document.getElementById("executionResult").innerHTML = "<p style=\'color:red;\'>Network error during execution: " + e.message + "</p>"; }' +
-    '}' +
-    'loadSavedWorkflows();' +
-    '</script>' +
-    '</body></html>');
+  res.send(`<!DOCTYPE html><html><head><title>Workflow Builder - Filesque</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Plus Jakarta Sans",sans-serif;background:#f8fafc;min-height:100vh}
+.container{display:flex;gap:2rem;max-width:1400px;margin:2rem auto;padding:0 1rem}
+.panel{background:white;border-radius:1rem;box-shadow:0 2px 10px rgba(0,0,0,0.05);padding:1.5rem}
+.tools-panel{flex:1;max-height:80vh;overflow-y:auto}.workflow-panel{flex:2}
+.panel-title{font-size:1.3rem;font-weight:800;margin-bottom:1rem}
+.tool-item{display:flex;align-items:center;gap:0.8rem;padding:0.8rem 1rem;background:#f1f5f9;border-radius:0.5rem;margin-bottom:0.5rem;cursor:pointer;transition:0.2s}
+.tool-item:hover{background:#e2e8f0;transform:translateX(5px)}
+.tool-icon{font-size:1.4rem}.tool-name{font-weight:600}
+.workflow-area{min-height:200px;border:2px dashed #cbd5e1;border-radius:0.75rem;padding:1rem;margin-bottom:1rem}
+.step{display:flex;align-items:center;gap:1rem;padding:0.8rem;background:#f1f5f9;border-radius:0.5rem;margin-bottom:0.5rem}
+.step-number{width:30px;height:30px;background:#dc2626;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold}
+.remove-btn{background:#ef4444;color:white;border:none;border-radius:0.25rem;padding:0.3rem 0.7rem;cursor:pointer}
+.controls{display:flex;gap:0.8rem;margin-bottom:1rem}
+input[type="text"]{flex:1;padding:0.7rem 1rem;border:1px solid #cbd5e1;border-radius:0.5rem;font-size:1rem}
+.btn{padding:0.7rem 1.5rem;background:#dc2626;color:white;border:none;border-radius:0.5rem;cursor:pointer;font-weight:700}
+.btn:hover{background:#b91c1c}.btn-secondary{background:#64748b}.btn-secondary:hover{background:#475569}
+.saved-list{margin-top:1rem}.saved-item{padding:0.6rem;background:#f8fafc;border-radius:0.4rem;margin-bottom:0.4rem}
+.file-upload-section{margin-top:1.5rem;padding:1rem;background:#f8fafc;border-radius:0.5rem}
+.file-upload-section input[type="file"]{margin-top:0.5rem}
+</style></head><body class="bg-slate-50 text-slate-900">
+<nav class="w-full bg-white/90 backdrop-blur-md border-b border-slate-200 px-8 py-4 flex justify-between items-center sticky top-0 left-0 z-50 shadow-sm">
+    <div class="cursor-pointer flex items-center space-x-2 group shrink-0" onclick="window.location.href='/'">
+        <span class="text-4xl sm:text-5xl font-black tracking-tighter text-[#0f172a] flex items-center overflow-hidden">
+            <span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span><span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span>
+        </span>
+        <span class="w-3 h-3 rounded-full bg-red-600 animate-ping ml-1 hidden sm:inline-block"></span>
+    </div>
+    <a href="/" class="hover:text-red-600 text-slate-800 transition-all font-black text-sm flex items-center space-x-1 border border-slate-200 bg-slate-50 hover:bg-red-50 hover:border-red-200 px-4 py-2.5 rounded-xl shadow-xs">
+        <span>&larr; Back to Home</span>
+    </a>
+</nav>
+<div class="container">
+<div class="panel tools-panel"><div class="panel-title">🛠️ Tools ( + toolRegistry.length + )</div> + toolsListHTML + </div>
+<div class="panel workflow-panel"><div class="panel-title">📋 Your Workflow</div>
+<div class="workflow-area" id="workflowArea"><p style="color:#94a3b8;">Click on tools to add steps</p></div>
+<div class="controls"><input type="text" id="wfName" placeholder="Workflow Name">
+<button class="btn" onclick="saveWorkflow()">💾 Save</button>
+<button class="btn btn-secondary" onclick="clearWorkflow()">🗑️ Clear</button></div>
+<div class="file-upload-section"><h3>📁 Test Your Workflow</h3>
+<input type="file" id="wfFile" multiple>
+<button class="btn" onclick="executeWorkflow()" style="margin-left: 10px;">▶️ Execute Workflow</button>
+<div id="executionResult" style="margin-top:10px;"></div></div>
+<div class="saved-list"><h3>Saved Workflows</h3><div id="savedList"></div></div>
+</div></div>
+<div id="modalContainer"></div>
+<script>
+let steps = [];
+let selectedFiles = [];
+document.getElementById("wfFile").addEventListener("change", function(e) { selectedFiles = e.target.files; });
+function updateStepConfig(idx, key, val) { steps[idx][key] = val; }
+function addToWorkflow(id, name, icon) { 
+  steps.push({ id: id, name: name, icon: icon, isComplex: false, mode: "all", range: "", sortOrder: "upload", customSequence: "", pageOrder: "", rotatePages: "", rotateDegree: "90", watermarkText: "CONFIDENTIAL", watermarkMode: "diagonal", compressQuality: "0.70", convertFormat: "jpg", convertQuality: "0.92", reducerMode: "resize", reducerWidth: "800", reducerHeight: "600", reducerTargetKb: "50", sizePreset: "3.5x4.5", bgColor: "#f87171", zoom: "100", copies: "32", removeBg: false });
+  renderSteps();
+}
+function renderSteps() {
+  const area = document.getElementById("workflowArea");
+  if (steps.length === 0) { area.innerHTML = "<p style='color:#94a3b8;'>Click on tools to add steps</p>"; return; }
+  let html = "";
+  for (let i = 0; i < steps.length; i++) {
+    let toggleHtml = "";
+    if (steps[i].id === "pdf-to-excel") {
+      toggleHtml = "<div style='margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1;'>" +
+        "<span style='font-size:12px; font-weight:bold; color:#475569;'>Mode:</span>" +
+        "<select onchange='updateStepConfig(" + i + ", \"isComplex\", this.value === \"complex\")' style='padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;'>" +
+          "<option value=\"simple\" " + (!steps[i].isComplex ? "selected" : "") + ">Simple Table</option>" +
+          "<option value=\"complex\" " + (steps[i].isComplex ? "selected" : "") + ">Complex Table</option>" +
+        "</select>" +
+      "</div>";
+    } else if (steps[i].id === "pdf-splitter") {
+      let mode = steps[i].mode || "all";
+      let rangeVal = steps[i].range || "";
+      let displayRange = mode === "all" ? "display:none;" : "";
+      toggleHtml = "<div style='margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1;'>" +
+        "<span style='font-size:12px; font-weight:bold; color:#475569;'>Mode:</span>" +
+        "<select onchange='updateStepConfig(" + i + ", \"mode\", this.value); renderSteps();' style='padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;'>" +
+          "<option value=\"all\" " + (mode === "all" ? "selected" : "") + ">Split All (ZIP)</option>" +
+          "<option value=\"range\" " + (mode === "range" ? "selected" : "") + ">Custom Range</option>" +
+        "</select>" +
+        "<input type='text' onkeyup='updateStepConfig(" + i + ", \"range\", this.value)' value='" + rangeVal + "' placeholder='e.g. 1-3, 5' style='padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; width:100px; outline:none; " + displayRange + "'>" +
+      "</div>";
+    } else if (steps[i].id === "merge-pdf" || steps[i].id === "image-to-pdf") {
+      let sOrder = steps[i].sortOrder || "upload";
+      toggleHtml = "<div style='margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1;'>" +
+        "<span style='font-size:12px; font-weight:bold; color:#475569;'>Combine Order:</span>" +
+        "<select onchange='updateStepConfig(" + i + ", \"sortOrder\", this.value)' style='padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;'>" +
+          "<option value=\"upload\" " + (sOrder === "upload" ? "selected" : "") + ">As Uploaded</option>" +
+          "<option value=\"az\" " + (sOrder === "az" ? "selected" : "") + ">Alphabetical (A-Z)</option>" +
+          "<option value=\"za\" " + (sOrder === "za" ? "selected" : "") + ">Alphabetical (Z-A)</option>" +
+        "</select>" +
+      "</div>";
+    } else if (steps[i].id === "pdf-organizer") {
+      let pOrder = steps[i].pageOrder || "";
+      let rPages = steps[i].rotatePages || "";
+      let rDeg = steps[i].rotateDegree || "90";
+      toggleHtml = "<div style='margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1; flex-wrap:wrap;'>" +
+        "<input type='text' onkeyup='updateStepConfig(" + i + ", \"pageOrder\", this.value)' value='" + pOrder + "' placeholder='Page Order (e.g. 3,1,2)' style='padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; width:130px; outline:none;'>" +
+        "<input type='text' onkeyup='updateStepConfig(" + i + ", \"rotatePages\", this.value)' value='" + rPages + "' placeholder='Rotate Pages (e.g. 1,2)' style='padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; width:130px; outline:none;'>" +
+        "<select onchange='updateStepConfig(" + i + ", \"rotateDegree\", this.value)' style='padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;'>" +
+          "<option value=\"90\" " + (rDeg === "90" ? "selected" : "") + ">Rotate +90°</option>" +
+          "<option value=\"180\" " + (rDeg === "180" ? "selected" : "") + ">Rotate 180°</option>" +
+          "<option value=\"270\" " + (rDeg === "270" ? "selected" : "") + ">Rotate +270°</option>" +
+        "</select>" +
+      "</div>";
+    } else if (steps[i].id === "pdf-watermark") {
+      let wText = steps[i].watermarkText || "CONFIDENTIAL";
+      let wMode = steps[i].watermarkMode || "diagonal";
+      toggleHtml = "<div style='margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1;'>" +
+        "<input type='text' onkeyup='updateStepConfig(" + i + ", \"watermarkText\", this.value)' value='" + wText + "' placeholder='Watermark Text' style='padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; width:120px; outline:none;'>" +
+        "<select onchange='updateStepConfig(" + i + ", \"watermarkMode\", this.value)' style='padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;'>" +
+          "<option value=\"diagonal\" " + (wMode === "diagonal" ? "selected" : "") + ">Diagonal</option>" +
+          "<option value=\"header\" " + (wMode === "header" ? "selected" : "") + ">Header Banner</option>" +
+          "<option value=\"footer\" " + (wMode === "footer" ? "selected" : "") + ">Footer Note</option>" +
+        "</select>" +
+      "</div>";
+    } else if (steps[i].id === "compress-image") {
+      let cQual = steps[i].compressQuality || "0.70";
+      toggleHtml = "<div style='margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1;'>" +
+        "<span style='font-size:12px; font-weight:bold; color:#475569;'>Quality:</span>" +
+        "<select onchange='updateStepConfig(" + i + ", \"compressQuality\", this.value)' style='padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;'>" +
+          "<option value=\"0.85\" " + (cQual === "0.85" ? "selected" : "") + ">High (85%)</option>" +
+          "<option value=\"0.70\" " + (cQual === "0.70" ? "selected" : "") + ">Medium (70%)</option>" +
+          "<option value=\"0.50\" " + (cQual === "0.50" ? "selected" : "") + ">Max Compress (50%)</option>" +
+        "</select>" +
+      "</div>";
+    } else if (steps[i].id === "image-converter") {
+      let cFmt = steps[i].convertFormat || "jpg";
+      toggleHtml = "<div style='margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1;'>" +
+        "<span style='font-size:12px; font-weight:bold; color:#475569;'>Format:</span>" +
+        "<select onchange='updateStepConfig(" + i + ", \"convertFormat\", this.value)' style='padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;'>" +
+          "<option value=\"jpg\" " + (cFmt === "jpg" ? "selected" : "") + ">Convert to JPG</option>" +
+          "<option value=\"png\" " + (cFmt === "png" ? "selected" : "") + ">Convert to PNG</option>" +
+          "<option value=\"webp\" " + (cFmt === "webp" ? "selected" : "") + ">Convert to WEBP</option>" +
+        "</select>" +
+      "</div>";
+    } else if (steps[i].id === "image-reducer") {
+      let rMode = steps[i].reducerMode || "resize";
+      let rW = steps[i].reducerWidth || "800";
+      let rH = steps[i].reducerHeight || "600";
+      let rTarget = steps[i].reducerTargetKb || "50";
+      toggleHtml = "<div style='margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1; flex-wrap:wrap;'>" +
+        "<select onchange='updateStepConfig(" + i + ", \"reducerMode\", this.value); renderSteps();' style='padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;'>" +
+          "<option value=\"resize\" " + (rMode === "resize" ? "selected" : "") + ">Exact Dimensions (px)</option>" +
+          "<option value=\"kb\" " + (rMode === "kb" ? "selected" : "") + ">Target Size (KB)</option>" +
+        "</select>" +
+        (rMode === "resize" ? 
+          "<input type='text' onkeyup='updateStepConfig(" + i + ", \"reducerWidth\", this.value)' value='" + rW + "' placeholder='Width' style='padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; width:65px; outline:none;'>" +
+          "<input type='text' onkeyup='updateStepConfig(" + i + ", \"reducerHeight\", this.value)' value='" + rH + "' placeholder='Height' style='padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; width:65px; outline:none;'>" :
+          "<input type='text' onkeyup='updateStepConfig(" + i + ", \"reducerTargetKb\", this.value)' value='" + rTarget + "' placeholder='Target KB' style='padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; width:85px; outline:none;'>") +
+      "</div>";
+    } else if (steps[i].id === "passport-studio") {
+      toggleHtml = "<div style='margin-left:auto; display:flex; align-items:center; gap:8px; background:linear-gradient(135deg, #4f46e5, #e11d48); padding:6px 14px; border-radius:8px; color:white; font-weight:bold; font-size:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1);'>" +
+        "<span>✨ Auto Studio Dialog Ready</span>" +
+      "</div>";
+    }
+    html += "<div class='step'>" +
+      "<div class='step-number'>" + (i + 1) + "</div>" +
+      "<span class='step-icon'>" + steps[i].icon + "</span>" +
+      "<span class='step-name' style='font-weight:bold; color:#0f172a;'>" + steps[i].name + "</span>" +
+      toggleHtml +
+      "<button class='remove-btn' onclick='removeStep(" + i + ")' style='margin-left:8px;'>✕</button>" +
+      "</div>";
+  }
+  area.innerHTML = html;
+}
+function openProfessionalStudioModal(file, stepIdx) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const imgSrc = e.target.result;
+    const modalHtml = '<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.8);backdrop-filter:blur(8px);display:flex;justify-content:center;align-items:center;z-index:9999;font-family:\'Plus Jakarta Sans\',sans-serif;"><div style="background:white;padding:2.5rem;border-radius:1.75rem;width:820px;max-width:96%;box-shadow:0 25px 60px rgba(0,0,0,0.4);max-height:92vh;overflow-y:auto;border:1px solid #e2e8f0;"><div style="display:flex;align-items:center;margin-bottom:1.5rem;"><div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#4f46e5,#e11d48);display:flex;align-items:center;justify-content:center;color:white;font-size:24px;box-shadow:0 10px 20px rgba(79,70,229,0.3);margin-right:1rem;">📷</div><div><h2 style="font-size:24px;font-weight:900;color:#0f172a;margin:0;letter-spacing:-0.5px;">Passport Photo Studio Pro</h2><p style="font-size:12px;color:#64748b;font-weight:600;margin:2px 0 0 0;">Professional Studio: Cloud AI Background Removal & HD Print Layout</p></div></div><hr style="border:0;border-top:1px solid #e2e8f0;margin-bottom:1.5rem;"><div style="display:grid;grid-template-columns:1.2fr 1fr;gap:2rem;margin-bottom:2rem;"><div style="display:flex;flex-direction:column;gap:1.2rem;"><div><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">1. Background Color Palette</label><select id="studioBg" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="#ffffff">Pure White (#FFFFFF)</option><option value="#a5cbf7">Light Blue (#A5CBF7)</option><option value="#3b82f6">Royal Blue (#3B82F6)</option><option value="#f87171" selected>Soft Red (#F87171)</option></select></div><div><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">2. Passport Size Preset</label><select id="studioSize" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="3.5x4.5">Standard Indian Passport (3.5 x 4.5 cm)</option><option value="2x2">US Visa Layout (2 x 2 inch)</option><option value="3.5x3.5">Indian PAN Card Size (3.5 x 3.5 cm)</option></select></div><div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><label style="font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;">3. Zoom & Face Position</label><span id="zoomValBadge" style="font-size:11px;font-weight:800;color:#4f46e5;background:#e0e7ff;padding:2px 8px;border-radius:6px;">100%</span></div><input type="range" id="studioZoom" min="50" max="250" value="100" style="width:100%;height:6px;background:#cbd5e1;border-radius:4px;accent-color:#4f46e5;cursor:pointer;"></div><div><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">4. Copies & Grid Layout</label><select id="studioCopies" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="4">4 Photos Grid</option><option value="8">8 Photos Grid</option><option value="16">16 Photos Grid</option><option value="32" selected>32 Photos Grid (Full A4 Sheet)</option></select></div><div style="background:#e0e7ff;border:1px solid #c7d2fe;padding:12px 14px;border-radius:12px;display:flex;align-items:center;gap:10px;"><input type="checkbox" id="studioRemoveBg" style="width:18px;height:18px;accent-color:#4f46e5;cursor:pointer;"><label for="studioRemoveBg" style="font-size:12px;font-weight:800;color:#3730a3;cursor:pointer;">Remove Background Pro (Cloud AI Engine)</label></div></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f1f5f9;padding:1.5rem;border-radius:16px;border:1px solid #e2e8f0;position:relative;"><span style="font-size:11px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Live Studio Preview</span><div id="modalPreviewBox" style="width:160px;height:200px;background:#f87171;box-shadow:0 20px 30px rgba(0,0,0,0.15);border:2px solid white;overflow:hidden;position:relative;border-radius:8px;transition:background 0.3s;display:flex;align-items:center;justify-content:center;"><img src="' + imgSrc + '" id="modalPreviewImg" style="width:100%;height:100%;object-fit:contain;transform:scale(1);transform-origin:center;transition:transform 0.1s;" /></div><p style="font-size:11px;color:#64748b;font-weight:600;margin-top:12px;text-align:center;">Interactive preview updates instantly</p></div></div><div style="display:flex;justify-content:flex-end;gap:12px;padding-top:1rem;border-top:1px solid #e2e8f0;"><button onclick="closeModal()" style="padding:12px 24px;background:#f1f5f9;color:#334155;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;transition:0.2s;">Cancel</button><button onclick="applyStudioAndExecute(' + stepIdx + ')" style="padding:12px 28px;background:linear-gradient(135deg,#4f46e5,#e11d48);color:white;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;box-shadow:0 10px 20px rgba(79,70,229,0.3);transition:0.2s;">🚀 Apply & Execute Workflow</button></div></div></div>';
+    document.getElementById("modalContainer").innerHTML = modalHtml;
+    document.getElementById("studioZoom").addEventListener("input", function(e) {
+      const zoom = e.target.value;
+      document.getElementById("zoomValBadge").innerText = zoom + "%";
+      document.getElementById("modalPreviewImg").style.transform = "scale(" + (zoom / 100) + ")";
+    });
+    document.getElementById("studioBg").addEventListener("change", function(e) {
+      document.getElementById("modalPreviewBox").style.background = e.target.value;
+    });
+  };
+  reader.readAsDataURL(file);
+}
+function closeModal() { document.getElementById("modalContainer").innerHTML = ""; }
+function applyStudioAndExecute(stepIdx) {
+  steps[stepIdx].bgColor = document.getElementById("studioBg").value;
+  steps[stepIdx].sizePreset = document.getElementById("studioSize").value;
+  steps[stepIdx].zoom = document.getElementById("studioZoom").value;
+  steps[stepIdx].copies = document.getElementById("studioCopies").value;
+  steps[stepIdx].removeBg = document.getElementById("studioRemoveBg").checked;
+  closeModal();
+  sendWorkflowExecution();
+}
+function removeStep(idx) { steps.splice(idx, 1); renderSteps(); }
+function clearWorkflow() { steps = []; renderSteps(); }
+async function saveWorkflow() {
+  const name = document.getElementById("wfName").value.trim() || "My Workflow";
+  if (steps.length === 0) { alert("Please add steps first"); return; }
+  try {
+    const res = await fetch("/api/workflow/create", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name, steps: steps }) });
+    const data = await res.json();
+    if (data.success) { alert("Workflow saved successfully!"); loadSavedWorkflows(); }
+    else { alert("Failed: " + data.error); }
+  } catch(e) { alert("Error saving workflow: " + e.message); }
+}
+async function loadSavedWorkflows() {
+  try {
+    const res = await fetch("/api/workflow/list");
+    const data = await res.json();
+    if (data.success) {
+      let html = "";
+      data.workflows.forEach(wf => {
+        html += "<div class='saved-item'><b>" + wf.name + "</b> (" + wf.steps.length + " steps)</div>";
+      });
+      document.getElementById("savedList").innerHTML = html;
+    }
+  } catch(e) {}
+}
+async function executeWorkflow() {
+  if (selectedFiles.length === 0 || steps.length === 0) { alert("Please select file(s) and add workflow steps."); return; }
+  const passportStepIdx = steps.findIndex(s => s.id === "passport-studio");
+  if (passportStepIdx !== -1) {
+    openProfessionalStudioModal(selectedFiles[0], passportStepIdx);
+    return;
+  }
+  sendWorkflowExecution();
+}
+async function sendWorkflowExecution() {
+  const name = document.getElementById("wfName").value.trim() || "My Workflow";
+  let saveData = null;
+  try { saveRes = await fetch("/api/workflow/create", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name, steps: steps.map(s => ({ toolId: s.id, isComplex: !!s.isComplex, mode: s.mode, range: s.range, sortOrder: s.sortOrder, customSequence: s.customSequence, pageOrder: s.pageOrder, rotatePages: s.rotatePages, rotateDegree: s.rotateDegree, watermarkText: s.watermarkText, watermarkMode: s.watermarkMode, compressQuality: s.compressQuality, convertFormat: s.convertFormat, convertQuality: s.convertQuality, reducerMode: s.reducerMode, reducerWidth: s.reducerWidth, reducerHeight: s.reducerHeight, reducerTargetKb: s.reducerTargetKb, sizePreset: s.sizePreset, bgColor: s.bgColor, zoom: s.zoom, copies: s.copies, removeBg: s.removeBg, printSheet: s.printSheet })) }) }); saveData = await saveRes.json(); } catch(e) { alert("Error: " + e.message); return; }
+  if (!saveData || !saveData.success) { alert("Error saving temporary workflow execution"); return; }
+  const formData = new FormData();
+  for (let i = 0; i < selectedFiles.length; i++) { formData.append("file", selectedFiles[i]); }
+  try {
+    document.getElementById("executionResult").innerHTML = "<p style='color:blue;'>⏳ Processing workflow steps...</p>";
+    const execRes = await fetch("/api/workflow/execute/" + saveData.workflow.id, { method: "POST", body: formData });
+    if (execRes.ok) {
+      const blob = await execRes.blob();
+      let fname = "workflow_output";
+      const cd = execRes.headers.get("content-disposition");
+      if (cd) { const m = cd.match(/filename="?([^";]+)"?/i); if (m && m[1]) fname = m[1]; }
+      else {
+        const mimeExtMap = { "application/pdf": ".pdf", "image/jpeg": ".jpg", "image/png": ".png", "image/webp": ".webp", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": ".xlsx", "application/zip": ".zip", "application/msword": ".doc" };
+        fname = "workflow_output" + (mimeExtMap[blob.type] || "");
+      }
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = fname; document.body.appendChild(a); a.click(); a.remove();
+      document.getElementById("executionResult").innerHTML = "<p style='color:green;'>✅ Workflow executed successfully! Check download.</p>";
+    } else {
+      const errJson = await execRes.json();
+      document.getElementById("executionResult").innerHTML = "<p style='color:red;'>❌ Execution error: " + (errJson.error || "Unknown error") + "</p>";
+    }
+  } catch(e) {
+    document.getElementById("executionResult").innerHTML = "<p style='color:red;'>❌ Error executing workflow: " + e.message + "</p>";
+  }
+}
+loadSavedWorkflows();
+</script></body></html>`);
 });
 
 app.listen(PORT, () => {
