@@ -29,7 +29,8 @@ app.use(fileUpload({ createParentPath: true, limits: { fileSize: 100 * 1024 * 10
 const tempDir = path.join(__dirname, 'temp');
 if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
 
-app.use(express.static(path.join(__dirname, 'public')));
+const publicDir = fs.existsSync(path.join(__dirname, 'public')) ? path.join(__dirname, 'public') : __dirname;
+app.use(express.static(publicDir));
 
 const toolRegistry = [
   { id: 'pdf-to-word',         name: 'PDF to Word',             icon: '📄', file: 'pdf-to-word.html', outputExt: '.doc' },
@@ -1513,7 +1514,10 @@ app.post('/api/workflow/execute/:id', async (req, res) => {
 });
 
 // ========== Frontend & Workflow Builder UI with Gorgeous Multi-Color Studio Modal & Live Preview ==========
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.get('/', (req, res) => {
+  const indexPath = fs.existsSync(path.join(__dirname, 'public', 'index.html')) ? path.join(__dirname, 'public', 'index.html') : path.join(__dirname, 'index.html');
+  res.sendFile(indexPath);
+});
 
 app.get('/workflow-builder', (req, res) => {
   const toolsListHTML = toolRegistry.map(tool => {
@@ -1819,3 +1823,4 @@ app.listen(PORT, () => {
   console.log('🔧 Total Tools: ' + toolRegistry.length);
   console.log('========================================');
 });
+
