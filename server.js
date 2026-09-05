@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const fileUpload = require('express-fileupload');
 const cors = require('cors');
 const path = require('path');
@@ -1515,8 +1515,22 @@ app.post('/api/workflow/execute/:id', async (req, res) => {
 
 // ========== Frontend & Workflow Builder UI with Gorgeous Multi-Color Studio Modal & Live Preview ==========
 app.get('/', (req, res) => {
-  const indexPath = fs.existsSync(path.join(__dirname, 'public', 'index.html')) ? path.join(__dirname, 'public', 'index.html') : path.join(__dirname, 'index.html');
-  res.sendFile(indexPath);
+  const pathPublicIndex = path.join(__dirname, 'public', 'index.html');
+  const pathRootIndex = path.join(__dirname, 'index.html');
+  if (fs.existsSync(pathPublicIndex)) {
+    return res.sendFile(pathPublicIndex);
+  } else if (fs.existsSync(pathRootIndex)) {
+    return res.sendFile(pathRootIndex);
+  } else {
+    const files = fs.readdirSync(__dirname);
+    return res.status(404).send('<div style="font-family:sans-serif;padding:2rem;max-width:600px;margin:50px auto;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.05);">' +
+      '<h2 style="color:#dc2626;margin-bottom:1rem;">?? index.html File Missing on GitHub</h2>' +
+      '<p style="color:#334155;line-height:1.6;">Your Node.js server is running smoothly, but <b>index.html</b> was not uploaded to your GitHub repository.</p>' +
+      '<p style="background:#f1f5f9;padding:12px;border-radius:8px;font-size:13px;color:#475569;margin:1rem 0;"><b>Files on GitHub:</b> ' + files.join(', ') + '</p>' +
+      '<p style="color:#334155;margin-bottom:1rem;">?? <b>Action Needed:</b> Please upload <b>index.html</b> (and all html files from <code>public</code> folder) to GitHub!</p>' +
+      '<a href="/workflow-builder" style="display:inline-block;background:#dc2626;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:bold;">?? Open Workflow Builder Page</a>' +
+      '</div>');
+  }
 });
 
 app.get('/workflow-builder', (req, res) => {
@@ -1531,7 +1545,14 @@ app.get('/workflow-builder', (req, res) => {
     '*{margin:0;padding:0;box-sizing:border-box}' +
     'body{font-family:"Plus Jakarta Sans",sans-serif;background:#f8fafc;min-height:100vh}' +
     '.navbar{background:white;border-bottom:1px solid #e2e8f0;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center}' +
-    '.logo{font-size:1.8rem;font-weight:900;color:#0f172a}.logo span{color:#dc2626}' +
+    '.navbar{background:white;border-bottom:1px solid #e2e8f0;padding:1.2rem 2.5rem;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 4px rgba(0,0,0,0.04)}' +
+'.logo{font-size:3.2rem;font-weight:900;letter-spacing:-0.06em;color:#0f172a;display:flex;align-items:center;cursor:pointer;user-select:none}' +
+'.logo span.red-text{color:#dc2626;display:inline-block;transition:transform 0.3s ease}' +
+'.logo:hover span.red-text{transform:translateY(2px) scale(1.05)}' +
+'.logo-dot{width:12px;height:12px;background-color:#dc2626;border-radius:50%;margin-left:8px;display:inline-block;animation:pulse-dot 1.8s infinite}' +
+'@keyframes pulse-dot{0%{transform:scale(0.95);box-shadow:0 0 0 0 rgba(220,38,38,0.7)}70%{transform:scale(1.15);box-shadow:0 0 0 10px rgba(220,38,38,0)}100%{transform:scale(0.95);box-shadow:0 0 0 0 rgba(220,38,38,0)}}' +
+'.back-link{color:#dc2626;text-decoration:none;font-weight:800;font-size:1rem;padding:0.6rem 1.2rem;border-radius:0.75rem;background:#fef2f2;border:1px solid #fecaca;transition:all 0.2s;display:flex;align-items:center;gap:0.4rem}' +
+'.back-link:hover{background:#dc2626;color:white;transform:translateX(-3px);box-shadow:0 4px 12px rgba(220,38,38,0.2)}' +
     '.back-link{color:#dc2626;text-decoration:none;font-weight:700}' +
     '.container{display:flex;gap:2rem;max-width:1400px;margin:2rem auto;padding:0 1rem}' +
     '.panel{background:white;border-radius:1rem;box-shadow:0 2px 10px rgba(0,0,0,0.05);padding:1.5rem}' +
@@ -1552,7 +1573,7 @@ app.get('/workflow-builder', (req, res) => {
     '.file-upload-section{margin-top:1.5rem;padding:1rem;background:#f8fafc;border-radius:0.5rem}' +
     '.file-upload-section input[type="file"]{margin-top:0.5rem}' +
     '</style></head><body>' +
-    '<div class="navbar"><div class="logo">Files<span>que</span></div><a href="/" class="back-link">← Back to Home</a></div>' +
+    '<div class="navbar"><div class="logo" onclick="window.location.href='/'">Files<span class="red-text">que</span><span class="logo-dot"></span></div><a href="/" class="back-link">← Back to Home</a></div>' +
     '<div class="container">' +
     '<div class="panel tools-panel"><div class="panel-title">🛠️ Tools (' + toolRegistry.length + ')</div>' + toolsListHTML + '</div>' +
     '<div class="panel workflow-panel"><div class="panel-title">📋 Your Workflow</div>' +
@@ -1823,4 +1844,5 @@ app.listen(PORT, () => {
   console.log('🔧 Total Tools: ' + toolRegistry.length);
   console.log('========================================');
 });
+
 
