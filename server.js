@@ -45,7 +45,7 @@ const toolRegistry = [
   { id: 'image-reducer',       name: 'Image Reducer',           icon: '📉', file: 'image-reducer.html', outputExt: '.jpg' },
   { id: 'image-to-text',       name: 'Image to Text',           icon: '🔍', file: 'image-to-text.html', outputExt: '.doc' },
   { id: 'passport-studio',     name: 'Passport Studio',         icon: '🛂', file: 'passport-studio.html', outputExt: '.jpg' },
-  { id: 'merge-image',         name: 'Merge Image',             icon: '🧩', file: 'merge-image.html' },
+  { id: 'merge-image', name: 'Merge Image', icon: '🧩', file: 'merge-image.html', outputExt: '.jpg' },
   { id: 'invoice-generator',   name: 'Invoice Generator',       icon: '🧾', file: 'invoice-gen.html' },
   { id: 'barcode-generator',   name: 'Barcode Generator',       icon: '🏷️', file: 'barcode-gen.html' },
   { id: 'qr-code-studio',      name: 'QR Code Studio',          icon: '📱', file: 'qr-studio.html' },
@@ -721,17 +721,17 @@ async function pdfOrganizerConvert(inputPath, outputPath, config = {}) {
          const normalized = rStr.replace(/to/g, '-').replace(/and/g, ',').replace(/&/g, ',').replace(/[^0-9,-]/g, '');
          const parts = normalized.split(',');
          parts.forEach(part => {
-            if (part.includes('-')) {
-              const [s, e] = part.split('-').map(n => parseInt(n));
-              if (!isNaN(s) && !isNaN(e)) {
-                for (let p = Math.min(s, e); p <= Math.max(s, e); p++) {
-                   if (p >= 1 && p <= totalPages) rotPages.add(p - 1);
-                }
-              }
-            } else {
-              const p = parseInt(part);
-              if (!isNaN(p) && p >= 1 && p <= totalPages) rotPages.add(p - 1);
-            }
+           if (part.includes('-')) {
+             const [s, e] = part.split('-').map(n => parseInt(n));
+             if (!isNaN(s) && !isNaN(e)) {
+               for (let p = Math.min(s, e); p <= Math.max(s, e); p++) {
+                  if (p >= 1 && p <= totalPages) rotPages.add(p - 1);
+               }
+             }
+           } else {
+             const p = parseInt(part);
+             if (!isNaN(p) && p >= 1 && p <= totalPages) rotPages.add(p - 1);
+           }
          });
       }
     }
@@ -888,19 +888,77 @@ async function compressImageConvert(inputPath, outputPath, config = {}) {
 // ========== Image Converter Logic ==========
 async function imageConverterConvert(inputPath, outputPath, config = {}) {
   try {
-    if (!sharp) throw new Error("Sharp module required.");
     const format = (config.convertFormat || 'jpg').toLowerCase();
     const quality = config.convertQuality ? Math.round(parseFloat(config.convertQuality) * 100) : 92;
+    const finalOutputPath = outputPath.replace(/\.[^/.]+$/, `.${format}`);
+
+    if (format === 'bmp') {
+      const img = await loadImage(inputPath);
+      const canvas = createCanvas(img.width, img.height);
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, img.width, img.height);
+      ctx.drawImage(img, 0, 0);
+      
+      const imgData = ctx.getImageData(0, 0, img.width, img.height);
+      const rawData = imgData.data;
+
+      const width = img.width;
+      const height = img.height;
+      const rowSize = Math.floor((3 * width + 3) / 4) * 4;
+      const pixelArraySize = rowSize * height;
+      const fileSize = 54 + pixelArraySize;
+      const buffer = Buffer.alloc(fileSize);
+
+      buffer.write('BM', 0);
+      buffer.writeUInt32LE(fileSize, 2);
+      buffer.writeUInt32LE(0, 6);
+      buffer.writeUInt32LE(54, 10);
+
+      buffer.writeUInt32LE(40, 14);
+      buffer.writeInt32LE(width, 18);
+      buffer.writeInt32LE(-height, 22);
+      buffer.writeUInt16LE(1, 26);
+      buffer.writeUInt16LE(24, 28);
+      buffer.writeUInt32LE(0, 30);
+      buffer.writeUInt32LE(pixelArraySize, 34);
+      buffer.writeUInt32LE(2835, 38);
+      buffer.writeUInt32LE(2835, 42);
+      buffer.writeUInt32LE(0, 46);
+      buffer.writeUInt32LE(0, 50);
+
+      let srcOffset = 0;
+      let dstOffset = 54;
+      for (let y = 0; y < height; y++) {
+          const rowPadding = rowSize - (width * 3);
+          for (let x = 0; x < width; x++) {
+              const r = rawData[srcOffset];
+              const g = rawData[srcOffset + 1];
+              const b = rawData[srcOffset + 2];
+              buffer[dstOffset] = b;
+              buffer[dstOffset + 1] = g;
+              buffer[dstOffset + 2] = r;
+              srcOffset += 4;
+              dstOffset += 3;
+          }
+          for (let p = 0; p < rowPadding; p++) {
+              buffer[dstOffset++] = 0;
+          }
+      }
+
+      fs.writeFileSync(finalOutputPath, buffer);
+      return finalOutputPath;
+    }
+
+    if (!sharp) throw new Error("Sharp module required.");
     let imageProcess = sharp(inputPath);
 
-    if (format === 'jpg' || format === 'jpeg' || format === 'bmp') {
+    if (format === 'jpg' || format === 'jpeg' || format === 'png') {
       imageProcess = imageProcess.flatten({ background: { r: 255, g: 255, b: 255 } });
     }
 
     let ext = format === 'jpeg' ? 'jpeg' : format;
     if (format === 'ico') ext = 'ico';
-
-    const finalOutputPath = outputPath.replace(/\.[^/.]+$/, `.${ext}`);
 
     if (format === 'ico') {
       await imageProcess.resize(256, 256, { fit: 'inside', kernel: sharp.kernel.lanczos3 }).png().toFile(finalOutputPath);
@@ -1203,7 +1261,7 @@ async function imageToTextConvert(inputPath, outputPath, config = {}) {
 const PASSPORT_SIZE_PRESETS = {
   '3.5x4.5': { wIn: 3.5 / 2.54, hIn: 4.5 / 2.54, wMm: 35, hMm: 45, cols: 6, copyOptions: [4, 8, 16, 24, 32] },
   '3.5x3.5': { wIn: 3.5 / 2.54, hIn: 3.5 / 2.54, wMm: 35, hMm: 35, cols: 6, copyOptions: [4, 8, 16, 24, 32] },
-  '2x2':     { wIn: 2,           hIn: 2,           wMm: 51, hMm: 51, cols: 4, copyOptions: [4, 8, 16] }
+  '2x2':     { wIn: 2,            hIn: 2,            wMm: 51, hMm: 51, cols: 4, copyOptions: [4, 8, 16] }
 };
 const PASSPORT_DPI = 300;
 const MM_TO_PT = 2.83465;
@@ -1379,6 +1437,71 @@ async function passportStudioConvert(inputPath, outputPath, config = {}) {
   }
 }
 
+// ========== Merge Image Logic (Matching Frontend HTML Exactly) ==========
+async function mergeImageConvert(input, outputPath, config = {}) {
+  try {
+    let inputs = Array.isArray(input) ? input : [input];
+    if (inputs.length === 0) throw new Error("No images provided for merging.");
+
+    const direction = config.mergeDirection || config.direction || 'horizontal';
+    const professionalGap = 16;
+
+    let loadedImages = [];
+    for (let i = 0; i < inputs.length; i++) {
+      const img = await loadImage(inputs[i]);
+      loadedImages.push(img);
+    }
+
+    const totalW = direction === 'vertical' 
+      ? Math.max(...loadedImages.map(img => img.width)) 
+      : loadedImages.reduce((sum, img) => sum + img.width, 0) + (professionalGap * (loadedImages.length - 1));
+      
+    const totalH = direction === 'vertical' 
+      ? loadedImages.reduce((sum, img) => sum + img.height, 0) + (professionalGap * (loadedImages.length - 1)) 
+      : Math.max(...loadedImages.map(img => img.height));
+
+    const canvas = createCanvas(totalW, totalH);
+    const ctx = canvas.getContext('2d');
+
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillRect(0, 0, totalW, totalH);
+
+    let offset = 0;
+    loadedImages.forEach((img) => {
+      if (direction === 'vertical') {
+        const drawX = (totalW - img.width) / 2;
+        ctx.drawImage(img, drawX, offset);
+        offset += img.height + professionalGap;
+      } else {
+        const drawY = (totalH - img.height) / 2;
+        ctx.drawImage(img, offset, drawY);
+        offset += img.width + professionalGap;
+      }
+    });
+
+    const finalOutputPath = outputPath.replace(/\.[^/.]+$/, ".jpg");
+    let buffer = canvas.toBuffer('image/jpeg', { quality: 0.88 });
+
+    if (sharp) {
+      let quality = 88;
+      while (buffer.length > 100 * 1024 && quality > 15) {
+        quality -= 8;
+        buffer = await sharp(canvas.toBuffer('image/png'))
+          .jpeg({ quality: quality, mozjpeg: true })
+          .toBuffer();
+      }
+    }
+
+    fs.writeFileSync(finalOutputPath, buffer);
+    return finalOutputPath;
+  } catch (error) {
+    console.error('Merge Image error:', error);
+    throw error;
+  }
+} 
+
 // ========== Main processFile ==========
 async function processFile(toolId, inputPath, outputPath, config = {}) {
   switch (toolId) {
@@ -1409,6 +1532,8 @@ async function processFile(toolId, inputPath, outputPath, config = {}) {
       return await imageToTextConvert(inputPath, outputPath, config);
     case 'passport-studio':
       return await passportStudioConvert(inputPath, outputPath, config);
+   case 'merge-image':
+      return await mergeImageConvert(inputPath, outputPath, config);
     default:
       fs.copyFileSync(Array.isArray(inputPath) ? inputPath[0] : inputPath, outputPath);
       return outputPath;
@@ -1603,7 +1728,7 @@ app.get('/workflow-builder', (req, res) => {
     'document.getElementById("wfFile").addEventListener("change", function(e) { selectedFiles = e.target.files; });' +
     'function updateStepConfig(idx, key, val) { steps[idx][key] = val; }' +
     'function addToWorkflow(id, name, icon) { ' +
-    '  steps.push({ id: id, name: name, icon: icon, isComplex: false, mode: "all", range: "", sortOrder: "upload", customSequence: "", pageOrder: "", rotatePages: "", rotateDegree: "90", watermarkText: "CONFIDENTIAL", watermarkMode: "diagonal", compressQuality: "0.70", convertFormat: "jpg", convertQuality: "0.92", reducerMode: "resize", reducerWidth: "800", reducerHeight: "600", reducerTargetKb: "50", sizePreset: "3.5x4.5", bgColor: "#f87171", zoom: "100", copies: "32", removeBg: false });' +
+    '  steps.push({ id: id, name: name, icon: icon, isComplex: false, mode: "all", range: "", sortOrder: "upload", customSequence: "", pageOrder: "", rotatePages: "", rotateDegree: "90", watermarkText: "CONFIDENTIAL", watermarkMode: "diagonal", compressQuality: "0.70", convertFormat: "jpg", convertQuality: "0.92", reducerMode: "resize", reducerWidth: "800", reducerHeight: "600", reducerTargetKb: "50", sizePreset: "3.5x4.5", bgColor: "#f87171", zoom: "100", copies: "32", removeBg: false, mergeDirection: "horizontal" });' +
     '  renderSteps();' +
     '}' +
     'function renderSteps() {' +
@@ -1619,6 +1744,10 @@ app.get('/workflow-builder', (req, res) => {
     '          "<option value=\\\"simple\\\" " + (!steps[i].isComplex ? "selected" : "") + ">Simple Table</option>" +' +
     '          "<option value=\\\"complex\\\" " + (steps[i].isComplex ? "selected" : "") + ">Complex Table</option>" +' +
     '        "</select>" +' +
+    '      "</div>";' +
+    '    } else if (steps[i].id === "merge-image") {' +
+    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:linear-gradient(135deg, #0d9488, #4f46e5); padding:6px 14px; border-radius:8px; color:white; font-weight:bold; font-size:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1);\'>" + ' +
+    '        "<span>🧩 Studio & Crop Dialog Ready</span>" + ' +
     '      "</div>";' +
     '    } else if (steps[i].id === "pdf-splitter") {' +
     '      let mode = steps[i].mode || "all";' +
@@ -1741,10 +1870,6 @@ app.get('/workflow-builder', (req, res) => {
     '          "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"reducerTargetKb\\\", this.value)\' value=\'" + rKb + "\' placeholder=\'KB\' style=\'display:" + showTarget + "; padding:2px 4px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; width:60px; outline:none;\'>" +' +
     '        "</div>" +' +
     '      "</div>";' +
-    '    } else if (steps[i].id === "passport-studio") {' +
-    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:linear-gradient(135deg, #4f46e5, #e11d48); padding:6px 14px; border-radius:8px; color:white; font-weight:bold; font-size:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1);\'>" + ' +
-    '        "<span>✨ Auto Studio Dialog Ready</span>" + ' +
-    '      "</div>";' +
     '    }' +
     '    html += "<div class=\'step\'><div class=\'step-number\'>" + (i+1) + "</div><span style=\'font-size:1.2rem;\'>" + steps[i].icon + "</span><strong style=\'font-size:1.1rem;\'>" + steps[i].name + "</strong>" + (toggleHtml ? toggleHtml : "<div style=\'margin-left:auto;\'></div>") + "<button class=\'remove-btn\' style=\'margin-left:10px;\' onclick=\'removeStep(" + i + ")\'>✕</button></div>";' +
     '  }' +
@@ -1755,7 +1880,7 @@ app.get('/workflow-builder', (req, res) => {
     'async function saveWorkflow() {' +
     '  const name = document.getElementById("wfName").value.trim() || "My Workflow";' +
     '  if (steps.length === 0) { alert("Please add at least one tool"); return; }' +
-    '  const payload = { name: name, steps: steps.map(s => ({ toolId: s.id, isComplex: !!s.isComplex, mode: s.mode, range: s.range, sortOrder: s.sortOrder, customSequence: s.customSequence, pageOrder: s.pageOrder, rotatePages: s.rotatePages, rotateDegree: s.rotateDegree, watermarkText: s.watermarkText, watermarkMode: s.watermarkMode, compressQuality: s.compressQuality, convertFormat: s.convertFormat, convertQuality: s.convertQuality, reducerMode: s.reducerMode, reducerWidth: s.reducerWidth, reducerHeight: s.reducerHeight, reducerTargetKb: s.reducerTargetKb, sizePreset: s.sizePreset, bgColor: s.bgColor, zoom: s.zoom, copies: s.copies, removeBg: s.removeBg, printSheet: s.printSheet })) };' +
+    '  const payload = { name: name, steps: steps.map(s => ({ toolId: s.id, isComplex: !!s.isComplex, mode: s.mode, range: s.range, sortOrder: s.sortOrder, customSequence: s.customSequence, pageOrder: s.pageOrder, rotatePages: s.rotatePages, rotateDegree: s.rotateDegree, watermarkText: s.watermarkText, watermarkMode: s.watermarkMode, compressQuality: s.compressQuality, convertFormat: s.convertFormat, convertQuality: s.convertQuality, reducerMode: s.reducerMode, reducerWidth: s.reducerWidth, reducerHeight: s.reducerHeight, reducerTargetKb: s.reducerTargetKb, sizePreset: s.sizePreset, bgColor: s.bgColor, zoom: s.zoom, copies: s.copies, removeBg: s.removeBg, printSheet: s.printSheet, mergeDirection: s.mergeDirection, customProcessedImages: s.customProcessedImages })) };' +
     '  try {' +
     '    const res = await fetch("/api/workflow/create", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });' +
     '    const data = await res.json();' +
@@ -1779,6 +1904,198 @@ app.get('/workflow-builder', (req, res) => {
     '    openProfessionalStudioModal(selectedFiles[0], passportStepIdx);' +
     '    return;' +
     '  }' +
+    '  const mergeImgStepIdx = steps.findIndex(s => s.id === "merge-image");' +
+    '  if (mergeImgStepIdx !== -1) {' +
+    '    openMergeImageStudioModal(selectedFiles, mergeImgStepIdx);' +
+    '    return;' +
+    '  }' +
+    '  sendWorkflowExecution();' +
+    '}' +
+    'function openMergeImageStudioModal(files, stepIdx) {' +
+    '  let modalHtml = \'<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.8);backdrop-filter:blur(8px);display:flex;justify-content:center;align-items:center;z-index:9999;font-family:\\\'Plus Jakarta Sans\\\',sans-serif;"><div style="background:white;padding:2.5rem;border-radius:1.75rem;width:980px;max-width:96%;box-shadow:0 25px 60px rgba(0,0,0,0.4);max-height:92vh;overflow-y:auto;border:1px solid #e2e8f0;"><div style="display:flex;align-items:center;margin-bottom:1.5rem;"><div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#0d9488,#4f46e5);display:flex;align-items:center;justify-content:center;color:white;font-size:24px;box-shadow:0 10px 20px rgba(13,148,136,0.3);margin-right:1rem;">🧩</div><div><h2 style="font-size:24px;font-weight:900;color:#0f172a;margin:0;letter-spacing:-0.5px;">Merge Image Studio Pro</h2><p style="font-size:12px;color:#64748b;font-weight:600;margin:2px 0 0 0;">Interactive Studio: Reorder, Rotate 90°, Crop & Split Bucket Extraction</p></div></div><hr style="border:0;border-top:1px solid #e2e8f0;margin-bottom:1.5rem;"><div style="margin-bottom:1.5rem;"><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Merge Direction / Flow</label><select id="studioMergeDir" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="horizontal">Horizontal (Side by Side)</option><option value="vertical" selected>Vertical (Top to Bottom)</option></select></div><div style="margin-bottom:1.5rem;"><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Uploaded Images Workspace</label><div id="studioFilesContainer" style="display:flex;flex-direction:column;gap:1rem;background:#f8fafc;padding:1rem;border-radius:12px;border:1px solid #e2e8f0;max-height:350px;overflow-y:auto;"></div></div><div style="display:flex;justify-content:flex-end;gap:12px;padding-top:1rem;border-top:1px solid #e2e8f0;"><button onclick="closeModal()" style="padding:12px 24px;background:#f1f5f9;color:#334155;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;transition:0.2s;">Cancel</button><button id="applyMergeBtn" style="padding:12px 28px;background:linear-gradient(135deg,#0d9488,#4f46e5);color:white;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;box-shadow:0 10px 20px rgba(13,148,136,0.3);transition:0.2s;">✨ Apply & Execute Workflow</button></div></div></div>\';' +
+    '  document.getElementById("modalContainer").innerHTML = modalHtml;' +
+    '  document.getElementById("applyMergeBtn").onclick = function() { applyMergeStudioAndExecute(stepIdx); };' +
+    '  window.studioItems = [];' +
+    '  let loadedCount = 0;' +
+    '  for (let i = 0; i < files.length; i++) {' +
+    '    const reader = new FileReader();' +
+    '    reader.onload = function(e) {' +
+    '      const img = new Image();' +
+    '      img.onload = function() {' +
+    '        window.studioItems.push({ id: Math.random().toString(36).substring(2, 9), file: files[i], url: e.target.result, rotation: 0, imgObj: img });' +
+    '        loadedCount++;' +
+    '        if (loadedCount === files.length) { renderStudioFilesList(); }' +
+    '      };' +
+    '      img.src = e.target.result;' +
+    '    };' +
+    '    reader.readAsDataURL(files[i]);' +
+    '  }' +
+    '}' +
+    'function renderStudioFilesList() {' +
+    '  const container = document.getElementById("studioFilesContainer");' +
+    '  if (!container) return;' +
+    '  if (window.studioItems.length === 0) { container.innerHTML = "<p style=\'font-size:12px;color:#64748b;\'>No images remaining.</p>"; return; }' +
+    '  let html = "";' +
+    '  for (let i = 0; i < window.studioItems.length; i++) {' +
+    '    const item = window.studioItems[i];' +
+    '    html += \'<div style="background:white;padding:12px 16px;border-radius:12px;border:1px solid #cbd5e1;display:flex;align-items:center;justify-content:space-between;gap:1rem;"><div style="display:flex;align-items:center;gap:12px;"><img src="\' + item.url + \'" style="width:50px;height:50px;object-fit:contain;border-radius:8px;border:1px solid #e2e8f0;"><div style="display:flex;flex-direction:column;"><strong style="font-size:13px;color:#0f172a;">Image #\' + (i+1) + \'</strong><span style="font-size:11px;color:#64748b;">Size: \' + item.imgObj.width + \' × \' + item.imgObj.height + \'px</span></div></div><div style="display:flex;align-items:center;gap:6px;"><button type="button" onclick="moveStudioItem(\' + i + \', -1)" \' + (i === 0 ? \'disabled style="opacity:0.3;cursor:not-allowed;padding:6px 10px;background:#f1f5f9;border-radius:6px;font-size:12px;font-weight:bold;"\' : \'style="padding:6px 10px;background:#f1f5f9;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer;"\') + \'>⬆️ Up</button><button type="button" onclick="moveStudioItem(\' + i + \', 1)" \' + (i === window.studioItems.length - 1 ? \'disabled style="opacity:0.3;cursor:not-allowed;padding:6px 10px;background:#f1f5f9;border-radius:6px;font-size:12px;font-weight:bold;"\' : \'style="padding:6px 10px;background:#f1f5f9;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer;"\') + \'>⬇️ Down</button><button type="button" onclick="rotateStudioItem(\' + i + \')" style="padding:6px 10px;background:#fef3c7;color:#b45309;border:none;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;">🔄 Rotate</button><button type="button" onclick="openStudioCropModal(\' + i + \')" style="padding:6px 10px;background:#ccfbf1;color:#0f766e;border:none;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;">✂️ Crop</button><button type="button" onclick="openStudioSplitModal(\' + i + \')" style="padding:6px 10px;background:#e0e7ff;color:#3730a3;border:none;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;">🔪 Split</button><button type="button" onclick="deleteStudioItem(\' + i + \')" style="padding:6px 10px;background:#fee2e2;color:#dc2626;border:none;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;">🗑️ Delete</button></div></div>\';' +
+    '  }' +
+    '  container.innerHTML = html;' +
+    '}' +
+    'function moveStudioItem(idx, direction) {' +
+    '  const target = idx + direction;' +
+    '  if (target < 0 || target >= window.studioItems.length) return;' +
+    '  const temp = window.studioItems[idx];' +
+    '  window.studioItems[idx] = window.studioItems[target];' +
+    '  window.studioItems[target] = temp;' +
+    '  renderStudioFilesList();' +
+    '}' +
+    'function deleteStudioItem(idx) {' +
+    '  window.studioItems.splice(idx, 1);' +
+    '  renderStudioFilesList();' +
+    '}' +
+    'function rotateStudioItem(idx) {' +
+    '  const item = window.studioItems[idx];' +
+    '  item.rotation = (item.rotation + 90) % 360;' +
+    '  const canvas = document.createElement("canvas");' +
+    '  const ctx = canvas.getContext("2d");' +
+    '  const img = item.imgObj;' +
+    '  if (item.rotation === 90 || item.rotation === 270) { canvas.width = img.height; canvas.height = img.width; }' +
+    '  else { canvas.width = img.width; canvas.height = img.height; }' +
+    '  ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0,0,canvas.width,canvas.height);' +
+    '  ctx.translate(canvas.width/2, canvas.height/2);' +
+    '  ctx.rotate((item.rotation * Math.PI) / 180);' +
+    '  ctx.drawImage(img, -img.width/2, -img.height/2);' +
+    '  item.url = canvas.toDataURL("image/jpeg", 0.95);' +
+    '  item.rotation = 0;' +
+    '  const newImg = new Image();' +
+    '  newImg.onload = function() { item.imgObj = newImg; renderStudioFilesList(); };' +
+    '  newImg.src = item.url;' +
+    '}' +
+    'function openStudioCropModal(targetIdx) {' +
+    '  const item = window.studioItems[targetIdx];' +
+    '  const cropHtml = \'<div id="subStudioModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.85);z-index:10000;display:flex;justify-content:center;align-items:center;"><div style="background:white;padding:2rem;border-radius:1.5rem;width:700px;max-width:95%;box-shadow:0 25px 50px rgba(0,0,0,0.5);text-align:center;"><h3 style="font-size:18px;font-weight:900;color:#0f172a;margin-bottom:1rem;">Crop Image</h3><div style="background:#f1f5f9;padding:1rem;border-radius:12px;display:flex;justify-content:center;max-height:50vh;overflow:hidden;margin-bottom:1rem;"><canvas id="subCropCanvas" style="max-width:100%;max-height:45vh;object-fit:contain;cursor:crosshair;"></canvas></div><div style="display:flex;justify-content:flex-end;gap:10px;"><button onclick="document.getElementById(\\\'subStudioModal\\\").remove()" style="padding:10px 20px;background:#f1f5f9;color:#334155;border:none;border-radius:8px;font-weight:800;cursor:pointer;">Cancel</button><button id="saveCropBtn" style="padding:10px 24px;background:#0d9488;color:white;border:none;border-radius:8px;font-weight:800;cursor:pointer;">Save Crop</button></div></div></div>\';' +
+    '  const div = document.createElement("div"); div.innerHTML = cropHtml; document.body.appendChild(div);' +
+    '  document.getElementById("saveCropBtn").onclick = function() { saveStudioCrop(targetIdx); };' +
+    '  const canvas = document.getElementById("subCropCanvas");' +
+    '  const ctx = canvas.getContext("2d");' +
+    '  const img = item.imgObj;' +
+    '  canvas.width = img.width; canvas.height = img.height;' +
+    '  ctx.drawImage(img, 0, 0);' +
+    '  window.subCropBox = { x: img.width*0.1, y: img.height*0.1, w: img.width*0.8, h: img.height*0.8 };' +
+    '  let isSubDragging = false, startX = 0, startY = 0;' +
+    '  function redrawSubCrop() {' +
+    '    ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0);' +
+    '    ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(0,0,canvas.width,canvas.height);' +
+    '    ctx.save(); ctx.beginPath(); ctx.rect(window.subCropBox.x, window.subCropBox.y, window.subCropBox.w, window.subCropBox.h); ctx.clip(); ctx.drawImage(img,0,0); ctx.restore();' +
+    '    ctx.strokeStyle = "#0d9488"; ctx.lineWidth = 3; ctx.strokeRect(window.subCropBox.x, window.subCropBox.y, window.subCropBox.w, window.subCropBox.h);' +
+    '  }' +
+    '  redrawSubCrop();' +
+    '  canvas.onmousedown = function(e) {' +
+    '    const rect = canvas.getBoundingClientRect();' +
+    '    const scaleX = canvas.width / rect.width; const scaleY = canvas.height / rect.height;' +
+    '    startX = (e.clientX - rect.left) * scaleX; startY = (e.clientY - rect.top) * scaleY;' +
+    '    isSubDragging = true;' +
+    '  };' +
+    '  canvas.onmousemove = function(e) {' +
+    '    if (!isSubDragging) return;' +
+    '    const rect = canvas.getBoundingClientRect();' +
+    '    const scaleX = canvas.width / rect.width; const scaleY = canvas.height / rect.height;' +
+    '    const curX = (e.clientX - rect.left) * scaleX; const curY = (e.clientY - rect.top) * scaleY;' +
+    '    window.subCropBox.w = Math.max(30, Math.min(canvas.width - window.subCropBox.x, curX - startX + window.subCropBox.w));' +
+    '    window.subCropBox.h = Math.max(30, Math.min(canvas.height - window.subCropBox.y, curY - startY + window.subCropBox.h));' +
+    '    redrawSubCrop();' +
+    '  };' +
+    '  window.onmouseup = function() { isSubDragging = false; };' +
+    '}' +
+    'function saveStudioCrop(targetIdx) {' +
+    '  const canvas = document.getElementById("subCropCanvas");' +
+    '  const box = window.subCropBox;' +
+    '  const outCanvas = document.createElement("canvas");' +
+    '  outCanvas.width = box.w; outCanvas.height = box.h;' +
+    '  const outCtx = outCanvas.getContext("2d");' +
+    '  outCtx.fillStyle = "#FFFFFF"; outCtx.fillRect(0,0,box.w,box.h);' +
+    '  outCtx.drawImage(canvas, box.x, box.y, box.w, box.h, 0, 0, box.w, box.h);' +
+    '  const item = window.studioItems[targetIdx];' +
+    '  item.url = outCanvas.toDataURL("image/jpeg", 0.95);' +
+    '  const newImg = new Image();' +
+    '  newImg.onload = function() { item.imgObj = newImg; renderStudioFilesList(); document.getElementById("subStudioModal").remove(); };' +
+    '  newImg.src = item.url;' +
+    '}' +
+    'function openStudioSplitModal(targetIdx) {' +
+    '  const item = window.studioItems[targetIdx];' +
+    '  const splitHtml = \'<div id="subSplitModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.85);z-index:10000;display:flex;justify-content:center;align-items:center;"><div style="background:white;padding:2rem;border-radius:1.5rem;width:750px;max-width:95%;box-shadow:0 25px 50px rgba(0,0,0,0.5);text-align:center;"><h3 style="font-size:18px;font-weight:900;color:#0f172a;margin-bottom:0.5rem;">Split Image</h3><p style="font-size:12px;color:#64748b;margin-bottom:1rem;">Drag box on image and click "Add Part" to add parts to merge list.</p><div style="background:#f1f5f9;padding:1rem;border-radius:12px;display:flex;justify-content:center;max-height:45vh;overflow:hidden;margin-bottom:1rem;"><canvas id="subSplitCanvas" style="max-width:100%;max-height:40vh;object-fit:contain;cursor:crosshair;"></canvas></div><div style="margin-bottom:1.0rem;display:flex;gap:8px;overflow-x:auto;padding:6px;background:#f8fafc;border-radius:8px;min-height:50px;align-items:center;" id="subSplitBucket"></div><div style="display:flex;justify-content:space-between;align-items:center;"><button onclick="addSubSplitPart()" style="padding:10px 18px;background:#4f46e5;color:white;border:none;border-radius:8px;font-weight:800;cursor:pointer;">➕ Add Part to Bucket</button><div style="display:flex;gap:10px;"><button onclick="document.getElementById(\\\'subSplitModal\\\").remove()" style="padding:10px 20px;background:#f1f5f9;color:#334155;border:none;border-radius:8px;font-weight:800;cursor:pointer;">Cancel</button><button id="saveSplitBtn" style="padding:10px 24px;background:#0d9488;color:white;border:none;border-radius:8px;font-weight:800;cursor:pointer;">Done & Replace</button></div></div></div></div>\';' +
+    '  const div = document.createElement("div"); div.innerHTML = splitHtml; document.body.appendChild(div);' +
+    '  document.getElementById("saveSplitBtn").onclick = function() { saveStudioSplit(targetIdx); };' +
+    '  const canvas = document.getElementById("subSplitCanvas");' +
+    '  const ctx = canvas.getContext("2d");' +
+    '  const img = item.imgObj;' +
+    '  canvas.width = img.width; canvas.height = img.height;' +
+    '  ctx.drawImage(img, 0, 0);' +
+    '  window.subSplitBox = { x: img.width*0.1, y: img.height*0.1, w: img.width*0.4, h: img.height*0.4 };' +
+    '  window.subSplitBucketList = [];' +
+    '  let isSubSplitting = false, startX = 0, startY = 0;' +
+    '  function redrawSubSplit() {' +
+    '    ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0);' +
+    '    ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(0,0,canvas.width,canvas.height);' +
+    '    ctx.save(); ctx.beginPath(); ctx.rect(window.subSplitBox.x, window.subSplitBox.y, window.subSplitBox.w, window.subSplitBox.h); ctx.clip(); ctx.drawImage(img,0,0); ctx.restore();' +
+    '    ctx.strokeStyle = "#4f46e5"; ctx.lineWidth = 3; ctx.strokeRect(window.subSplitBox.x, window.subSplitBox.y, window.subSplitBox.w, window.subSplitBox.h);' +
+    '  }' +
+    '  redrawSubSplit();' +
+    '  canvas.onmousedown = function(e) {' +
+    '    const rect = canvas.getBoundingClientRect();' +
+    '    const scaleX = canvas.width / rect.width; const scaleY = canvas.height / rect.height;' +
+    '    startX = (e.clientX - rect.left) * scaleX; startY = (e.clientY - rect.top) * scaleY;' +
+    '    isSubSplitting = true;' +
+    '  };' +
+    '  canvas.onmousemove = function(e) {' +
+    '    if (!isSubSplitting) return;' +
+    '    const rect = canvas.getBoundingClientRect();' +
+    '    const scaleX = canvas.width / rect.width; const scaleY = canvas.height / rect.height;' +
+    '    const curX = (e.clientX - rect.left) * scaleX; const curY = (e.clientY - rect.top) * scaleY;' +
+    '    window.subSplitBox.w = Math.max(30, Math.min(canvas.width - window.subSplitBox.x, curX - startX + window.subSplitBox.w));' +
+    '    window.subSplitBox.h = Math.max(30, Math.min(canvas.height - window.subSplitBox.y, curY - startY + window.subSplitBox.h));' +
+    '    redrawSubSplit();' +
+    '  };' +
+    '  window.onmouseup = function() { isSubSplitting = false; };' +
+    '}' +
+    'function addSubSplitPart() {' +
+    '  const canvas = document.getElementById("subSplitCanvas");' +
+    '  const box = window.subSplitBox;' +
+    '  const outCanvas = document.createElement("canvas");' +
+    '  outCanvas.width = box.w; outCanvas.height = box.h;' +
+    '  const outCtx = outCanvas.getContext("2d");' +
+    '  outCtx.fillStyle = "#FFFFFF"; outCtx.fillRect(0,0,box.w,box.h);' +
+    '  outCtx.drawImage(canvas, box.x, box.y, box.w, box.h, 0, 0, box.w, box.h);' +
+    '  const url = outCanvas.toDataURL("image/jpeg", 0.95);' +
+    '  window.subSplitBucketList.push(url);' +
+    '  const bucket = document.getElementById("subSplitBucket");' +
+    '  bucket.innerHTML += \'<img src="\' + url + \'" style="height:40px;width:40px;object-fit:contain;border:1px solid #cbd5e1;border-radius:6px;background:white;">\';' +
+    '}' +
+    'function saveStudioSplit(targetIdx) {' +
+    '  if (window.subSplitBucketList.length === 0) { document.getElementById("subSplitModal").remove(); return; }' +
+    '  let loaded = 0;' +
+    '  const newItems = [];' +
+    '  window.subSplitBucketList.forEach((url, i) => {' +
+    '    const img = new Image();' +
+    '    img.onload = function() {' +
+    '      newItems.push({ id: Math.random().toString(36).substring(2, 9), file: window.studioItems[targetIdx].file, url: url, rotation: 0, imgObj: img });' +
+    '      loaded++;' +
+    '      if (loaded === window.subSplitBucketList.length) {' +
+    '        window.studioItems.splice(targetIdx, 1, ...newItems);' +
+    '        renderStudioFilesList();' +
+    '        document.getElementById("subSplitModal").remove();' +
+    '      }' +
+    '    };' +
+    '    img.src = url;' +
+    '  });' +
+    '}' +
+    'function applyMergeStudioAndExecute(stepIdx) {' +
+    '  steps[stepIdx].mergeDirection = document.getElementById("studioMergeDir").value;' +
+    '  if (window.studioItems && window.studioItems.length > 0) {' +
+    '    selectedFiles = window.studioItems.map(it => it.file);' +
+    '  }' +
+    '  closeModal();' +
     '  sendWorkflowExecution();' +
     '}' +
     'function openProfessionalStudioModal(file, stepIdx) {' +
@@ -1788,12 +2105,12 @@ app.get('/workflow-builder', (req, res) => {
     '    const modalHtml = \'<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.8);backdrop-filter:blur(8px);display:flex;justify-content:center;align-items:center;z-index:9999;font-family:\\\'Plus Jakarta Sans\\\',sans-serif;"><div style="background:white;padding:2.5rem;border-radius:1.75rem;width:820px;max-width:96%;box-shadow:0 25px 60px rgba(0,0,0,0.4);max-height:92vh;overflow-y:auto;border:1px solid #e2e8f0;"><div style="display:flex;align-items:center;margin-bottom:1.5rem;"><div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#4f46e5,#e11d48);display:flex;align-items:center;justify-content:center;color:white;font-size:24px;box-shadow:0 10px 20px rgba(79,70,229,0.3);margin-right:1rem;">🛂</div><div><h2 style="font-size:24px;font-weight:900;color:#0f172a;margin:0;letter-spacing:-0.5px;">Passport Photo Studio Pro</h2><p style="font-size:12px;color:#64748b;font-weight:600;margin:2px 0 0 0;">Professional Studio: Cloud AI Background Removal & HD Print Layout</p></div></div><hr style="border:0;border-top:1px solid #e2e8f0;margin-bottom:1.5rem;"><div style="display:grid;grid-template-columns:1.2fr 1fr;gap:2rem;margin-bottom:2rem;"><div style="display:flex;flex-direction:column;gap:1.2rem;"><div><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">1. Background Color Palette</label><select id="studioBg" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="#ffffff">Pure White (#FFFFFF)</option><option value="#a5cbf7">Light Blue (#A5CBF7)</option><option value="#3b82f6">Royal Blue (#3B82F6)</option><option value="#f87171" selected>Soft Red (#F87171)</option></select></div><div><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">2. Passport Size Preset</label><select id="studioSize" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="3.5x4.5">Standard Indian Passport (3.5 x 4.5 cm)</option><option value="2x2">US Visa Layout (2 x 2 inch)</option><option value="3.5x3.5">Indian PAN Card Size (3.5 x 3.5 cm)</option></select></div><div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><label style="font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;">3. Zoom & Face Position</label><span id="zoomValBadge" style="font-size:11px;font-weight:800;color:#4f46e5;background:#e0e7ff;padding:2px 8px;border-radius:6px;">100%</span></div><input type="range" id="studioZoom" min="50" max="250" value="100" style="width:100%;height:6px;background:#cbd5e1;border-radius:4px;accent-color:#4f46e5;cursor:pointer;"></div><div><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">4. Copies & Grid Layout</label><select id="studioCopies" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="4">4 Photos Grid</option><option value="8">8 Photos Grid</option><option value="16">16 Photos Grid</option><option value="32" selected>32 Photos Grid (Full A4 Sheet)</option></select></div><div style="background:#e0e7ff;border:1px solid #c7d2fe;padding:12px 14px;border-radius:12px;display:flex;align-items:center;gap:10px;"><input type="checkbox" id="studioRemoveBg" style="width:18px;height:18px;accent-color:#4f46e5;cursor:pointer;"><label for="studioRemoveBg" style="font-size:12px;font-weight:800;color:#3730a3;cursor:pointer;">Remove Background Pro (Cloud AI Engine)</label></div></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f1f5f9;padding:1.5rem;border-radius:16px;border:1px solid #e2e8f0;position:relative;"><span style="font-size:11px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Live Studio Preview</span><div id="modalPreviewBox" style="width:160px;height:200px;background:#f87171;box-shadow:0 20px 30px rgba(0,0,0,0.15);border:2px solid white;overflow:hidden;position:relative;border-radius:8px;transition:background 0.3s;display:flex;align-items:center;justify-content:center;"><img src="\' + imgSrc + \'" id="modalPreviewImg" style="width:100%;height:100%;object-fit:contain;transform:scale(1);transform-origin:center;transition:transform 0.1s;" /></div><p style="font-size:11px;color:#64748b;font-weight:600;margin-top:12px;text-align:center;">Interactive preview updates instantly</p></div></div><div style="display:flex;justify-content:flex-end;gap:12px;padding-top:1rem;border-top:1px solid #e2e8f0;"><button onclick="closeModal()" style="padding:12px 24px;background:#f1f5f9;color:#334155;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;transition:0.2s;">Cancel</button><button onclick="applyStudioAndExecute(\' + stepIdx + \')" style="padding:12px 28px;background:linear-gradient(135deg,#4f46e5,#e11d48);color:white;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;box-shadow:0 10px 20px rgba(79,70,229,0.3);transition:0.2s;">✨ Apply & Execute Workflow</button></div></div></div>\';' +
     '    document.getElementById("modalContainer").innerHTML = modalHtml;' +
     '    document.getElementById("studioZoom").addEventListener("input", function(e) {' +
-    '       const val = e.target.value;' +
-    '       document.getElementById("zoomValBadge").textContent = val + "%";' +
-    '       document.getElementById("modalPreviewImg").style.transform = "scale(" + (val / 100) + ")";' +
+    '        const val = e.target.value;' +
+    '        document.getElementById("zoomValBadge").textContent = val + "%";' +
+    '        document.getElementById("modalPreviewImg").style.transform = "scale(" + (val / 100) + ")";' +
     '    });' +
     '    document.getElementById("studioBg").addEventListener("change", function(e) {' +
-    '       document.getElementById("modalPreviewBox").style.backgroundColor = e.target.value;' +
+    '        document.getElementById("modalPreviewBox").style.backgroundColor = e.target.value;' +
     '    });' +
     '  };' +
     '  reader.readAsDataURL(file);' +
@@ -1812,7 +2129,7 @@ app.get('/workflow-builder', (req, res) => {
     'async function sendWorkflowExecution() {' +
     '  const name = document.getElementById("wfName").value.trim() || "My Workflow";' +
     '  let saveRes;' +
-    '  try { saveRes = await fetch("/api/workflow/create", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name, steps: steps.map(s => ({ toolId: s.id, isComplex: !!s.isComplex, mode: s.mode, range: s.range, sortOrder: s.sortOrder, customSequence: s.customSequence, pageOrder: s.pageOrder, rotatePages: s.rotatePages, rotateDegree: s.rotateDegree, watermarkText: s.watermarkText, watermarkMode: s.watermarkMode, compressQuality: s.compressQuality, convertFormat: s.convertFormat, convertQuality: s.convertQuality, reducerMode: s.reducerMode, reducerWidth: s.reducerWidth, reducerHeight: s.reducerHeight, reducerTargetKb: s.reducerTargetKb, sizePreset: s.sizePreset, bgColor: s.bgColor, zoom: s.zoom, copies: s.copies, removeBg: s.removeBg, printSheet: s.printSheet })) }) }); }' +
+    '  try { saveRes = await fetch("/api/workflow/create", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name, steps: steps.map(s => ({ toolId: s.id, isComplex: !!s.isComplex, mode: s.mode, range: s.range, sortOrder: s.sortOrder, customSequence: s.customSequence, pageOrder: s.pageOrder, rotatePages: s.rotatePages, rotateDegree: s.rotateDegree, watermarkText: s.watermarkText, watermarkMode: s.watermarkMode, compressQuality: s.compressQuality, convertFormat: s.convertFormat, convertQuality: s.convertQuality, reducerMode: s.reducerMode, reducerWidth: s.reducerWidth, reducerHeight: s.reducerHeight, reducerTargetKb: s.reducerTargetKb, sizePreset: s.sizePreset, bgColor: s.bgColor, zoom: s.zoom, copies: s.copies, removeBg: s.removeBg, printSheet: s.printSheet, mergeDirection: s.mergeDirection })) }) }); }' +
     '  catch(e) { alert("Save failed: " + e.message); return; }' +
     '  const saveData = await saveRes.json();' +
     '  if (!saveData.success) { alert("Save error: " + saveData.error); return; }' +
