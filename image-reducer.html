@@ -17,6 +17,7 @@
         <span class="text-4xl sm:text-7xl font-black tracking-tighter text-[#0f172a] flex items-center overflow-hidden">
             <span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span><span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span>
         </span>
+        
         <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping ml-1 hidden sm:inline-block"></span>
     </div>
     
@@ -297,78 +298,77 @@
 
             actionBtn.classList.add('hidden');
             statusDiv.classList.remove('hidden');
-            statusDiv.innerHTML = "⚡ Processing graphic updates inside engine...";
+            statusDiv.innerHTML = "⚡ Optimizing image size precisely...";
 
-            let isFinished = false;
-            const safetyTimer = setTimeout(() => {
-                if (!isFinished) {
-                    isFinished = true;
-                    triggerDirectDownload();
-                }
-            }, 1000);
+            const objectUrl = URL.createObjectURL(selectedFile);
+            const img = new Image();
+            
+            img.onload = function() {
+                URL.revokeObjectURL(objectUrl);
 
-            try {
-                const objectUrl = URL.createObjectURL(selectedFile);
-                const img = new Image();
-                img.onload = function() {
-                    URL.revokeObjectURL(objectUrl);
-                    if (isFinished) return;
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
 
-                    const canvas = document.createElement('canvas');
-                    let targetW = parseInt(inputWidth.value) || img.width;
-                    let targetH = parseInt(inputHeight.value) || img.height;
+                let targetW = img.width;
+                let targetH = img.height;
 
-                    if (currentMode === 'target') {
-                        const targetKb = parseFloat(inputSize.value) || 50;
-                        const scaleFactor = Math.min(1, Math.sqrt((targetKb * 1024 * 1.2) / selectedFile.size));
-                        targetW = Math.max(100, Math.floor(img.width * scaleFactor));
-                        targetH = Math.max(100, Math.floor(img.height * scaleFactor));
-                    }
-
+                if (currentMode === 'resize') {
+                    targetW = parseInt(inputWidth.value) || img.width;
+                    targetH = parseInt(inputHeight.value) || img.height;
                     canvas.width = targetW;
                     canvas.height = targetH;
-                    const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, targetW, targetH);
 
-                    let quality = currentMode === 'target' ? 0.75 : 0.90;
-
-                    try {
-                        canvas.toBlob((blob) => {
-                            if (!isFinished) {
-                                isFinished = true;
-                                clearTimeout(safetyTimer);
-                                if (blob) {
-                                    const dlUrl = URL.createObjectURL(blob);
-                                    finalizeDownload(dlUrl);
-                                } else {
-                                    triggerDirectDownload();
-                                }
-                            }
-                        }, 'image/jpeg', quality);
-                    } catch (e) {
-                        if (!isFinished) {
-                            isFinished = true;
-                            clearTimeout(safetyTimer);
+                    canvas.toBlob((blob) => {
+                        if (blob) {
+                            finalizeDownload(URL.createObjectURL(blob));
+                        } else {
                             triggerDirectDownload();
                         }
+                    }, 'image/jpeg', 0.90);
+                } else {
+                    const maxBytes = (parseFloat(inputSize.value) || 50) * 1024;
+                    
+                    // Progressive quality & dimension compression loop
+                    let quality = 0.90;
+                    let scale = 1.0;
+                    let attempt = 0;
+
+                    function attemptCompression() {
+                        const w = Math.max(100, Math.floor(img.width * scale));
+                        const h = Math.max(100, Math.floor(img.height * scale));
+                        canvas.width = w;
+                        canvas.height = h;
+                        ctx.clearRect(0, 0, w, h);
+                        ctx.drawImage(img, 0, 0, w, h);
+
+                        canvas.toBlob((blob) => {
+                            if (!blob) {
+                                triggerDirectDownload();
+                                return;
+                            }
+
+                            if (blob.size <= maxBytes || quality <= 0.15 || attempt >= 6) {
+                                finalizeDownload(URL.createObjectURL(blob));
+                            } else {
+                                attempt++;
+                                quality -= 0.12;
+                                scale -= 0.10;
+                                attemptCompression();
+                            }
+                        }, 'image/jpeg', quality);
                     }
-                };
-                img.onerror = function() {
-                    URL.revokeObjectURL(objectUrl);
-                    if (!isFinished) {
-                        isFinished = true;
-                        clearTimeout(safetyTimer);
-                        triggerDirectDownload();
-                    }
-                };
-                img.src = objectUrl;
-            } catch (err) {
-                if (!isFinished) {
-                    isFinished = true;
-                    clearTimeout(safetyTimer);
-                    triggerDirectDownload();
+
+                    attemptCompression();
                 }
-            }
+            };
+
+            img.onerror = function() {
+                URL.revokeObjectURL(objectUrl);
+                triggerDirectDownload();
+            };
+
+            img.src = objectUrl;
         });
 
         function finalizeDownload(url) {
@@ -380,7 +380,7 @@
             a.remove();
             URL.revokeObjectURL(url);
 
-            statusDiv.innerHTML = "🎉 Processed asset fetched and downloaded successfully!";
+            statusDiv.innerHTML = "🎉 Asset resized and downloaded successfully!";
             actionBtn.classList.remove('hidden');
         }
 
@@ -394,7 +394,7 @@
             a.remove();
             URL.revokeObjectURL(url);
 
-            statusDiv.innerHTML = "🎉 Processed asset fetched and downloaded successfully!";
+            statusDiv.innerHTML = "🎉 Asset fetched and downloaded successfully!";
             actionBtn.classList.remove('hidden');
         }
     </script>
