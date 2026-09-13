@@ -885,7 +885,7 @@ async function compressImageConvert(inputPath, outputPath, config = {}) {
   }
 }
 
-// ========== Image Converter Logic ==========
+// ========== Image Converter Logic (Full support for BMP, PNG, WEBP, JPG) ==========
 async function imageConverterConvert(inputPath, outputPath, config = {}) {
   try {
     const format = (config.convertFormat || 'jpg').toLowerCase();
@@ -1028,22 +1028,39 @@ async function imageToPdfConvert(input, outputPath, config = {}) {
   }
 }
 
-// ========== Image Reducer Logic ==========
+// ========== Image Reducer Logic (Dynamic format preservation & PNG lossless/lossy balance) ==========
 async function imageReducerConvert(inputPath, outputPath, config = {}) {
   try {
     const mode = config.reducerMode || 'resize';
-    const finalOutputPath = outputPath.replace(/\.[^/.]+$/, ".jpg");
+    const inputExt = path.extname(inputPath).toLowerCase();
+    const targetExt = ['.png', '.webp', '.bmp', '.jpeg', '.jpg'].includes(inputExt) ? inputExt : '.jpg';
+    const finalOutputPath = outputPath.replace(/\.[^/.]+$/, targetExt === '.jpeg' ? '.jpg' : targetExt);
 
     if (sharp) {
-      let pipeline = sharp(inputPath).flatten({ background: { r: 255, g: 255, b: 255 } });
+      if (targetExt === '.bmp') {
+        const img = await loadImage(inputPath);
+        const canvas = createCanvas(img.width, img.height);
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, img.width, img.height);
+        ctx.drawImage(img, 0, 0);
+        fs.writeFileSync(finalOutputPath, canvas.toBuffer('image/jpeg'));
+        return finalOutputPath;
+      }
+
+      let pipeline = sharp(inputPath);
+      if (targetExt !== '.png') {
+        pipeline = pipeline.flatten({ background: { r: 255, g: 255, b: 255 } });
+      }
 
       if (mode === 'resize') {
         const w = parseInt(config.reducerWidth) || 800;
         const h = parseInt(config.reducerHeight) || 600;
-        await pipeline
-          .resize(w, h, { fit: 'fill', kernel: sharp.kernel.lanczos3 })
-          .jpeg({ quality: 95, mozjpeg: true })
-          .toFile(finalOutputPath);
+        let p = pipeline.resize(w, h, { fit: 'fill', kernel: sharp.kernel.lanczos3 });
+        
+        if (targetExt === '.png') await p.png({ compressionLevel: 9 }).toFile(finalOutputPath);
+        else if (targetExt === '.webp') await p.webp({ quality: 95 }).toFile(finalOutputPath);
+        else await p.jpeg({ quality: 95, mozjpeg: true }).toFile(finalOutputPath);
       } else {
         const targetKb = parseFloat(config.reducerTargetKb) || 50;
         const targetBytes = targetKb * 1024;
@@ -1057,21 +1074,28 @@ async function imageReducerConvert(inputPath, outputPath, config = {}) {
         let outputBuffer;
 
         for (let attempt = 0; attempt < 6; attempt++) {
-            outputBuffer = await sharp(inputPath)
-                .flatten({ background: { r: 255, g: 255, b: 255 } })
-                .resize(
-                  Math.max(150, Math.round(currentW * scale)), 
-                  Math.max(150, Math.round(currentH * scale)), 
-                  { fit: 'inside', kernel: sharp.kernel.lanczos3 }
-                )
-                .jpeg({ quality: quality, mozjpeg: true })
-                .toBuffer();
+            let resizePipeline = sharp(inputPath);
+            if (targetExt !== '.png') resizePipeline = resizePipeline.flatten({ background: { r: 255, g: 255, b: 255 } });
+            
+            let resObj = resizePipeline.resize(
+              Math.max(150, Math.round(currentW * scale)), 
+              Math.max(150, Math.round(currentH * scale)), 
+              { fit: 'inside', kernel: sharp.kernel.lanczos3 }
+            );
 
-            if (outputBuffer.length <= targetBytes || quality <= 30) {
+            if (targetExt === '.png') {
+                outputBuffer = await resObj.png({ compressionLevel: 9, palette: true, colors: Math.max(16, Math.round(256 * (quality/100))) }).toBuffer();
+            } else if (targetExt === '.webp') {
+                outputBuffer = await resObj.webp({ quality: quality }).toBuffer();
+            } else {
+                outputBuffer = await resObj.jpeg({ quality: quality, mozjpeg: true }).toBuffer();
+            }
+
+            if (outputBuffer.length <= targetBytes || quality <= 20) {
                 break;
             }
             quality -= 12;
-            scale -= 0.10;
+            scale -= 0.12;
         }
 
         fs.writeFileSync(finalOutputPath, outputBuffer);
@@ -1682,11 +1706,11 @@ app.get('/workflow-builder', (req, res) => {
       '</div>';
   }).join('');
 
-  res.send('<!DOCTYPE html><html><head><title>Workflow Builder - Filesque</title><style>' +
+  res.send('<!DOCTYPE html><html><head><title>Workflow Builder - Filesque</title><script src="https://cdn.tailwindcss.com"></script><style>' +
     '*{margin:0;padding:0;box-sizing:border-box}' +
     'body{font-family:"Plus Jakarta Sans",sans-serif;background:#f8fafc;min-height:100vh}' +
     '.navbar{background:white;border-bottom:1px solid #e2e8f0;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center}' +
-    '.logo{font-size:1.8rem;font-weight:900;color:#0f172a}.logo span{color:#dc2626}' +
+    '.logo{cursor:pointer;display:flex;align-items:center}' +
     '.back-link{color:#dc2626;text-decoration:none;font-weight:700}' +
     '.container{display:flex;gap:2rem;max-width:1400px;margin:2rem auto;padding:0 1rem}' +
     '.panel{background:white;border-radius:1rem;box-shadow:0 2px 10px rgba(0,0,0,0.05);padding:1.5rem}' +
@@ -1696,7 +1720,8 @@ app.get('/workflow-builder', (req, res) => {
     '.tool-item:hover{background:#e2e8f0;transform:translateX(5px)}' +
     '.tool-icon{font-size:1.4rem}.tool-name{font-weight:600}' +
     '.workflow-area{min-height:200px;border:2px dashed #cbd5e1;border-radius:0.75rem;padding:1rem;margin-bottom:1rem}' +
-    '.step{display:flex;align-items:center;gap:1rem;padding:0.8rem;background:#f1f5f9;border-radius:0.5rem;margin-bottom:0.5rem}' +
+    '.step{display:flex;align-items:center;gap:1rem;padding:0.8rem;background:#f1f5f9;border-radius:0.5rem;margin-bottom:0.5rem;transition:all 0.3s}' +
+    '.step.active-step{background:#e0f2fe;border:2px solid #0284c7;box-shadow:0 4px 12px rgba(2,132,199,0.2);transform:scale(1.01)}' +
     '.step-number{width:30px;height:30px;background:#dc2626;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold}' +
     '.remove-btn{background:#ef4444;color:white;border:none;border-radius:0.25rem;padding:0.3rem 0.7rem;cursor:pointer}' +
     '.controls{display:flex;gap:0.8rem;margin-bottom:1rem}' +
@@ -1707,7 +1732,16 @@ app.get('/workflow-builder', (req, res) => {
     '.file-upload-section{margin-top:1.5rem;padding:1rem;background:#f8fafc;border-radius:0.5rem}' +
     '.file-upload-section input[type="file"]{margin-top:0.5rem}' +
     '</style></head><body>' +
-    '<div class="navbar"><div class="logo">Files<span>que</span></div><a href="/" class="back-link">← Back to Home</a></div>' +
+    '<div class="navbar">' +
+    '  <div class="logo group shrink-0 flex items-center space-x-2" onclick="window.location.href=\'/\'">' +
+    '    <span class="text-4xl sm:text-7xl font-black tracking-tighter text-[#0f172a] flex items-center overflow-hidden">' +
+    '      <span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span>' +
+    '      <span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span>' +
+    '    </span>' +
+    '    <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping ml-1 hidden sm:inline-block"></span>' +
+    '  </div>' +
+    '  <a href="/" class="back-link">← Back to Home</a>' +
+    '</div>' +
     '<div class="container">' +
     '<div class="panel tools-panel"><div class="panel-title">🛠️ Tools (' + toolRegistry.length + ')</div>' + toolsListHTML + '</div>' +
     '<div class="panel workflow-panel"><div class="panel-title">📋 Your Workflow</div>' +
@@ -1731,13 +1765,17 @@ app.get('/workflow-builder', (req, res) => {
     '  steps.push({ id: id, name: name, icon: icon, isComplex: false, mode: "all", range: "", sortOrder: "upload", customSequence: "", pageOrder: "", rotatePages: "", rotateDegree: "90", watermarkText: "CONFIDENTIAL", watermarkMode: "diagonal", compressQuality: "0.70", convertFormat: "jpg", convertQuality: "0.92", reducerMode: "resize", reducerWidth: "800", reducerHeight: "600", reducerTargetKb: "50", sizePreset: "3.5x4.5", bgColor: "#f87171", zoom: "100", copies: "32", removeBg: false, mergeDirection: "horizontal" });' +
     '  renderSteps();' +
     '}' +
-    'function renderSteps() {' +
+    'function renderSteps(activeIdx = -1) {' +
     '  const area = document.getElementById("workflowArea");' +
     '  if (steps.length === 0) { area.innerHTML = "<p style=\'color:#94a3b8;\'>Click on tools to add steps</p>"; return; }' +
     '  let html = "";' +
     '  for (let i = 0; i < steps.length; i++) {' +
     '    let toggleHtml = "";' +
-    '    if (steps[i].id === "pdf-to-excel") {' +
+    '    let isActive = (i === activeIdx);' +
+    '    let stepClass = isActive ? "step active-step" : "step";' +
+    '    if (isActive) {' +
+    '       toggleHtml += "<div style=\'margin-left:auto; display:flex; align-items:center; gap:6px; background:#0284c7; color:white; padding:4px 10px; border-radius:6px; font-weight:800; font-size:11px;\'>⚡ Processing Step...</div>";' +
+    '    } else if (steps[i].id === "pdf-to-excel") {' +
     '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
     '        "<span style=\'font-size:12px; font-weight:bold; color:#475569;\'>Mode:</span>" +' +
     '        "<select onchange=\'updateStepConfig(" + i + ", \\\"isComplex\\\", this.value === \\\"complex\\\")\' style=\'padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
@@ -1871,7 +1909,7 @@ app.get('/workflow-builder', (req, res) => {
     '        "</div>" +' +
     '      "</div>";' +
     '    }' +
-    '    html += "<div class=\'step\'><div class=\'step-number\'>" + (i+1) + "</div><span style=\'font-size:1.2rem;\'>" + steps[i].icon + "</span><strong style=\'font-size:1.1rem;\'>" + steps[i].name + "</strong>" + (toggleHtml ? toggleHtml : "<div style=\'margin-left:auto;\'></div>") + "<button class=\'remove-btn\' style=\'margin-left:10px;\' onclick=\'removeStep(" + i + ")\'>✕</button></div>";' +
+    '    html += "<div class=\'" + stepClass + "\'><div class=\'step-number\'>" + (i+1) + "</div><span style=\'font-size:1.2rem;\'>" + steps[i].icon + "</span><strong style=\'font-size:1.1rem;\'>" + steps[i].name + "</strong>" + (toggleHtml ? toggleHtml : "<div style=\'margin-left:auto;\'></div>") + (!isActive ? "<button class=\'remove-btn\' style=\'margin-left:10px;\' onclick=\'removeStep(" + i + ")\'>✕</button>" : "") + "</div>";' +
     '  }' +
     '  area.innerHTML = html;' +
     '}' +
@@ -2137,7 +2175,12 @@ app.get('/workflow-builder', (req, res) => {
     '  for (let i = 0; i < selectedFiles.length; i++) { formData.append("file", selectedFiles[i]); }' +
     '  try {' +
     '    document.getElementById("executionResult").innerHTML = "<p style=\'color:blue;\'>⏳ Processing workflow steps...</p>";' +
+    '    for (let i = 0; i < steps.length; i++) {' +
+    '       renderSteps(i);' +
+    '       await new Promise(r => setTimeout(r, 600));' +
+    '    }' +
     '    const execRes = await fetch("/api/workflow/execute/" + saveData.workflow.id, { method: "POST", body: formData });' +
+    '    renderSteps(-1);' +
     '    if (execRes.ok) {' +
     '      const blob = await execRes.blob();' +
     '      let fname = "workflow_output";' +
@@ -2155,7 +2198,7 @@ app.get('/workflow-builder', (req, res) => {
     '      const errorData = await execRes.json().catch(() => ({ error: "Execution failed" }));' +
     '      document.getElementById("executionResult").innerHTML = "<p style=\'color:red;\'>❌ " + (errorData.error || "Execution failed") + "</p>";' +
     '    }' +
-    '  } catch(e) { document.getElementById("executionResult").innerHTML = "<p style=\'color:red;\'>Network error during execution: " + e.message + "</p>"; }' +
+    '  } catch(e) { renderSteps(-1); document.getElementById("executionResult").innerHTML = "<p style=\'color:red;\'>Network error during execution: " + e.message + "</p>"; }' +
     '}' +
     'loadSavedWorkflows();' +
     '</script>' +
