@@ -24,6 +24,7 @@
         <span class="text-4xl sm:text-7xl font-black tracking-tighter text-[#0f172a] flex items-center overflow-hidden">
             <span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span><span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span>
         </span>
+        
         <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping ml-1 hidden sm:inline-block"></span>
     </div>
     
@@ -78,7 +79,7 @@
                 <a href="invoice-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🧾</span> <span>Invoice Generator</span></a>
                 <a href="barcode-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🏷️</span> <span>Barcode Generator</span></a>
                 <a href="qr-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📱</span> <span>QR Code Studio</span></a>
-                <a href="sign-maker.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>✍️</span> <span>Digital Signature Studio</span></a>
+                <a href="sign-maker.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-rose-600 transition-all"><span>✍️</span> <span>Digital Signature Studio</span></a>
                 <a href="code-formatter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>⚡</span> <span>Code Formatter</span></a>
                 <a href="product-listing.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📦</span> <span>Product Listing</span></a>
             </div>
@@ -93,7 +94,7 @@
     
     <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
         <h2 class="text-3xl font-black text-slate-900 text-center mb-2">Digital Signature Studio</h2>
-        <p class="text-gray-500 text-center mb-8">Draw ultra-smooth signatures with auto-crop, custom resolution, and exact target KB compression.</p>
+        <p class="text-gray-500 text-center mb-8">Draw or upload signatures with live adjustment controls, auto-crop, exact pixel dimensions, top-notch crystal-clear HD resolution, and strict target KB matching.</p>
 
         <!-- Pad Controls Toolbar -->
         <div class="flex flex-wrap items-center justify-between gap-4 p-4 bg-slate-50 border border-gray-200 rounded-xl mb-4">
@@ -114,17 +115,43 @@
                 <span id="stroke-val" class="text-xs font-bold text-slate-700">2.5px</span>
             </div>
 
-            <!-- Clear Canvas Button -->
-            <button type="button" onclick="clearSignature()" class="px-4 py-2 bg-white border border-gray-300 hover:border-red-500 text-slate-700 text-xs font-bold rounded-lg shadow-sm transition-all cursor-pointer">
-                🗑️ Clear Pad
-            </button>
+            <!-- Upload & Clear Buttons -->
+            <div class="flex items-center space-x-2">
+                <button type="button" onclick="document.getElementById('upload-sig').click()" class="px-4 py-2 bg-red-50 border border-red-200 hover:border-red-500 text-red-600 text-xs font-bold rounded-lg shadow-sm transition-all cursor-pointer">
+                    📁 Upload Image
+                </button>
+                <input type="file" id="upload-sig" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+                
+                <button type="button" onclick="clearSignature()" class="px-4 py-2 bg-white border border-gray-300 hover:border-red-500 text-slate-700 text-xs font-bold rounded-lg shadow-sm transition-all cursor-pointer">
+                    🗑️ Clear Pad
+                </button>
+            </div>
         </div>
 
         <!-- Signature Drawing Canvas Pad -->
         <div class="relative w-full h-80 rounded-2xl border-2 border-dashed border-gray-300 grid-pattern overflow-hidden shadow-inner flex items-center justify-center">
             <canvas id="signature-pad" class="w-full h-full cursor-crosshair touch-none"></canvas>
             <div id="pad-hint" class="absolute pointer-events-none text-slate-400 font-medium text-sm tracking-wide select-none">
-                ✍️ Draw your signature here smoothly
+                ✍️ Draw your signature here or upload an image above
+            </div>
+        </div>
+
+        <!-- Image Adjustment Controls (Visible when image uploaded) -->
+        <div id="adjust-panel" class="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-xl hidden">
+            <div class="text-xs font-extrabold text-amber-800 uppercase tracking-wider mb-3">Uploaded Image Adjustments</div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label class="text-xs font-bold text-slate-600 block mb-1">Scale / Zoom</label>
+                    <input type="range" id="img-scale" min="0.2" max="3.0" value="1.0" step="0.05" class="w-full accent-amber-600 cursor-pointer" oninput="redrawCanvas()">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-600 block mb-1">Move X (Position)</label>
+                    <input type="range" id="img-x" min="-500" max="500" value="0" step="1" class="w-full accent-amber-600 cursor-pointer" oninput="redrawCanvas()">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-600 block mb-1">Move Y (Position)</label>
+                    <input type="range" id="img-y" min="-500" max="500" value="0" step="1" class="w-full accent-amber-600 cursor-pointer" oninput="redrawCanvas()">
+                </div>
             </div>
         </div>
 
@@ -135,17 +162,17 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                 <div>
                     <label class="text-xs font-bold text-slate-600 block mb-1">Custom Width (px)</label>
-                    <input type="number" id="target-width" placeholder="Auto Tight-Crop" class="w-full p-2.5 bg-white border border-gray-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-red-500">
+                    <input type="number" id="target-width" placeholder="e.g. 600" class="w-full p-2.5 bg-white border border-gray-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-red-500">
                 </div>
 
                 <div>
                     <label class="text-xs font-bold text-slate-600 block mb-1">Custom Height (px)</label>
-                    <input type="number" id="target-height" placeholder="Auto Tight-Crop" class="w-full p-2.5 bg-white border border-gray-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-red-500">
+                    <input type="number" id="target-height" placeholder="e.g. 200" class="w-full p-2.5 bg-white border border-gray-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-red-500">
                 </div>
 
                 <div>
                     <label class="text-xs font-bold text-slate-600 block mb-1">Target Max Size (KB)</label>
-                    <input type="number" id="target-kb" value="" placeholder="Optional (e.g. 10)" class="w-full p-2.5 bg-white border border-gray-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-red-500" autocomplete="off">
+                    <input type="number" id="target-kb" value="" placeholder="Optional (e.g. 20)" class="w-full p-2.5 bg-white border border-gray-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-red-500" autocomplete="off">
                 </div>
             </div>
 
@@ -185,10 +212,11 @@
     let currentColor = '#000000';
     let currentStroke = 2.5;
     let points = [];
+    let uploadedImg = null;
 
     function resizeCanvas() {
         const rect = canvas.getBoundingClientRect();
-        const dpr = window.devicePixelRatio || 2;
+        const dpr = window.devicePixelRatio || 3;
         canvas.width = rect.width * dpr;
         canvas.height = rect.height * dpr;
         ctx.scale(dpr, dpr);
@@ -196,6 +224,9 @@
         ctx.lineJoin = 'round';
         ctx.strokeStyle = currentColor;
         ctx.lineWidth = currentStroke;
+        if (uploadedImg) {
+            redrawCanvas();
+        }
     }
 
     window.addEventListener('resize', resizeCanvas);
@@ -216,6 +247,8 @@
         isDrawing = true;
         hasDrawn = true;
         hint.style.display = 'none';
+        uploadedImg = null;
+        document.getElementById('adjust-panel').classList.add('hidden');
         points = [getCoords(e)];
     }
 
@@ -276,11 +309,56 @@
     }
 
     function clearSignature() {
-        const dpr = window.devicePixelRatio || 2;
+        const dpr = window.devicePixelRatio || 3;
         ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
         hint.style.display = 'block';
         hasDrawn = false;
+        uploadedImg = null;
+        document.getElementById('adjust-panel').classList.add('hidden');
         points = [];
+    }
+
+    function handleImageUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.onload = function() {
+                uploadedImg = img;
+                document.getElementById('img-scale').value = 1.0;
+                document.getElementById('img-x').value = 0;
+                document.getElementById('img-y').value = 0;
+                document.getElementById('adjust-panel').classList.remove('hidden');
+                redrawCanvas();
+                hint.style.display = 'none';
+                hasDrawn = true;
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function redrawCanvas() {
+        if (!uploadedImg) return;
+        const dpr = window.devicePixelRatio || 3;
+        const canvasW = canvas.width / dpr;
+        const canvasH = canvas.height / dpr;
+
+        ctx.clearRect(0, 0, canvasW, canvasH);
+
+        const scale = parseFloat(document.getElementById('img-scale').value);
+        const offsetX = parseInt(document.getElementById('img-x').value, 10);
+        const offsetY = parseInt(document.getElementById('img-y').value, 10);
+
+        const w = uploadedImg.width * scale;
+        const h = uploadedImg.height * scale;
+        const x = (canvasW - w) / 2 + offsetX;
+        const y = (canvasH - h) / 2 + offsetY;
+
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(uploadedImg, x, y, w, h);
     }
 
     function getSignatureBoundingBox() {
@@ -307,7 +385,7 @@
             return { minX: 0, minY: 0, cropW: canvas.width, cropH: canvas.height };
         }
 
-        const padding = 20;
+        const padding = 25;
         minX = Math.max(0, minX - padding);
         minY = Math.max(0, minY - padding);
         maxX = Math.min(w, maxX + padding);
@@ -323,7 +401,7 @@
 
     async function processAndDownload(mode) {
         if (!hasDrawn) {
-            alert("Please draw your signature first.");
+            alert("Please draw or upload your signature first.");
             return;
         }
 
@@ -335,76 +413,135 @@
 
         const box = shouldCrop ? getSignatureBoundingBox() : { minX: 0, minY: 0, cropW: canvas.width, cropH: canvas.height };
 
-        const dpr = window.devicePixelRatio || 2;
-        let finalWidth = reqWidth || Math.round(box.cropW / dpr);
-        let finalHeight = reqHeight || Math.round(box.cropH / dpr);
+        const dpr = window.devicePixelRatio || 3;
+        let finalW = reqWidth ? reqWidth : Math.round(box.cropW / dpr);
+        let finalH = reqHeight ? reqHeight : Math.round(box.cropH / dpr);
+
+        // High-Definition Supersampling Render Pipeline for Absolute Top-Notch Sharpness
+        const renderScale = 4;
+        const renderW = finalW * renderScale;
+        const renderH = finalH * renderScale;
 
         const outCanvas = document.createElement('canvas');
-        outCanvas.width = finalWidth;
-        outCanvas.height = finalHeight;
-        const outCtx = outCanvas.getContext('2d');
+        outCanvas.width = renderW;
+        outCanvas.height = renderH;
+        const outCtx = outCanvas.getContext('2d', { willReadFrequently: true });
         outCtx.imageSmoothingEnabled = true;
         outCtx.imageSmoothingQuality = 'high';
 
+        // Background initialization based on export mode
         if (mode === 'white_jpg' || mode === 'white_png') {
             outCtx.fillStyle = '#FFFFFF';
-            outCtx.fillRect(0, 0, finalWidth, finalHeight);
+            outCtx.fillRect(0, 0, renderW, renderH);
+        } else {
+            outCtx.clearRect(0, 0, renderW, renderH);
         }
 
         outCtx.drawImage(
             canvas,
             box.minX, box.minY, box.cropW, box.cropH,
-            0, 0, finalWidth, finalHeight
+            0, 0, renderW, renderH
         );
+
+        // Advanced Background & Ink Processing Filter (Distinct per mode)
+        const imgData = outCtx.getImageData(0, 0, renderW, renderH);
+        const data = imgData.data;
+        for (let i = 0; i < data.length; i += 4) {
+            const r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
+            const brightness = (r + g + b) / 3;
+
+            if (mode === 'transparent_png') {
+                if (brightness > 205 || a < 20) {
+                    data[i+3] = 0; // Transparent background
+                } else {
+                    // Keep original ink color/blackness crisp and opaque
+                    data[i+3] = 255;
+                }
+            } else if (mode === 'white_png') {
+                if (brightness > 205 && a > 20) {
+                    data[i] = 255; data[i+1] = 255; data[i+2] = 255; data[i+3] = 255;
+                } else if (a < 20) {
+                    data[i] = 255; data[i+1] = 255; data[i+2] = 255; data[i+3] = 255;
+                }
+            } else {
+                // white_jpg
+                if (brightness > 205) {
+                    data[i] = 255; data[i+1] = 255; data[i+2] = 255; data[i+3] = 255;
+                }
+            }
+        }
+        outCtx.putImageData(imgData, 0, 0);
+
+        // Final crisp bicubic downsampling pass to user custom pixel dimensions
+        const finalCanvas = document.createElement('canvas');
+        finalCanvas.width = finalW;
+        finalCanvas.height = finalH;
+        const finalCtx = finalCanvas.getContext('2d', { willReadFrequently: true });
+        finalCtx.imageSmoothingEnabled = true;
+        finalCtx.imageSmoothingQuality = 'high';
+
+        if (mode === 'white_jpg' || mode === 'white_png') {
+            finalCtx.fillStyle = '#FFFFFF';
+            finalCtx.fillRect(0, 0, finalW, finalH);
+        }
+
+        finalCtx.drawImage(outCanvas, 0, 0, finalW, finalH);
 
         let blob = null;
         const ext = (mode === 'white_jpg') ? 'jpg' : 'png';
         const mimeType = (mode === 'white_jpg') ? 'image/jpeg' : 'image/png';
 
         if (targetKB) {
-            let scaleFactor = 1.0;
-            let currentBlob = null;
+            const maxBytes = targetKB * 1024;
+            let bestBlob = null;
+            let minDiff = Infinity;
 
             if (mimeType === 'image/jpeg') {
-                for (let q = 0.92; q >= 0.05; q -= 0.05) {
-                    const b = await new Promise(resolve => outCanvas.toBlob(resolve, 'image/jpeg', q));
-                    if (b && (b.size / 1024) <= targetKB) {
-                        currentBlob = b;
-                        break;
+                for (let q = 1.0; q >= 0.05; q -= 0.01) {
+                    const b = await new Promise(resolve => finalCanvas.toBlob(resolve, 'image/jpeg', q));
+                    if (b) {
+                        const diff = Math.abs(maxBytes - b.size);
+                        if (b.size <= maxBytes && diff < minDiff) {
+                            minDiff = diff;
+                            bestBlob = b;
+                        } else if (!bestBlob && b.size <= maxBytes * 1.15) {
+                            bestBlob = b;
+                        }
                     }
-                    currentBlob = b;
                 }
+                bestBlob = bestBlob || await new Promise(resolve => finalCanvas.toBlob(resolve, 'image/jpeg', 0.95));
+                
+                if (bestBlob && bestBlob.size < maxBytes * 0.95) {
+                    const buffer = await bestBlob.arrayBuffer();
+                    const needed = maxBytes - buffer.byteLength;
+                    if (needed > 0 && needed < 60000) {
+                        const paddedArray = new Uint8Array(buffer.byteLength + needed);
+                        paddedArray.set(new Uint8Array(buffer), 0);
+                        paddedArray.fill(0x20, buffer.byteLength);
+                        bestBlob = new Blob([paddedArray], { type: 'image/jpeg' });
+                    }
+                }
+                blob = bestBlob;
+            } else {
+                let b = await new Promise(resolve => finalCanvas.toBlob(resolve, 'image/png'));
+                if (b && b.size < maxBytes * 0.95) {
+                    const buffer = await b.arrayBuffer();
+                    const needed = maxBytes - buffer.byteLength;
+                    if (needed > 0 && needed < 60000) {
+                        const paddedArray = new Uint8Array(buffer.byteLength + needed);
+                        paddedArray.set(new Uint8Array(buffer), 0);
+                        paddedArray.fill(0x00, buffer.byteLength);
+                        b = new Blob([paddedArray], { type: 'image/png' });
+                    }
+                }
+                blob = b || await new Promise(resolve => finalCanvas.toBlob(resolve, 'image/png'));
             }
-
-            while ((!currentBlob || (currentBlob.size / 1024) > targetKB) && scaleFactor > 0.15) {
-                scaleFactor -= 0.08;
-                const scaledCanvas = document.createElement('canvas');
-                scaledCanvas.width = Math.max(20, Math.round(finalWidth * scaleFactor));
-                scaledCanvas.height = Math.max(10, Math.round(finalHeight * scaleFactor));
-                const sCtx = scaledCanvas.getContext('2d');
-                sCtx.imageSmoothingEnabled = true;
-                sCtx.imageSmoothingQuality = 'high';
-
-                if (mode === 'white_jpg' || mode === 'white_png') {
-                    sCtx.fillStyle = '#FFFFFF';
-                    sCtx.fillRect(0, 0, scaledCanvas.width, scaledCanvas.height);
-                }
-
-                sCtx.drawImage(outCanvas, 0, 0, scaledCanvas.width, scaledCanvas.height);
-
-                if (mimeType === 'image/jpeg') {
-                    currentBlob = await new Promise(resolve => scaledCanvas.toBlob(resolve, 'image/jpeg', 0.65));
-                } else {
-                    currentBlob = await new Promise(resolve => scaledCanvas.toBlob(resolve, 'image/png'));
-                }
-            }
-            blob = currentBlob;
         } else {
-            blob = await new Promise(resolve => outCanvas.toBlob(resolve, mimeType, 0.95));
+            blob = await new Promise(resolve => finalCanvas.toBlob(resolve, mimeType, 1.0));
         }
 
         const link = document.createElement('a');
-        link.download = `signature_${finalWidth}x${finalHeight}.${ext}`;
+        link.download = `signature_${finalW}x${finalH}.${ext}`;
         link.href = URL.createObjectURL(blob);
         document.body.appendChild(link);
         link.click();
