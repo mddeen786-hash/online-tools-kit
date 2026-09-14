@@ -3,13 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF Watermark & Page Numbers | iLoveFiles</title>
+    <title>PDF Watermark & Page Numbers | Filesque</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+    </style>
 </head>
 <body class="bg-slate-50 min-h-screen flex flex-col items-center antialiased">
 
-<!-- Top Navigation Bar with Creative Animated Brand & Nav Links -->
+<!-- Top Navigation Bar with All Categories Dropdowns -->
 <nav class="w-full bg-white/90 backdrop-blur-md border-b border-slate-100 px-8 py-5 flex justify-between items-center fixed top-0 left-0 z-50 shadow-xs">
     
     <!-- Creative Animated Brand Name -->
@@ -20,7 +28,7 @@
         <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping ml-1 hidden sm:inline-block"></span>
     </div>
     
-    <!-- Navbar Links -->
+    <!-- Navbar Links & Categories -->
     <div class="hidden lg:flex items-center space-x-9 text-base font-black text-slate-800 tracking-wide ml-auto">
         <a href="index.html" class="hover:text-red-600 transition-colors uppercase">Home</a>
 
@@ -76,12 +84,11 @@
                 <a href="product-listing.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📦</span> <span>Product Listing</span></a>
             </div>
         </div>
-
     </div>
 </nav>
 
 <!-- Main Workspace -->
-<div class="w-full max-w-3xl px-4 mt-36 mb-24">
+<div class="w-full max-w-xl px-4 mt-36 mb-24">
     <a href="index.html" class="text-sm font-semibold text-gray-500 hover:text-red-600 mb-4 inline-block">← Back to Dashboard</a>
     
     <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
@@ -99,8 +106,15 @@
         </div>
 
         <!-- Controls -->
-        <div id="settings-panel" class="mt-8 pt-6 border-t border-gray-100 hidden">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+        <div id="settings-panel" class="mt-8 pt-6 border-t border-gray-100 hidden space-y-4">
+            
+            <div class="flex gap-2">
+                <button type="button" onclick="setWmType('text')" id="btn-type-text" class="flex-1 py-2 bg-red-600 text-white text-xs font-bold rounded-xl shadow-xs cursor-pointer">Text Watermark</button>
+                <button type="button" onclick="setWmType('image')" id="btn-type-image" class="flex-1 py-2 bg-slate-100 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-200 cursor-pointer">Image Watermark (Crop)</button>
+            </div>
+
+            <!-- Text Section -->
+            <div id="sec-text" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="text-xs font-bold text-slate-600 block mb-1">Watermark Text</label>
                     <input type="text" id="wm-text" placeholder="CONFIDENTIAL / DRAFT" value="CONFIDENTIAL" class="w-full p-2.5 bg-slate-50 border border-gray-200 rounded-xl text-xs font-bold outline-none focus:border-red-500">
@@ -115,71 +129,375 @@
                 </div>
             </div>
 
-            <button onclick="applyWatermark()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center space-x-2 cursor-pointer">
+            <!-- Image Section & Document Preview Box with Opacity Slider -->
+            <div id="sec-image" class="hidden space-y-4">
+                <label for="img-upload-input" class="border-2 border-dashed border-slate-300 rounded-xl p-4 bg-slate-50 text-center cursor-pointer block hover:bg-slate-100 transition-all">
+                    <span class="text-xs font-bold text-slate-700">🖼️ Upload Watermark Image (Auto Crop)</span>
+                    <input type="file" id="img-upload-input" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+                </label>
+
+                <!-- Opacity Control for Light Background Placement -->
+                <div>
+                    <div class="flex justify-between text-xs font-bold text-slate-600 mb-1">
+                        <span>Watermark Opacity (Light Background)</span>
+                        <span id="opacity-val">30%</span>
+                    </div>
+                    <input type="range" id="wm-opacity-slider" min="10" max="100" value="30" oninput="document.getElementById('opacity-val').textContent = this.value + '%'; updatePreviewOpacity(this.value);" class="w-full accent-red-600 cursor-pointer">
+                </div>
+
+                <!-- Alignment Presets -->
+                <div id="align-presets" class="hidden flex gap-2">
+                    <button type="button" onclick="setPresetPosition('center')" class="flex-1 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg cursor-pointer">Center</button>
+                    <button type="button" onclick="setPresetPosition('middle')" class="flex-1 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg cursor-pointer">Middle</button>
+                    <button type="button" onclick="setPresetPosition('bottom')" class="flex-1 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg cursor-pointer">Bottom</button>
+                </div>
+
+                <!-- Visual Document Preview Container -->
+                <div id="preview-container" class="hidden space-y-2">
+                    <label class="text-xs font-black text-slate-700 block uppercase tracking-wider text-center">Drag image on document preview to place:</label>
+                    <div id="canvas-wrapper" class="relative inline-block border border-slate-300 rounded-xl overflow-hidden shadow-md bg-white mx-auto block cursor-grab" style="min-height: 250px;">
+                        <canvas id="pdf-preview-canvas" class="block mx-auto max-w-full h-auto"></canvas>
+                        <!-- Draggable Stamp Overlay with Light Opacity -->
+                        <div id="draggable-stamp" class="absolute hidden cursor-move p-1 rounded z-20" style="left: 50px; top: 50px; width: 120px;">
+                            <img id="stamp-img-preview" class="w-full h-auto object-contain pointer-events-none drop-shadow-sm opacity-30 bg-transparent transition-opacity" alt="Stamp">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" id="download-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center space-x-2 cursor-pointer">
                 <span>⚡ Add Watermark & Download PDF</span>
             </button>
         </div>
     </div>
 </div>
 
-<script>
-    let pdfBytes = null;
-    let originalName = "document";
+<!-- CROP MODAL -->
+<div id="crop-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-xs z-50 flex items-center justify-center hidden">
+    <div class="bg-white p-6 rounded-3xl shadow-2xl max-w-lg w-full mx-4 space-y-4">
+        <h3 class="text-base font-black text-slate-900">Crop Watermark Image</h3>
+        <p class="text-xs text-slate-500 font-medium">Select and crop freely. No bounding boxes will appear on final output.</p>
+        
+        <div class="flex justify-center bg-slate-100 p-3 rounded-2xl overflow-hidden max-h-[50vh]">
+            <canvas id="crop-canvas" class="max-w-full max-h-[45vh] object-contain cursor-crosshair"></canvas>
+        </div>
 
-    function handleFile(files) {
+        <div class="flex justify-end space-x-3 pt-3 border-t border-slate-100">
+            <button type="button" onclick="document.getElementById('crop-modal').classList.add('hidden')" class="px-5 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 cursor-pointer">Cancel</button>
+            <button type="button" onclick="saveCroppedImage()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow cursor-pointer">Done & Place on Document</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let activeFileObject = null;
+    let pdfDocProxy = null;
+    let originalName = "document";
+    let wmType = 'text';
+    let cropImg = null;
+    let croppedImageBytes = null;
+    let cropCanvas, cropCtx;
+    let cropBox = { x: 0, y: 0, w: 100, h: 100 };
+    let stampPos = { x: 50, y: 50 };
+    let previewScale = 1;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const btn = document.getElementById('download-btn');
+        if (btn) {
+            btn.addEventListener('click', applyWatermark);
+        }
+    });
+
+    function updatePreviewOpacity(val) {
+        const img = document.getElementById('stamp-img-preview');
+        if (img) {
+            img.style.opacity = val / 100;
+        }
+    }
+
+    async function handleFile(files) {
         if (!files || !files[0]) return;
         const file = files[0];
+        activeFileObject = file;
         originalName = file.name.replace(/\.[^/.]+$/, "");
         document.getElementById('file-label').textContent = file.name;
         
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            pdfBytes = new Uint8Array(e.target.result);
+        try {
+            const arrayBuffer = await file.arrayBuffer();
             document.getElementById('settings-panel').classList.remove('hidden');
+            
+            const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) });
+            pdfDocProxy = await loadingTask.promise;
+            renderPdfPreviewPage(1);
+        } catch (err) {
+            alert("Failed to read PDF file: " + err.message);
+        }
+    }
+
+    async function renderPdfPreviewPage(pageNum) {
+        if (!pdfDocProxy) return;
+        const page = await pdfDocProxy.getPage(pageNum);
+        const viewport = page.getViewport({ scale: 1.0 });
+        
+        previewScale = Math.min(1.2, 400 / viewport.width);
+        const scaledViewport = page.getViewport({ scale: previewScale });
+
+        const canvas = document.getElementById('pdf-preview-canvas');
+        const context = canvas.getContext('2d');
+        canvas.height = scaledViewport.height;
+        canvas.width = scaledViewport.width;
+
+        await page.render({ canvasContext: context, viewport: scaledViewport }).promise;
+    }
+
+    function setWmType(type) {
+        wmType = type;
+        if (type === 'text') {
+            document.getElementById('btn-type-text').className = "flex-1 py-2.5 bg-red-600 text-white text-xs font-black uppercase rounded-lg shadow-xs cursor-pointer";
+            document.getElementById('btn-type-image').className = "flex-1 py-2.5 bg-transparent text-slate-600 text-xs font-black uppercase rounded-lg hover:text-slate-900 cursor-pointer";
+            document.getElementById('sec-text').classList.remove('hidden');
+            document.getElementById('sec-image').classList.add('hidden');
+        } else {
+            document.getElementById('btn-type-image').className = "flex-1 py-2.5 bg-red-600 text-white text-xs font-black uppercase rounded-lg shadow-xs cursor-pointer";
+            document.getElementById('btn-type-text').className = "flex-1 py-2.5 bg-transparent text-slate-600 text-xs font-black uppercase rounded-lg hover:text-slate-900 cursor-pointer";
+            document.getElementById('sec-image').classList.remove('hidden');
+            document.getElementById('sec-text').classList.add('hidden');
+            
+            if (croppedImageBytes) {
+                document.getElementById('preview-container').classList.remove('hidden');
+                document.getElementById('align-presets').classList.remove('hidden');
+            }
+        }
+    }
+
+    function handleImageUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+            const img = new Image();
+            img.onload = () => {
+                cropImg = img;
+                openCropModal();
+            };
+            img.src = evt.target.result;
         };
-        reader.readAsArrayBuffer(file);
+        reader.readAsDataURL(file);
+    }
+
+    function openCropModal() {
+        document.getElementById('crop-modal').classList.remove('hidden');
+        cropCanvas = document.getElementById('crop-canvas');
+        cropCtx = cropCanvas.getContext('2d');
+        
+        cropCanvas.width = cropImg.width;
+        cropCanvas.height = cropImg.height;
+        cropBox = { x: 0, y: 0, w: cropImg.width, h: cropImg.height };
+        redrawCrop();
+        setupCropListeners();
+    }
+
+    function redrawCrop() {
+        cropCtx.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
+        cropCtx.drawImage(cropImg, 0, 0);
+        cropCtx.strokeStyle = 'rgba(220, 38, 38, 0.8)';
+        cropCtx.lineWidth = 2;
+        cropCtx.strokeRect(cropBox.x, cropBox.y, cropBox.w, cropBox.h);
+    }
+
+    function setupCropListeners() {
+        let dragging = false;
+        cropCanvas.onmousedown = (e) => {
+            const rect = cropCanvas.getBoundingClientRect();
+            startX = (e.clientX - rect.left) * (cropCanvas.width / rect.width);
+            startY = (e.clientY - rect.top) * (cropCanvas.height / rect.height);
+            cropBox.x = startX; cropBox.y = startY;
+            cropBox.w = 10; cropBox.h = 10;
+            dragging = true;
+        };
+        cropCanvas.onmousemove = (e) => {
+            if (!dragging) return;
+            const rect = cropCanvas.getBoundingClientRect();
+            const curX = (e.clientX - rect.left) * (cropCanvas.width / rect.width);
+            const curY = (e.clientY - rect.top) * (cropCanvas.height / rect.height);
+            cropBox.w = curX - startX;
+            cropBox.h = curY - startY;
+            redrawCrop();
+        };
+        window.onmouseup = () => { dragging = false; };
+    }
+
+    function saveCroppedImage() {
+        const outCanvas = document.createElement('canvas');
+        let absW = Math.abs(cropBox.w), absH = Math.abs(cropBox.h);
+        let absX = cropBox.w < 0 ? cropBox.x + cropBox.w : cropBox.x;
+        let absY = cropBox.h < 0 ? cropBox.y + cropBox.h : cropBox.y;
+
+        outCanvas.width = absW; outCanvas.height = absH;
+        const outCtx = outCanvas.getContext('2d');
+        outCtx.drawImage(cropCanvas, absX, absY, absW, absH, 0, 0, absW, absH);
+
+        outCanvas.toBlob((blob) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                croppedImageBytes = new Uint8Array(e.target.result);
+                const dataUrl = e.target.result;
+                
+                const stampEl = document.getElementById('draggable-stamp');
+                const stampImg = document.getElementById('stamp-img-preview');
+                stampImg.src = dataUrl;
+                // Set default light opacity matching slider
+                const currentOpacity = document.getElementById('wm-opacity-slider').value / 100;
+                stampImg.style.opacity = currentOpacity;
+                
+                stampEl.classList.remove('hidden');
+                
+                document.getElementById('crop-modal').classList.add('hidden');
+                document.getElementById('preview-container').classList.remove('hidden');
+                document.getElementById('align-presets').classList.remove('hidden');
+                
+                setupDraggableStamp();
+            };
+            reader.readAsArrayBuffer(blob);
+        }, 'image/png');
+    }
+
+    function setPresetPosition(pos) {
+        const stamp = document.getElementById('draggable-stamp');
+        const wrapper = document.getElementById('canvas-wrapper');
+        
+        let x = 0, y = 0;
+        if (pos === 'center') {
+            x = (wrapper.clientWidth - stamp.clientWidth) / 2;
+            y = (wrapper.clientHeight - stamp.clientHeight) / 2;
+        } else if (pos === 'middle') {
+            x = (wrapper.clientWidth - stamp.clientWidth) / 2;
+            y = wrapper.clientHeight / 3;
+        } else if (pos === 'bottom') {
+            x = (wrapper.clientWidth - stamp.clientWidth) / 2;
+            y = wrapper.clientHeight - stamp.clientHeight - 20;
+        }
+
+        stamp.style.left = x + 'px';
+        stamp.style.top = y + 'px';
+        stampPos.x = x; stampPos.y = y;
+    }
+
+    function setupDraggableStamp() {
+        const stamp = document.getElementById('draggable-stamp');
+        const wrapper = document.getElementById('canvas-wrapper');
+        let isDrag = false;
+        let startX, startY;
+
+        stamp.onmousedown = (e) => {
+            isDrag = true;
+            startX = e.clientX - stamp.offsetLeft;
+            startY = e.clientY - stamp.offsetTop;
+            e.stopPropagation();
+        };
+
+        window.onmousemove = (e) => {
+            if (!isDrag) return;
+            let newX = e.clientX - startX;
+            let newY = e.clientY - startY;
+            
+            newX = Math.max(0, Math.min(newX, wrapper.clientWidth - stamp.clientWidth));
+            newY = Math.max(0, Math.min(newY, wrapper.clientHeight - stamp.clientHeight));
+            
+            stamp.style.left = newX + 'px';
+            stamp.style.top = newY + 'px';
+            
+            stampPos.x = newX;
+            stampPos.y = newY;
+        };
+
+        window.onmouseup = () => { isDrag = false; };
     }
 
     async function applyWatermark() {
-        if (!pdfBytes) return;
-        const { PDFDocument, rgb, degrees } = PDFLib;
-        const pdfDoc = await PDFDocument.load(pdfBytes);
-        const pages = pdfDoc.getPages();
-        const text = document.getElementById('wm-text').value || "CONFIDENTIAL";
-        const mode = document.getElementById('wm-mode').value;
+        if (!activeFileObject) {
+            alert("Please select a PDF file first.");
+            return;
+        }
+        
+        try {
+            const freshBuffer = await activeFileObject.arrayBuffer();
+            const { PDFDocument, rgb, degrees } = PDFLib;
+            const pdfDoc = await PDFDocument.load(freshBuffer);
+            const pages = pdfDoc.getPages();
+            const mode = document.getElementById('wm-mode').value;
+            const userOpacity = parseInt(document.getElementById('wm-opacity-slider').value) / 100;
 
-        pages.forEach((page, index) => {
-            const { width, height } = page.getSize();
-            
-            if (mode === 'diagonal' || mode === 'both') {
-                page.drawText(text, {
-                    x: width / 4,
-                    y: height / 2,
-                    size: 45,
-                    color: rgb(0.8, 0.2, 0.2),
-                    opacity: 0.25,
-                    rotate: degrees(45)
-                });
+            let embeddedImage = null;
+            if (wmType === 'image' && croppedImageBytes) {
+                try {
+                    embeddedImage = await pdfDoc.embedPng(croppedImageBytes);
+                } catch(e) {
+                    try { embeddedImage = await pdfDoc.embedJpg(croppedImageBytes); } catch(err) {}
+                }
             }
 
-            if (mode === 'footer_num' || mode === 'both') {
-                page.drawText(`Page ${index + 1} of ${pages.length}`, {
-                    x: width / 2 - 35,
-                    y: 20,
-                    size: 10,
-                    color: rgb(0.3, 0.3, 0.3)
-                });
-            }
-        });
+            pages.forEach((page, index) => {
+                const { width, height } = page.getSize();
+                
+                if (wmType === 'text') {
+                    const text = document.getElementById('wm-text').value || "CONFIDENTIAL";
+                    
+                    if (mode === 'diagonal' || mode === 'both') {
+                        page.drawText(text, {
+                            x: width / 4,
+                            y: height / 2,
+                            size: 45,
+                            color: rgb(0.8, 0.2, 0.2),
+                            opacity: userOpacity,
+                            rotate: degrees(45)
+                        });
+                    }
 
-        const modifiedBytes = await pdfDoc.save();
-        const blob = new Blob([modifiedBytes], { type: 'application/pdf' });
-        const link = document.createElement('a');
-        link.download = `${originalName}_watermarked.pdf`;
-        link.href = URL.createObjectURL(blob);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+                    if (mode === 'footer_num' || mode === 'both') {
+                        page.drawText(`Page ${index + 1} of ${pages.length}`, {
+                            x: width / 2 - 35,
+                            y: 20,
+                            size: 10,
+                            color: rgb(0.3, 0.3, 0.3),
+                            opacity: userOpacity
+                        });
+                    }
+                } else if (wmType === 'image' && embeddedImage) {
+                    const canvasEl = document.getElementById('pdf-preview-canvas');
+                    const stampEl = document.getElementById('draggable-stamp');
+
+                    const scaleX = width / canvasEl.clientWidth;
+                    const scaleY = height / canvasEl.clientHeight;
+
+                    const pdfX = stampPos.x * scaleX;
+                    const pdfWidth = stampEl.clientWidth * scaleX;
+                    const pdfHeight = stampEl.clientHeight * scaleY;
+                    const pdfY = height - (stampPos.y * scaleY) - pdfHeight;
+
+                    // Placed with user-defined soft opacity so text remains visible underneath
+                    page.drawImage(embeddedImage, {
+                        x: pdfX,
+                        y: pdfY,
+                        width: pdfWidth,
+                        height: pdfHeight,
+                        opacity: userOpacity
+                    });
+                }
+            });
+
+            const modifiedBytes = await pdfDoc.save();
+            const blob = new Blob([modifiedBytes], { type: 'application/pdf' });
+            const link = document.createElement('a');
+            link.download = `${originalName}_watermarked.pdf`;
+            link.href = URL.createObjectURL(blob);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (err) {
+            console.error(err);
+            alert("Error generating watermarked PDF: " + err.message);
+        }
     }
 </script>
 </body>
