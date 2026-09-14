@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image to Text & Word | iLoveFiles</title>
+    <title>Image to Text & Word | Filesque</title>
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Tesseract.js High Precision OCR Engine -->
@@ -11,8 +11,12 @@
     
     <!-- Client-Side Word (.docx) Generator -->
     <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
 </head>
-<body class="bg-slate-50 min-h-screen flex flex-col items-center">
+<body class="bg-slate-50 min-h-screen flex flex-col items-center antialiased">
 
 <!-- Top Navigation Bar with Creative Animated Brand & Nav Links -->
 <nav class="w-full bg-white/90 backdrop-blur-md border-b border-slate-100 px-8 py-5 flex justify-between items-center fixed top-0 left-0 z-50 shadow-xs">
@@ -429,7 +433,10 @@
             <head>
                 <meta charset="utf-8">
                 <title>${currentFileName}</title>
-                <style>
+                    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+
                     body { font-family: 'Calibri', 'Arial', sans-serif; font-size: 11pt; line-height: 1.5; color: #000; margin: 1in; }
                     h2 { font-size: 18pt; color: #111; margin-bottom: 14pt; }
                     p { margin-bottom: 12pt; text-align: justify; }

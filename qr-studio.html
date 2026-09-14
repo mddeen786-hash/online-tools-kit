@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Studio Pro | iLoveFiles</title>
+    <title>QR Code Studio Pro | Filesque</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
 </head>
 <body class="bg-slate-50 min-h-screen flex flex-col items-center antialiased">
 
@@ -295,7 +299,7 @@
         width: 260,
         height: 260,
         type: "canvas",
-        data: "https://ilovefiles.com",
+        data: "https://filesque.com",
         image: "",
         dotsOptions: {
             color: "#0f172a",
@@ -357,7 +361,7 @@
 
     function resetAll() {
         document.querySelectorAll('.type-form input').forEach(inp => inp.value = '');
-        document.getElementById('input-url').value = 'https://ilovefiles.com';
+        document.getElementById('input-url').value = 'https://filesque.com';
         
         document.getElementById('qr-dot-style').value = 'dots';
         document.getElementById('qr-corner-square').value = 'extra-rounded';
@@ -372,7 +376,7 @@
 
     function getFormattedData() {
         if (activeType === 'url') {
-            return document.getElementById('input-url').value.trim() || 'https://ilovefiles.com';
+            return document.getElementById('input-url').value.trim() || 'https://filesque.com';
         } else if (activeType === 'upi') {
             const vpa = document.getElementById('input-upi-id').value.trim() || 'sample@upi';
             const name = encodeURIComponent(document.getElementById('input-upi-name').value.trim() || 'Merchant');
@@ -393,7 +397,7 @@
             const email = document.getElementById('input-vcard-email').value.trim();
             return `BEGIN:VCARD\nVERSION:3.0\nN:${name}\nFN:${name}\nTEL:${phone}\nEMAIL:${email}\nEND:VCARD`;
         }
-        return 'https://ilovefiles.com';
+        return 'https://filesque.com';
     }
 
     function updateQR() {

@@ -1,0 +1,5 @@
+node_modules
+qa-agent/
+test-suite/
+temp/
+*.traineddata
