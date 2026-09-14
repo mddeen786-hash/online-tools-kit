@@ -45,13 +45,7 @@ const toolRegistry = [
   { id: 'image-reducer',       name: 'Image Reducer',           icon: '📉', file: 'image-reducer.html', outputExt: '.jpg' },
   { id: 'image-to-text',       name: 'Image to Text',           icon: '🔍', file: 'image-to-text.html', outputExt: '.doc' },
   { id: 'passport-studio',     name: 'Passport Studio',         icon: '🛂', file: 'passport-studio.html', outputExt: '.jpg' },
-  { id: 'merge-image', name: 'Merge Image', icon: '🧩', file: 'merge-image.html', outputExt: '.jpg' },
-  { id: 'invoice-generator',   name: 'Invoice Generator',       icon: '🧾', file: 'invoice-gen.html' },
-  { id: 'barcode-generator',   name: 'Barcode Generator',       icon: '🏷️', file: 'barcode-gen.html' },
-  { id: 'qr-code-studio',      name: 'QR Code Studio',          icon: '📱', file: 'qr-studio.html' },
-  { id: 'digital-signature',   name: 'Digital Signature Studio', icon: '✍️', file: 'sign-maker.html' },
-  { id: 'code-formatter',      name: 'Code Formatter',          icon: '⚡', file: 'code-formatter.html' },
-  { id: 'product-listing',     name: 'Product Listing',         icon: '📦', file: 'product-listing.html' }
+  { id: 'merge-image',         name: 'Merge Image',             icon: '🧩', file: 'merge-image.html', outputExt: '.jpg' }
 ];
 
 const workflowsDB = new Map();
@@ -1709,51 +1703,55 @@ app.get('/workflow-builder', (req, res) => {
   res.send('<!DOCTYPE html><html><head><title>Workflow Builder - Filesque</title><script src="https://cdn.tailwindcss.com"></script><style>' +
     '*{margin:0;padding:0;box-sizing:border-box}' +
     'body{font-family:"Plus Jakarta Sans",sans-serif;background:#f8fafc;min-height:100vh}' +
-    '.navbar{background:white;border-bottom:1px solid #e2e8f0;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center}' +
+    '.navbar{background:white;border-bottom:1px solid #e2e8f0;padding:1rem 2.5rem;display:flex;justify-content:space-between;align-items:center}' +
     '.logo{cursor:pointer;display:flex;align-items:center}' +
-    '.back-link{color:#dc2626;text-decoration:none;font-weight:700}' +
-    '.container{display:flex;gap:2rem;max-width:1400px;margin:2rem auto;padding:0 1rem}' +
-    '.panel{background:white;border-radius:1rem;box-shadow:0 2px 10px rgba(0,0,0,0.05);padding:1.5rem}' +
-    '.tools-panel{flex:1;max-height:80vh;overflow-y:auto}.workflow-panel{flex:2}' +
-    '.panel-title{font-size:1.3rem;font-weight:800;margin-bottom:1rem}' +
-    '.tool-item{display:flex;align-items:center;gap:0.8rem;padding:0.8rem 1rem;background:#f1f5f9;border-radius:0.5rem;margin-bottom:0.5rem;cursor:pointer;transition:0.2s}' +
-    '.tool-item:hover{background:#e2e8f0;transform:translateX(5px)}' +
-    '.tool-icon{font-size:1.4rem}.tool-name{font-weight:600}' +
-    '.workflow-area{min-height:200px;border:2px dashed #cbd5e1;border-radius:0.75rem;padding:1rem;margin-bottom:1rem}' +
-    '.step{display:flex;align-items:center;gap:1rem;padding:0.8rem;background:#f1f5f9;border-radius:0.5rem;margin-bottom:0.5rem;transition:all 0.3s}' +
+    '.back-link{color:#0f172a;text-decoration:none;font-weight:800;font-size:15px;background:#f1f5f9;padding:10px 18px;border-radius:12px;border:1px solid #e2e8f0;display:flex;align-items:center;gap:6px;transition:all 0.2s}' +
+    '.back-link:hover{background:#0f172a;color:white;border-color:#0f172a;transform:translateY(-1px);box-shadow:0 4px 12px rgba(15,23,42,0.15)}' +
+    '.container{display:flex;gap:2rem;width:100%;max-width:none;margin:0;padding:2rem 2.5rem}' +
+    '.panel{background:white;border-radius:1.25rem;box-shadow:0 4px 20px rgba(0,0,0,0.03);padding:1.75rem;border:1px solid #e2e8f0}' +
+    '.tools-panel{flex:0 0 400px;max-height:85vh;overflow-y:auto}.workflow-panel{flex:1}' +
+    '.panel-title{font-size:1.35rem;font-weight:800;margin-bottom:1.25rem;color:#0f172a}' +
+    '.tool-item{display:flex;align-items:center;gap:0.8rem;padding:0.9rem 1.1rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:0.75rem;margin-bottom:0.6rem;cursor:pointer;transition:0.2s}' +
+    '.tool-item:hover{background:#f1f5f9;border-color:#cbd5e1;transform:translateX(4px)}' +
+    '.tool-icon{font-size:1.5rem}.tool-name{font-weight:700;color:#334155;font-size:14px}' +
+    '.workflow-area{min-height:220px;border:2px dashed #cbd5e1;border-radius:1rem;padding:1.25rem;margin-bottom:1.25rem;background:#fafafa}' +
+    '.step{display:flex;align-items:center;gap:1rem;padding:1.1rem;background:white;border:1px solid #e2e8f0;border-radius:0.75rem;margin-bottom:0.75rem;transition:all 0.3s;box-shadow:0 2px 6px rgba(0,0,0,0.02)}' +
     '.step.active-step{background:#e0f2fe;border:2px solid #0284c7;box-shadow:0 4px 12px rgba(2,132,199,0.2);transform:scale(1.01)}' +
-    '.step-number{width:30px;height:30px;background:#dc2626;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold}' +
-    '.remove-btn{background:#ef4444;color:white;border:none;border-radius:0.25rem;padding:0.3rem 0.7rem;cursor:pointer}' +
-    '.controls{display:flex;gap:0.8rem;margin-bottom:1rem}' +
-    'input[type="text"]{flex:1;padding:0.7rem 1rem;border:1px solid #cbd5e1;border-radius:0.5rem;font-size:1rem}' +
-    '.btn{padding:0.7rem 1.5rem;background:#dc2626;color:white;border:none;border-radius:0.5rem;cursor:pointer;font-weight:700}' +
-    '.btn:hover{background:#b91c1c}.btn-secondary{background:#64748b}.btn-secondary:hover{background:#475569}' +
-    '.saved-list{margin-top:1rem}.saved-item{padding:0.6rem;background:#f8fafc;border-radius:0.4rem;margin-bottom:0.4rem}' +
-    '.file-upload-section{margin-top:1.5rem;padding:1rem;background:#f8fafc;border-radius:0.5rem}' +
-    '.file-upload-section input[type="file"]{margin-top:0.5rem}' +
+    '.step-number{width:34px;height:34px;background:#dc2626;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px}' +
+    '.remove-btn{background:#fee2e2;color:#dc2626;border:none;border-radius:0.5rem;padding:0.4rem 0.9rem;cursor:pointer;font-weight:800;font-size:13px;transition:0.2s}' +
+    '.remove-btn:hover{background:#dc2626;color:white}' +
+    '.controls{display:flex;gap:1rem;margin-bottom:1.5rem}' +
+    'input[type="text"]{flex:1;padding:0.9rem 1.25rem;border:1px solid #cbd5e1;border-radius:0.75rem;font-size:15px;font-weight:600;outline:none}' +
+    'input[type="text"]:focus{border-color:#0284c7;box-shadow:0 0 0 3px rgba(2,132,199,0.1)}' +
+    '.btn{padding:0.9rem 1.75rem;background:#dc2626;color:white;border:none;border-radius:0.75rem;cursor:pointer;font-weight:800;font-size:15px;transition:0.2s}' +
+    '.btn:hover{background:#b91c1c;transform:translateY(-1px);box-shadow:0 4px 12px rgba(220,38,38,0.2)}' +
+    '.btn-secondary{background:#64748b}.btn-secondary:hover{background:#475569;box-shadow:0 4px 12px rgba(100,116,139,0.2)}' +
+    '.saved-list{margin-top:1.5rem}.saved-item{padding:0.9rem 1.1rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:0.75rem;margin-bottom:0.5rem;font-size:14px;font-weight:600;color:#334155}' +
+    '.file-upload-section{margin-top:1.5rem;padding:1.25rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:1rem}' +
+    '.file-upload-section input[type="file"]{margin-top:0.75rem;font-size:14px;font-weight:600}' +
     '</style></head><body>' +
     '<div class="navbar">' +
-    '  <div class="logo group shrink-0 flex items-center space-x-2" onclick="window.location.href=\'/\'">' +
+    '  <div class="logo group shrink-0 flex items-center space-x-2 cursor-pointer" onclick="window.location.href=\'/\'">' +
     '    <span class="text-4xl sm:text-7xl font-black tracking-tighter text-[#0f172a] flex items-center overflow-hidden">' +
     '      <span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span>' +
     '      <span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span>' +
     '    </span>' +
     '    <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping ml-1 hidden sm:inline-block"></span>' +
     '  </div>' +
-    '  <a href="/" class="back-link">← Back to Home</a>' +
+    '  <a href="/" class="back-link"><span>🏠</span> Back to Dashboard</a>' +
     '</div>' +
     '<div class="container">' +
     '<div class="panel tools-panel"><div class="panel-title">🛠️ Tools (' + toolRegistry.length + ')</div>' + toolsListHTML + '</div>' +
     '<div class="panel workflow-panel"><div class="panel-title">📋 Your Workflow</div>' +
-    '<div class="workflow-area" id="workflowArea"><p style="color:#94a3b8;">Click on tools to add steps</p></div>' +
+    '<div class="workflow-area" id="workflowArea"><p style="color:#94a3b8;font-weight:600;font-size:15px;">Click on tools to add steps</p></div>' +
     '<div class="controls"><input type="text" id="wfName" placeholder="Workflow Name">' +
-    '<button class="btn" onclick="saveWorkflow()">💾 Save</button>' +
+    '<button class="btn" onclick="saveWorkflow()">💾 Save Workflow</button>' +
     '<button class="btn btn-secondary" onclick="clearWorkflow()">🗑️ Clear</button></div>' +
-    '<div class="file-upload-section"><h3>📁 Test Your Workflow</h3>' +
+    '<div class="file-upload-section"><h3 style="font-size:15px;font-weight:800;color:#0f172a;">📁 Test Your Workflow</h3>' +
     '<input type="file" id="wfFile" multiple>' + 
     '<button class="btn" onclick="executeWorkflow()" style="margin-left: 10px;">▶️ Execute Workflow</button>' +
-    '<div id="executionResult" style="margin-top:10px;"></div></div>' +
-    '<div class="saved-list"><h3>Saved Workflows</h3><div id="savedList"></div></div>' +
+    '<div id="executionResult" style="margin-top:10px;font-weight:700;font-size:14px;"></div></div>' +
+    '<div class="saved-list"><h3 style="font-size:15px;font-weight:800;color:#0f172a;margin-bottom:0.75rem;">Saved Workflows</h3><div id="savedList"></div></div>' +
     '</div></div>' +
     '<div id="modalContainer"></div>' +
     '<script>' +
@@ -1767,43 +1765,43 @@ app.get('/workflow-builder', (req, res) => {
     '}' +
     'function renderSteps(activeIdx = -1) {' +
     '  const area = document.getElementById("workflowArea");' +
-    '  if (steps.length === 0) { area.innerHTML = "<p style=\'color:#94a3b8;\'>Click on tools to add steps</p>"; return; }' +
+    '  if (steps.length === 0) { area.innerHTML = "<p style=\'color:#94a3b8;font-weight:600;font-size:15px;\'>Click on tools to add steps</p>"; return; }' +
     '  let html = "";' +
     '  for (let i = 0; i < steps.length; i++) {' +
     '    let toggleHtml = "";' +
     '    let isActive = (i === activeIdx);' +
     '    let stepClass = isActive ? "step active-step" : "step";' +
     '    if (isActive) {' +
-    '       toggleHtml += "<div style=\'margin-left:auto; display:flex; align-items:center; gap:6px; background:#0284c7; color:white; padding:4px 10px; border-radius:6px; font-weight:800; font-size:11px;\'>⚡ Processing Step...</div>";' +
+    '       toggleHtml += "<div style=\'margin-left:auto; display:flex; align-items:center; gap:6px; background:#0284c7; color:white; padding:6px 12px; border-radius:8px; font-weight:800; font-size:13px;\'>⚡ Processing Step...</div>";' +
     '    } else if (steps[i].id === "pdf-to-excel") {' +
-    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '        "<span style=\'font-size:12px; font-weight:bold; color:#475569;\'>Mode:</span>" +' +
-    '        "<select onchange=\'updateStepConfig(" + i + ", \\\"isComplex\\\", this.value === \\\"complex\\\")\' style=\'padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:8px; border:1px solid #cbd5e1;\'>" +' +
+    '        "<span style=\'font-size:13px; font-weight:bold; color:#475569;\'>Mode:</span>" +' +
+    '        "<select onchange=\'updateStepConfig(" + i + ", \\\"isComplex\\\", this.value === \\\"complex\\\")\' style=\'padding:4px 8px; border-radius:6px; border:1px solid #94a3b8; font-size:13px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
     '          "<option value=\\\"simple\\\" " + (!steps[i].isComplex ? "selected" : "") + ">Simple Table</option>" +' +
     '          "<option value=\\\"complex\\\" " + (steps[i].isComplex ? "selected" : "") + ">Complex Table</option>" +' +
     '        "</select>" +' +
     '      "</div>";' +
     '    } else if (steps[i].id === "merge-image") {' +
-    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:linear-gradient(135deg, #0d9488, #4f46e5); padding:6px 14px; border-radius:8px; color:white; font-weight:bold; font-size:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1);\'>" + ' +
+    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:linear-gradient(135deg, #0d9488, #4f46e5); padding:6px 14px; border-radius:8px; color:white; font-weight:bold; font-size:13px; box-shadow:0 2px 5px rgba(0,0,0,0.1);\'>" + ' +
     '        "<span>🧩 Studio & Crop Dialog Ready</span>" + ' +
     '      "</div>";' +
     '    } else if (steps[i].id === "pdf-splitter") {' +
     '      let mode = steps[i].mode || "all";' +
     '      let rangeVal = steps[i].range || "";' +
     '      let displayRange = mode === "all" ? "display:none;" : "";' +
-    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '        "<span style=\'font-size:12px; font-weight:bold; color:#475569;\'>Mode:</span>" +' +
-    '        "<select onchange=\'updateStepConfig(" + i + ", \\\"mode\\\", this.value); renderSteps();\' style=\'padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:8px; border:1px solid #cbd5e1;\'>" +' +
+    '        "<span style=\'font-size:13px; font-weight:bold; color:#475569;\'>Mode:</span>" +' +
+    '        "<select onchange=\'updateStepConfig(" + i + ", \\\"mode\\\", this.value); renderSteps();\' style=\'padding:4px 8px; border-radius:6px; border:1px solid #94a3b8; font-size:13px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
     '          "<option value=\\\"all\\\" " + (mode === "all" ? "selected" : "") + ">Split All (ZIP)</option>" +' +
     '          "<option value=\\\"range\\\" " + (mode === "range" ? "selected" : "") + ">Custom Range</option>" +' +
     '        "</select>" +' +
-    '        "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"range\\\", this.value)\' value=\'" + rangeVal + "\' placeholder=\'e.g. 1-3, 5\' style=\'padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; width:100px; outline:none; " + displayRange + "\'>" + ' +
+    '        "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"range\\\", this.value)\' value=\'" + rangeVal + "\' placeholder=\'e.g. 1-3, 5\' style=\'padding:4px 8px; border-radius:6px; border:1px solid #94a3b8; font-size:13px; width:110px; outline:none; " + displayRange + "\'>" + ' +
     '      "</div>";' +
     '    } else if (steps[i].id === "merge-pdf" || steps[i].id === "image-to-pdf") {' +
     '      let sOrder = steps[i].sortOrder || "upload";' +
-    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '        "<span style=\'font-size:12px; font-weight:bold; color:#475569;\'>Combine Order:</span>" +' +
-    '        "<select onchange=\'updateStepConfig(" + i + ", \\\"sortOrder\\\", this.value)\' style=\'padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:8px; border:1px solid #cbd5e1;\'>" +' +
+    '        "<span style=\'font-size:13px; font-weight:bold; color:#475569;\'>Combine Order:</span>" +' +
+    '        "<select onchange=\'updateStepConfig(" + i + ", \\\"sortOrder\\\", this.value)\' style=\'padding:4px 8px; border-radius:6px; border:1px solid #94a3b8; font-size:13px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
     '          "<option value=\\\"upload\\\" " + (sOrder === "upload" ? "selected" : "") + ">As Uploaded</option>" +' +
     '          "<option value=\\\"az\\\" " + (sOrder === "az" ? "selected" : "") + ">Alphabetical (A-Z)</option>" +' +
     '          "<option value=\\\"za\\\" " + (sOrder === "za" ? "selected" : "") + ">Alphabetical (Z-A)</option>" +' +
@@ -1815,19 +1813,19 @@ app.get('/workflow-builder', (req, res) => {
     '      let rDeg = steps[i].rotateDegree || "90";' +
     '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px;\'>" +' +
     '        "<div style=\'display:flex; align-items:flex-start; gap:5px; background:#e2e8f0; padding:6px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '          "<span style=\'font-size:11px; font-weight:bold; color:#475569; margin-top:2px;\'>Page Order:</span>" +' +
+    '          "<span style=\'font-size:13px; font-weight:bold; color:#475569; margin-top:2px;\'>Page Order:</span>" +' +
     '          "<div style=\'display:flex; flex-direction:column; gap:2px;\'>" +' +
-    '            "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"pageOrder\\\", this.value)\' value=\'" + pOrder + "\' placeholder=\'e.g. 1, 3, 2, 5-7\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; width:120px; outline:none;\' title=\'Leave blank to keep all pages original order\'>" +' +
-    '            "<span style=\'font-size:9px; color:#64748b; line-height:1;\'>e.g., 1, 3, 2, 5-7</span>" +' +
+    '            "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"pageOrder\\\", this.value)\' value=\'" + pOrder + "\' placeholder=\'e.g. 1, 3, 2, 5-7\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; width:130px; outline:none;\'>" +' +
+    '            "<span style=\'font-size:10px; color:#64748b; line-height:1;\'>e.g., 1, 3, 2, 5-7</span>" +' +
     '          "</div>" +' +
     '        "</div>" +' +
     '        "<div style=\'display:flex; align-items:flex-start; gap:5px; background:#e2e8f0; padding:6px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '          "<span style=\'font-size:11px; font-weight:bold; color:#475569; margin-top:2px;\'>Rotate:</span>" +' +
+    '          "<span style=\'font-size:13px; font-weight:bold; color:#475569; margin-top:2px;\'>Rotate:</span>" +' +
     '          "<div style=\'display:flex; flex-direction:column; gap:2px;\'>" +' +
-    '            "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"rotatePages\\\", this.value)\' value=\'" + rPages + "\' placeholder=\'e.g. 2, 4 or all\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; width:110px; outline:none;\'>" +' +
-    '            "<span style=\'font-size:9px; color:#64748b; line-height:1;\'>e.g. 2, 4 or all</span>" +' +
+    '            "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"rotatePages\\\", this.value)\' value=\'" + rPages + "\' placeholder=\'e.g. 2, 4 or all\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; width:120px; outline:none;\'>" +' +
+    '            "<span style=\'font-size:10px; color:#64748b; line-height:1;\'>e.g. 2, 4 or all</span>" +' +
     '          "</div>" +' +
-    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"rotateDegree\\\", this.value)\' style=\'padding:1px 4px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"rotateDegree\\\", this.value)\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
     '             "<option value=\\\"90\\\" " + (rDeg === "90" ? "selected" : "") + ">90°</option>" +' +
     '             "<option value=\\\"180\\\" " + (rDeg === "180" ? "selected" : "") + ">180°</option>" +' +
     '             "<option value=\\\"270\\\" " + (rDeg === "270" ? "selected" : "") + ">270°</option>" +' +
@@ -1839,15 +1837,15 @@ app.get('/workflow-builder', (req, res) => {
     '      let wmMode = steps[i].watermarkMode || "diagonal";' +
     '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px;\'>" +' +
     '        "<div style=\'display:flex; align-items:flex-start; gap:5px; background:#e2e8f0; padding:6px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '          "<span style=\'font-size:11px; font-weight:bold; color:#475569; margin-top:2px;\'>Text:</span>" +' +
+    '          "<span style=\'font-size:13px; font-weight:bold; color:#475569; margin-top:2px;\'>Text:</span>" +' +
     '          "<div style=\'display:flex; flex-direction:column; gap:2px;\'>" +' +
-    '            "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"watermarkText\\\", this.value)\' value=\'" + wmText + "\' placeholder=\'e.g. CONFIDENTIAL\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; width:110px; outline:none;\'>" +' +
-    '            "<span style=\'font-size:9px; color:#64748b; line-height:1;\'>e.g. DRAFT</span>" +' +
+    '            "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"watermarkText\\\", this.value)\' value=\'" + wmText + "\' placeholder=\'e.g. CONFIDENTIAL\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; width:120px; outline:none;\'>" +' +
+    '            "<span style=\'font-size:10px; color:#64748b; line-height:1;\'>e.g. DRAFT</span>" +' +
     '          "</div>" +' +
     '        "</div>" +' +
     '        "<div style=\'display:flex; align-items:flex-start; gap:5px; background:#e2e8f0; padding:6px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '          "<span style=\'font-size:11px; font-weight:bold; color:#475569; margin-top:2px;\'>Mode:</span>" +' +
-    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"watermarkMode\\\", this.value)\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '          "<span style=\'font-size:13px; font-weight:bold; color:#475569; margin-top:2px;\'>Mode:</span>" +' +
+    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"watermarkMode\\\", this.value)\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
     '             "<option value=\\\"diagonal\\\" " + (wmMode === "diagonal" ? "selected" : "") + ">Watermark Only</option>" +' +
     '             "<option value=\\\"footer_num\\\" " + (wmMode === "footer_num" ? "selected" : "") + ">Page Numbers Only</option>" +' +
     '             "<option value=\\\"both\\\" " + (wmMode === "both" ? "selected" : "") + ">Both</option>" +' +
@@ -1856,9 +1854,9 @@ app.get('/workflow-builder', (req, res) => {
     '      "</div>";' +
     '    } else if (steps[i].id === "compress-image") {' +
     '      let qual = steps[i].compressQuality || "0.70";' +
-    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '        "<span style=\'font-size:12px; font-weight:bold; color:#475569;\'>Quality:</span>" +' +
-    '        "<select onchange=\'updateStepConfig(" + i + ", \\\"compressQuality\\\", this.value)\' style=\'padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:8px; border:1px solid #cbd5e1;\'>" +' +
+    '        "<span style=\'font-size:13px; font-weight:bold; color:#475569;\'>Quality:</span>" +' +
+    '        "<select onchange=\'updateStepConfig(" + i + ", \\\"compressQuality\\\", this.value)\' style=\'padding:4px 8px; border-radius:6px; border:1px solid #94a3b8; font-size:13px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
     '          "<option value=\\\"0.90\\\" " + (qual === "0.90" ? "selected" : "") + ">High (Less Compression)</option>" +' +
     '          "<option value=\\\"0.70\\\" " + (qual === "0.70" ? "selected" : "") + ">Medium (Default)</option>" +' +
     '          "<option value=\\\"0.50\\\" " + (qual === "0.50" ? "selected" : "") + ">Low (Max Compression)</option>" +' +
@@ -1869,8 +1867,8 @@ app.get('/workflow-builder', (req, res) => {
     '      let qual = steps[i].convertQuality || "0.92";' +
     '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px;\'>" +' +
     '        "<div style=\'display:flex; align-items:center; gap:5px; background:#e2e8f0; padding:6px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '          "<span style=\'font-size:11px; font-weight:bold; color:#475569;\'>Format:</span>" +' +
-    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"convertFormat\\\", this.value)\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '          "<span style=\'font-size:13px; font-weight:bold; color:#475569;\'>Format:</span>" +' +
+    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"convertFormat\\\", this.value)\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
     '            "<option value=\\\"jpg\\\" " + (fmt === "jpg" ? "selected" : "") + ">JPG</option>" +' +
     '            "<option value=\\\"jpeg\\\" " + (fmt === "jpeg" ? "selected" : "") + ">JPEG</option>" +' +
     '            "<option value=\\\"png\\\" " + (fmt === "png" ? "selected" : "") + ">PNG</option>" +' +
@@ -1880,8 +1878,8 @@ app.get('/workflow-builder', (req, res) => {
     '          "</select>" +' +
     '        "</div>" +' +
     '        "<div style=\'display:flex; align-items:center; gap:5px; background:#e2e8f0; padding:6px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '          "<span style=\'font-size:11px; font-weight:bold; color:#475569;\'>Quality:</span>" +' +
-    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"convertQuality\\\", this.value)\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '          "<span style=\'font-size:13px; font-weight:bold; color:#475569;\'>Quality:</span>" +' +
+    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"convertQuality\\\", this.value)\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
     '            "<option value=\\\"1.00\\\" " + (qual === "1.00" ? "selected" : "") + ">100% (Max)</option>" +' +
     '            "<option value=\\\"0.92\\\" " + (qual === "0.92" ? "selected" : "") + ">92% (High)</option>" +' +
     '            "<option value=\\\"0.70\\\" " + (qual === "0.70" ? "selected" : "") + ">70% (Medium)</option>" +' +
@@ -1898,18 +1896,18 @@ app.get('/workflow-builder', (req, res) => {
     '      let showTarget = rMode === "target" ? "inline-block" : "none";' +
     '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px;\'>" +' +
     '        "<div style=\'display:flex; align-items:center; gap:5px; background:#e2e8f0; padding:6px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '          "<span style=\'font-size:11px; font-weight:bold; color:#475569;\'>Mode:</span>" +' +
-    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"reducerMode\\\", this.value); renderSteps();\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '          "<span style=\'font-size:13px; font-weight:bold; color:#475569;\'>Mode:</span>" +' +
+    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"reducerMode\\\", this.value); renderSteps();\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
     '            "<option value=\\\"resize\\\" " + (rMode === "resize" ? "selected" : "") + ">Resize (W x H)</option>" +' +
     '            "<option value=\\\"target\\\" " + (rMode === "target" ? "selected" : "") + ">Target KB</option>" +' +
     '          "</select>" +' +
-    '          "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"reducerWidth\\\", this.value)\' value=\'" + rW + "\' placeholder=\'W\' style=\'display:" + showResize + "; padding:2px 4px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; width:45px; outline:none;\'>" +' +
-    '          "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"reducerHeight\\\", this.value)\' value=\'" + rH + "\' placeholder=\'H\' style=\'display:" + showResize + "; padding:2px 4px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; width:45px; outline:none;\'>" +' +
-    '          "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"reducerTargetKb\\\", this.value)\' value=\'" + rKb + "\' placeholder=\'KB\' style=\'display:" + showTarget + "; padding:2px 4px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; width:60px; outline:none;\'>" +' +
+    '          "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"reducerWidth\\\", this.value)\' value=\'" + rW + "\' placeholder=\'W\' style=\'display:" + showResize + "; padding:2px 4px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; width:50px; outline:none;\'>" +' +
+    '          "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"reducerHeight\\\", this.value)\' value=\'" + rH + "\' placeholder=\'H\' style=\'display:" + showResize + "; padding:2px 4px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; width:50px; outline:none;\'>" +' +
+    '          "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"reducerTargetKb\\\", this.value)\' value=\'" + rKb + "\' placeholder=\'KB\' style=\'display:" + showTarget + "; padding:2px 4px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; width:65px; outline:none;\'>" +' +
     '        "</div>" +' +
     '      "</div>";' +
     '    }' +
-    '    html += "<div class=\'" + stepClass + "\'><div class=\'step-number\'>" + (i+1) + "</div><span style=\'font-size:1.2rem;\'>" + steps[i].icon + "</span><strong style=\'font-size:1.1rem;\'>" + steps[i].name + "</strong>" + (toggleHtml ? toggleHtml : "<div style=\'margin-left:auto;\'></div>") + (!isActive ? "<button class=\'remove-btn\' style=\'margin-left:10px;\' onclick=\'removeStep(" + i + ")\'>✕</button>" : "") + "</div>";' +
+    '    html += "<div class=\'" + stepClass + "\'><div class=\'step-number\'>" + (i+1) + "</div><span style=\'font-size:1.35rem;\'>" + steps[i].icon + "</span><strong style=\'font-size:1.2rem;\'>" + steps[i].name + "</strong>" + (toggleHtml ? toggleHtml : "<div style=\'margin-left:auto;\'></div>") + (!isActive ? "<button class=\'remove-btn\' style=\'margin-left:10px;\' onclick=\'removeStep(" + i + ")\'>✕</button>" : "") + "</div>";' +
     '  }' +
     '  area.innerHTML = html;' +
     '}' +
