@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Passport Photo Studio | Filesque</title>
+    <title>Passport Photo Studio | iLoveFiles</title>
     <script src="https://cdn.tailwindcss.com"></script>
 
 </head>
-<body class="bg-slate-50 min-h-screen flex flex-col items-center antialiased">
+<body class="bg-slate-50 min-h-screen flex flex-col items-center">
 
 <!-- Top Navigation Bar with Creative Animated Brand & Nav Links -->
 <nav class="w-full bg-white/90 backdrop-blur-md border-b border-slate-100 px-8 py-5 flex justify-between items-center fixed top-0 left-0 z-50 shadow-xs">
@@ -151,7 +151,7 @@
                     <div class="md:col-span-2 flex flex-col items-center justify-center bg-slate-100 p-6 rounded-xl border border-gray-200 relative min-h-[350px]">
                         <span id="status-badge" class="text-xs font-bold text-gray-500 uppercase mb-4 absolute top-2 left-2">Live Studio Preview (Original)</span>
                         <div id="preview-container" class="shadow-xl border border-slate-300 overflow-hidden relative bg-white" style="width: 140px; height: 180px;">
-                            <canvas id="studio-canvas" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 origin-center cursor-move"></canvas>
+                            <canvas id="studio-canvas" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 origin-center cursor-move" style="touch-action: none;"></canvas>
                         </div>
                         <p class="text-xs text-gray-400 mt-3">Click and drag inside preview to reposition photo</p>
                     </div>
@@ -181,10 +181,7 @@
     <div id="a4-print-sheet" class="print-only bg-white"></div>
 
     <!-- Strict Print Styles with Dynamic Columns & Solid Cutting Grid Lines -->
-        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-
         @page {
             size: A4 portrait;
             margin: 10mm 8mm !important; 
@@ -200,7 +197,7 @@
                 display: grid !important;
                 gap: 0.8mm 0.8mm !important; 
                 -webkit-print-color-adjust: exact !important; 
-                print-color-adjust: exact !important;
+                print-color-adjust: exact;
             }
             .print-photo-box {
                 position: relative;
@@ -422,6 +419,7 @@
             ctx.drawImage(activeWorkingCanvas, finalX, finalY, targetW, targetH);
         }
 
+        // Mouse Events
         canvas.addEventListener('mousedown', (e) => {
             isDragging = true;
             startDragX = e.clientX;
@@ -443,6 +441,34 @@
         });
 
         window.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        // Mobile Touch Events Implementation (Zero Code Reduction)
+        canvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                isDragging = true;
+                startDragX = e.touches[0].clientX;
+                startDragY = e.touches[0].clientY;
+            }
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            if (!isDragging || e.touches.length !== 1) return;
+            const deltaX = e.touches[0].clientX - startDragX;
+            const deltaY = e.touches[0].clientY - startDragY;
+            
+            imgXOffset += deltaX;
+            imgYOffset += deltaY;
+            
+            startDragX = e.touches[0].clientX;
+            startDragY = e.touches[0].clientY;
+            
+            renderStudioView();
+            e.preventDefault();
+        }, { passive: false });
+
+        window.addEventListener('touchend', () => {
             isDragging = false;
         });
 

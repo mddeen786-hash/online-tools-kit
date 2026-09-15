@@ -24,6 +24,7 @@
             z-index: 30;
             user-select: none;
             overflow: visible !important;
+            touch-action: none;
         }
         .draggable-element:active {
             cursor: grabbing;
@@ -45,6 +46,7 @@
         }
         #crop-canvas {
             cursor: crosshair !important;
+            touch-action: none;
         }
     </style>
 </head>
@@ -510,24 +512,41 @@
 
     function setupCropListeners() {
         let dragging = false;
-        cropCanvas.onmousedown = (e) => {
+        
+        const getClientPos = (e) => {
             const rect = cropCanvas.getBoundingClientRect();
-            startX = (e.clientX - rect.left) * (cropCanvas.width / rect.width);
-            startY = (e.clientY - rect.top) * (cropCanvas.height / rect.height);
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: (clientX - rect.left) * (cropCanvas.width / rect.width),
+                y: (clientY - rect.top) * (cropCanvas.height / rect.height)
+            };
+        };
+
+        const handleStart = (e) => {
+            const pos = getClientPos(e);
+            startX = pos.x;
+            startY = pos.y;
             cropBox.x = startX; cropBox.y = startY;
             cropBox.w = 0; cropBox.h = 0;
             dragging = true;
         };
-        cropCanvas.onmousemove = (e) => {
+
+        const handleMove = (e) => {
             if (!dragging) return;
-            const rect = cropCanvas.getBoundingClientRect();
-            const curX = (e.clientX - rect.left) * (cropCanvas.width / rect.width);
-            const curY = (e.clientY - rect.top) * (cropCanvas.height / rect.height);
-            cropBox.w = curX - startX;
-            cropBox.h = curY - startY;
+            const pos = getClientPos(e);
+            cropBox.w = pos.x - startX;
+            cropBox.h = pos.y - startY;
             redrawCrop();
+            if(e.touches) e.preventDefault();
         };
+
+        cropCanvas.onmousedown = handleStart;
+        cropCanvas.ontouchstart = handleStart;
+        cropCanvas.onmousemove = handleMove;
+        cropCanvas.ontouchmove = handleMove;
         window.onmouseup = () => { dragging = false; };
+        window.ontouchend = () => { dragging = false; };
     }
 
     function saveCroppedImageToBucket() {
@@ -585,13 +604,12 @@
         const currentTextOpacity = document.getElementById('wm-text-opacity-slider').value / 100;
         const currentImgOpacity = document.getElementById('wm-opacity-slider').value / 100;
 
-        // 1. Render Text tab elements ONLY when in 'text' mode tab
         if (wmType === 'text') {
             textWatermarkBucket.forEach((item) => {
                 textStampsHtml += `
-                    <div id="${item.id}" class="draggable-element text-stamp absolute pointer-events-auto font-black tracking-wider flex items-center justify-center select-none" style="left: ${item.x}px; top: ${item.y}px; width: ${item.width}px; color: ${item.color || currentSelectedColor}; opacity: ${currentTextOpacity}; font-size: ${item.fontSize}px;" onmousedown="initDrag(event, '${item.id}', 'text')">
+                    <div id="${item.id}" class="draggable-element text-stamp absolute pointer-events-auto font-black tracking-wider flex items-center justify-center select-none" style="left: ${item.x}px; top: ${item.y}px; width: ${item.width}px; color: ${item.color || currentSelectedColor}; opacity: ${currentTextOpacity}; font-size: ${item.fontSize}px;" onmousedown="initDrag(event, '${item.id}', 'text')" ontouchstart="initDrag(event, '${item.id}', 'text')">
                         <span class="w-full text-center whitespace-nowrap overflow-visible drop-shadow-sm">${item.text}</span>
-                        <div class="resize-handle" onmousedown="initResize(event, '${item.id}', 'text')"></div>
+                        <div class="resize-handle" onmousedown="initResize(event, '${item.id}', 'text')" ontouchstart="initResize(event, '${item.id}', 'text')"></div>
                     </div>
                 `;
             });
@@ -615,22 +633,21 @@
             }
         }
 
-        // 2. Render Image tab elements (Images + Image Tab Texts) ONLY when in 'image' mode tab
         if (wmType === 'image') {
             imageWatermarkBucket.forEach((item) => {
                 imageStampsHtml += `
-                    <div id="${item.id}" class="draggable-element absolute pointer-events-auto" style="left: ${item.x}px; top: ${item.y}px; width: ${item.width}px;" onmousedown="initDrag(event, '${item.id}', 'image')">
+                    <div id="${item.id}" class="draggable-element absolute pointer-events-auto" style="left: ${item.x}px; top: ${item.y}px; width: ${item.width}px;" onmousedown="initDrag(event, '${item.id}', 'image')" ontouchstart="initDrag(event, '${item.id}', 'image')">
                         <img src="${item.dataUrl}" class="stamp-img w-full h-auto object-contain pointer-events-none bg-transparent block" style="opacity: ${currentImgOpacity};" alt="">
-                        <div class="resize-handle" onmousedown="initResize(event, '${item.id}', 'image')"></div>
+                        <div class="resize-handle" onmousedown="initResize(event, '${item.id}', 'image')" ontouchstart="initResize(event, '${item.id}', 'image')"></div>
                     </div>
                 `;
             });
 
             imgTabTextWatermarkBucket.forEach((item) => {
                 imgTabTextStampsHtml += `
-                    <div id="${item.id}" class="draggable-element text-stamp absolute pointer-events-auto font-black tracking-wider flex items-center justify-center select-none" style="left: ${item.x}px; top: ${item.y}px; width: ${item.width}px; color: ${item.color || currentSelectedColorImgTab}; opacity: ${currentImgOpacity}; font-size: ${item.fontSize}px;" onmousedown="initDrag(event, '${item.id}', 'img_text')">
+                    <div id="${item.id}" class="draggable-element text-stamp absolute pointer-events-auto font-black tracking-wider flex items-center justify-center select-none" style="left: ${item.x}px; top: ${item.y}px; width: ${item.width}px; color: ${item.color || currentSelectedColorImgTab}; opacity: ${currentImgOpacity}; font-size: ${item.fontSize}px;" onmousedown="initDrag(event, '${item.id}', 'img_text')" ontouchstart="initDrag(event, '${item.id}', 'img_text')">
                         <span class="w-full text-center whitespace-nowrap overflow-visible drop-shadow-sm">${item.text}</span>
-                        <div class="resize-handle" onmousedown="initResize(event, '${item.id}', 'img_text')"></div>
+                        <div class="resize-handle" onmousedown="initResize(event, '${item.id}', 'img_text')" ontouchstart="initResize(event, '${item.id}', 'img_text')"></div>
                     </div>
                 `;
             });
@@ -703,8 +720,10 @@
         targetCategory = category;
         isDrag = true;
         const el = document.getElementById(id);
-        startX = e.clientX;
-        startY = e.clientY;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        startX = clientX;
+        startY = clientY;
         startLeft = el.offsetLeft;
         startTop = el.offsetTop;
         e.stopPropagation();
@@ -715,20 +734,24 @@
         targetCategory = category;
         isResize = true;
         const el = document.getElementById(id);
-        startX = e.clientX;
-        startY = e.clientY;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        startX = clientX;
+        startY = clientY;
         startW = el.clientWidth;
         e.stopPropagation();
     }
 
-    window.addEventListener('mousemove', (e) => {
+    const handleGlobalMove = (e) => {
         if (!activeElemId) return;
         const el = document.getElementById(activeElemId);
         const wrapper = document.getElementById('canvas-wrapper');
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
 
         if (isDrag) {
-            let newX = startLeft + (e.clientX - startX);
-            let newY = startTop + (e.clientY - startY);
+            let newX = startLeft + (clientX - startX);
+            let newY = startTop + (clientY - startY);
             newX = Math.max(0, Math.min(newX, wrapper.clientWidth - el.clientWidth));
             newY = Math.max(0, Math.min(newY, wrapper.clientHeight - el.clientHeight));
             el.style.left = newX + 'px';
@@ -744,8 +767,9 @@
                 const item = imgTabTextWatermarkBucket.find(i => i.id === activeElemId);
                 if (item) { item.x = newX; item.y = newY; }
             }
+            if(e.touches) e.preventDefault();
         } else if (isResize) {
-            let diffX = e.clientX - startX;
+            let diffX = clientX - startX;
             let newW = Math.max(50, startW + diffX);
             el.style.width = newW + 'px';
 
@@ -767,10 +791,20 @@
                 const item = imageWatermarkBucket.find(i => i.id === activeElemId);
                 if (item) { item.width = newW; }
             }
+            if(e.touches) e.preventDefault();
         }
-    });
+    };
+
+    window.addEventListener('mousemove', handleGlobalMove);
+    window.addEventListener('touchmove', handleGlobalMove, { passive: false });
 
     window.addEventListener('mouseup', () => {
+        activeElemId = null;
+        isDrag = false;
+        isResize = false;
+        targetCategory = null;
+    });
+    window.addEventListener('touchend', () => {
         activeElemId = null;
         isDrag = false;
         isResize = false;

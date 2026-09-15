@@ -21,6 +21,7 @@
             cursor: crosshair;
             display: block;
             margin: 0 auto;
+            touch-action: none;
         }
     </style>
 </head>
@@ -519,9 +520,11 @@
             const rect = cropCanvas.getBoundingClientRect();
             const scaleX = cropCanvas.width / rect.width;
             const scaleY = cropCanvas.height / rect.height;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             return {
-                x: (e.clientX - rect.left) * scaleX,
-                y: (e.clientY - rect.top) * scaleY
+                x: (clientX - rect.left) * scaleX,
+                y: (clientY - rect.top) * scaleY
             };
         }
 
@@ -543,7 +546,7 @@
             return 'image-pan';
         }
 
-        cropCanvas.onmousemove = (e) => {
+        const handleMove = (e) => {
             const pos = getMousePos(e);
             if (!isDragging) {
                 const type = getHandleAtPos(pos.x, pos.y);
@@ -590,9 +593,10 @@
             }
 
             redrawCropCanvas();
+            if(e.touches) e.preventDefault();
         };
 
-        cropCanvas.onmousedown = (e) => {
+        const handleStart = (e) => {
             const pos = getMousePos(e);
             dragType = getHandleAtPos(pos.x, pos.y);
             isDragging = true;
@@ -606,7 +610,13 @@
             startPanY = imgPan.y;
         };
 
+        cropCanvas.onmousemove = handleMove;
+        cropCanvas.ontouchmove = handleMove;
+        cropCanvas.onmousedown = handleStart;
+        cropCanvas.ontouchstart = handleStart;
+
         window.onmouseup = () => { isDragging = false; };
+        window.ontouchend = () => { isDragging = false; };
     }
 
     function redrawCropCanvas() {
@@ -729,9 +739,11 @@
             const rect = splitCanvas.getBoundingClientRect();
             const scaleX = splitCanvas.width / rect.width;
             const scaleY = splitCanvas.height / rect.height;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             return {
-                x: (e.clientX - rect.left) * scaleX,
-                y: (e.clientY - rect.top) * scaleY
+                x: (clientX - rect.left) * scaleX,
+                y: (clientY - rect.top) * scaleY
             };
         }
 
@@ -748,7 +760,7 @@
             return 'none';
         }
 
-        splitCanvas.onmousemove = (e) => {
+        const handleSplitMove = (e) => {
             const pos = getMousePos(e);
             if (!isSplitDragging) {
                 const type = getSplitHandleAtPos(pos.x, pos.y);
@@ -790,9 +802,10 @@
             }
 
             redrawSplitCanvas();
+            if(e.touches) e.preventDefault();
         };
 
-        splitCanvas.onmousedown = (e) => {
+        const handleSplitStart = (e) => {
             const pos = getMousePos(e);
             splitDragType = getSplitHandleAtPos(pos.x, pos.y);
             if (splitDragType === 'none') {
@@ -811,7 +824,13 @@
             startBoxH = splitBox.h;
         };
 
+        splitCanvas.onmousemove = handleSplitMove;
+        splitCanvas.ontouchmove = handleSplitMove;
+        splitCanvas.onmousedown = handleSplitStart;
+        splitCanvas.ontouchstart = handleSplitStart;
+
         window.onmouseup = () => { isSplitDragging = false; };
+        window.ontouchend = () => { isSplitDragging = false; };
     }
 
     function redrawSplitCanvas() {
