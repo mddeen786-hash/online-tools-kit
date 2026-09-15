@@ -19,10 +19,10 @@
 </head>
 <body class="text-slate-900 min-h-screen flex flex-col antialiased selection:bg-red-600 selection:text-white hero-glow">
 
-<!-- Top Navigation Bar (Logo Full Left, Categories Full Right across all monitors) -->
+<!-- Top Navigation Bar -->
 <nav class="w-full bg-white/90 backdrop-blur-md border-b border-slate-100 px-6 sm:px-12 py-4 flex justify-between items-center fixed top-0 left-0 z-50 shadow-xs">
     
-    <!-- Creative Animated Brand Name (Extreme Left) -->
+    <!-- Creative Animated Brand Name -->
     <div class="cursor-pointer flex items-center space-x-2 group shrink-0" onclick="window.location.href='index.html'">
         <span class="text-4xl sm:text-7xl font-black tracking-tighter text-[#0f172a] flex items-center overflow-hidden">
             <span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span><span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span>
@@ -30,8 +30,8 @@
         <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping ml-1 hidden sm:inline-block"></span>
     </div>
     
-    <!-- Navbar Links & Categories (Extreme Right) -->
-    <div class="hidden lg:flex items-center space-x-8 text-base font-black text-slate-800 tracking-wide">
+    <!-- Desktop Navbar Links & Categories -->
+    <div class="hidden lg:flex items-center space-x-8 text-base font-black text-slate-800 tracking-wide ml-auto">
         <a href="index.html" class="hover:text-red-600 transition-colors uppercase">Home</a>
 
         <!-- 1. PDF Core Tools -->
@@ -92,7 +92,64 @@
             <svg class="w-4 h-4 fill-current text-yellow-300" viewBox="0 0 24 24"><path d="M13 2L3 14h7v8l10-12h-7z"/></svg><span>Workflow Builder</span>
         </a>
     </div>
+
+    <!-- Mobile Hamburger Menu Button -->
+    <div class="lg:hidden flex items-center">
+        <button type="button" onclick="toggleMobileMenu()" class="p-2 rounded-xl bg-slate-100 text-slate-800 focus:outline-none hover:bg-slate-200 transition-colors">
+            <svg id="menu-icon" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+        </button>
+    </div>
 </nav>
+
+<!-- Mobile Navigation Drawer -->
+<div id="mobile-menu" class="fixed inset-x-0 top-[73px] bg-white border-b border-slate-200 shadow-xl lg:hidden hidden z-40 max-h-[85vh] overflow-y-auto p-6 space-y-6">
+    <a href="index.html" class="block text-sm font-black uppercase text-slate-800 hover:text-red-600">Home</a>
+    
+    <!-- Mobile PDF Core Tools -->
+    <div class="space-y-2">
+        <div class="text-xs font-black text-red-600 uppercase tracking-wider">PDF Core Tools (7)</div>
+        <div class="grid grid-cols-1 gap-1 pl-2">
+            <a href="pdf-to-word.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>📄</span> <span>PDF to Word</span></a>
+            <a href="pdf-to-excel.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>📊</span> <span>PDF to Excel</span></a>
+            <a href="merge.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>💼</span> <span>Merge PDF</span></a>
+            <a href="pdf-splitter.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>✂️</span> <span>PDF Splitter</span></a>
+            <a href="pdf-organizer.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>📑</span> <span>PDF Organizer</span></a>
+            <a href="pdf-watermark.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>💧</span> <span>PDF Watermark</span></a>
+            <a href="pdf-to-image.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>🖼️</span> <span>PDF to Image</span></a>
+        </div>
+    </div>
+
+    <!-- Mobile Image Utilities -->
+    <div class="space-y-2">
+        <div class="text-xs font-black text-teal-600 uppercase tracking-wider">Image Utilities (7)</div>
+        <div class="grid grid-cols-1 gap-1 pl-2">
+            <a href="compress.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>🗜️</span> <span>Compress Image</span></a>
+            <a href="image-converter.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>🖼️</span> <span>Image Converter</span></a>
+            <a href="image-to-pdf.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>📷</span> <span>Image to PDF</span></a>
+            <a href="image-reducer.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>📉</span> <span>Image Reducer</span></a>
+            <a href="image-to-text.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>🔍</span> <span>Image to Text</span></a>
+            <a href="passport-studio.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>🛂</span> <span>Passport Studio</span></a>
+            <a href="merge-image.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>🧩</span> <span>Merge Image</span></a>
+        </div>
+    </div>
+
+    <!-- Mobile Business Suite -->
+    <div class="space-y-2">
+        <div class="text-xs font-black text-purple-600 uppercase tracking-wider">Business Suite (6)</div>
+        <div class="grid grid-cols-1 gap-1 pl-2">
+            <a href="invoice-gen.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>🧾</span> <span>Invoice Generator</span></a>
+            <a href="barcode-gen.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>🏷️</span> <span>Barcode Generator</span></a>
+            <a href="qr-studio.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>📱</span> <span>QR Code Studio</span></a>
+            <a href="sign-maker.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>✍️</span> <span>Digital Signature Studio</span></a>
+            <a href="code-formatter.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>⚡</span> <span>Code Formatter</span></a>
+            <a href="product-listing.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>📦</span> <span>Product Listing</span></a>
+        </div>
+    </div>
+
+    <div class="pt-2">
+        <a href="/workflow-builder" class="w-full bg-gradient-to-r from-red-600 to-rose-600 text-white py-3 rounded-xl font-black text-xs tracking-wider uppercase text-center block shadow-md">⚡ Workflow Builder</a>
+    </div>
+</div>
 
 <!-- Hero Section -->
 <header class="pt-36 pb-16 px-6 text-center max-w-[1600px] mx-auto w-full">
@@ -506,6 +563,11 @@
                 cat.style.display = 'block';
             }
         });
+    }
+
+    function toggleMobileMenu() {
+        const menu = document.getElementById('mobile-menu');
+        menu.classList.toggle('hidden');
     }
 </script>
 </body>
