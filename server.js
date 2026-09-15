@@ -32,20 +32,20 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname));
 
 const toolRegistry = [
-  { id: 'pdf-to-word',         name: 'PDF to Word',             icon: '📄', file: 'pdf-to-word.html', outputExt: '.doc' },
-  { id: 'pdf-to-excel',        name: 'PDF to Excel',            icon: '📊', file: 'pdf-to-excel.html', outputExt: '.xlsx' },
-  { id: 'merge-pdf',           name: 'Merge PDF',               icon: '💼', file: 'merge.html', outputExt: '.pdf' },
-  { id: 'pdf-splitter',        name: 'PDF Splitter',            icon: '✂️', file: 'pdf-splitter.html', outputExt: '.pdf' },
-  { id: 'pdf-organizer',       name: 'PDF Organizer',           icon: '📑', file: 'pdf-organizer.html', outputExt: '.pdf' },
-  { id: 'pdf-watermark',       name: 'PDF Watermark',           icon: '💧', file: 'pdf-watermark.html', outputExt: '.pdf' },
-  { id: 'pdf-to-image',        name: 'PDF to Image',            icon: '🖼️', file: 'pdf-to-image.html', outputExt: '.zip' },
-  { id: 'compress-image',      name: 'Compress Image',          icon: '🗜️', file: 'compress.html', outputExt: '.jpg' },
-  { id: 'image-converter',     name: 'Image Converter',         icon: '🖼️', file: 'image-converter.html' }, 
-  { id: 'image-to-pdf',        name: 'Image to PDF',            icon: '📷', file: 'image-to-pdf.html', outputExt: '.pdf' },
-  { id: 'image-reducer',       name: 'Image Reducer',           icon: '📉', file: 'image-reducer.html', outputExt: '.jpg' },
-  { id: 'image-to-text',       name: 'Image to Text',           icon: '🔍', file: 'image-to-text.html', outputExt: '.doc' },
-  { id: 'passport-studio',     name: 'Passport Studio',         icon: '🛂', file: 'passport-studio.html', outputExt: '.jpg' },
-  { id: 'merge-image',         name: 'Merge Image',             icon: '🧩', file: 'merge-image.html', outputExt: '.jpg' }
+  { id: 'pdf-to-word',         name: 'PDF to Word',               icon: '📄', file: 'pdf-to-word.html', outputExt: '.doc' },
+  { id: 'pdf-to-excel',        name: 'PDF to Excel',              icon: '📊', file: 'pdf-to-excel.html', outputExt: '.xlsx' },
+  { id: 'merge-pdf',           name: 'Merge PDF',                 icon: '💼', file: 'merge.html', outputExt: '.pdf' },
+  { id: 'pdf-splitter',        name: 'PDF Splitter',              icon: '✂️', file: 'pdf-splitter.html', outputExt: '.pdf' },
+  { id: 'pdf-organizer',       name: 'PDF Organizer',             icon: '📑', file: 'pdf-organizer.html', outputExt: '.pdf' },
+  { id: 'pdf-watermark',       name: 'PDF Watermark',             icon: '💧', file: 'pdf-watermark.html', outputExt: '.pdf' },
+  { id: 'pdf-to-image',        name: 'PDF to Image',              icon: '🖼️', file: 'pdf-to-image.html', outputExt: '.zip' },
+  { id: 'compress-image',      name: 'Compress Image',            icon: '🗜️', file: 'compress.html', outputExt: '.jpg' },
+  { id: 'image-converter',     name: 'Image Converter',           icon: '🖼️', file: 'image-converter.html' }, 
+  { id: 'image-to-pdf',        name: 'Image to PDF',              icon: '📷', file: 'image-to-pdf.html', outputExt: '.pdf' },
+  { id: 'image-reducer',       name: 'Image Reducer',             icon: '📉', file: 'image-reducer.html', outputExt: '.jpg' },
+  { id: 'image-to-text',       name: 'Image to Text',             icon: '🔍', file: 'image-to-text.html', outputExt: '.doc' },
+  { id: 'passport-studio',     name: 'Passport Studio',           icon: '🛂', file: 'passport-studio.html', outputExt: '.jpg' },
+  { id: 'merge-image',         name: 'Merge Image',               icon: '🧩', file: 'merge-image.html', outputExt: '.jpg' }
 ];
 
 const workflowsDB = new Map();
@@ -443,7 +443,6 @@ async function runOCRFallback(inputPath) {
     let imageToRecognize = inputPath;
     const ext = path.extname(inputPath).toLowerCase();
     
-    // If input is a PDF, render page 1 to an image buffer first using pdfjs + canvas
     if (ext === '.pdf') {
       try {
         const data = new Uint8Array(fs.readFileSync(inputPath));
@@ -765,7 +764,7 @@ async function pdfWatermarkConvert(inputPath, outputPath, config = {}) {
     pages.forEach((page, index) => {
       const { width, height } = page.getSize();
       
-      if (mode === 'diagonal' || mode === 'both') {
+      if (mode === 'diagonal' || mode === 'both' || mode === 'watermark_only') {
         page.drawText(text, {
           x: width / 4,
           y: height / 2,
@@ -1384,7 +1383,6 @@ async function generatePassportA4Sheet(photoJpegBuffer, sizePreset, copies) {
   const cellHpt = preset.hMm * MM_TO_PT;
   const cols = preset.cols; // 6 columns
 
-  // Exact grid alignment matching the frontend web layout preview
   const totalGridW = cols * cellWpt;
   const availableW = pageWpt - totalGridW;
   const marginSidePt = availableW / (cols + 1);
@@ -1703,25 +1701,24 @@ app.get('/workflow-builder', (req, res) => {
   res.send('<!DOCTYPE html><html><head><title>Workflow Builder - Filesque</title><script src="https://cdn.tailwindcss.com"></script><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"><style>' +
     '*{margin:0;padding:0;box-sizing:border-box}' +
     'body{font-family:"Plus Jakarta Sans",sans-serif;background:#f8fafc;min-height:100vh}' +
-    '.navbar{background:rgba(255,255,255,0.9);backdrop-filter:blur(12px);border-bottom:1px solid #f1f5f9;padding:1.25rem 2rem;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 2px 0 rgba(0,0,0,0.05)}' +
+    '.navbar{background:rgba(255,255,255,0.9);backdrop-filter:blur(12px);border-bottom:1px solid #f1f5f9;padding:1.25rem 3rem;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 2px 0 rgba(0,0,0,0.05)}' +
     '.back-link{color:#0f172a;text-decoration:none;font-weight:800;font-size:15px;background:#f1f5f9;padding:10px 18px;border-radius:12px;border:1px solid #e2e8f0;display:flex;align-items:center;gap:6px;transition:all 0.2s}' +
     '.back-link:hover{background:#0f172a;color:white;border-color:#0f172a;transform:translateY(-1px);box-shadow:0 4px 12px rgba(15,23,42,0.15)}' +
-    '.container{display:flex;gap:2rem;width:100%;max-width:none;margin:0;padding:2rem 2rem}' +
+    '.container{display:flex;gap:2rem;width:100%;max-width:1600px;margin:0 auto;padding:2rem 3rem}' +
+    '@media(max-width: 1024px){.container{flex-direction:column;padding:1rem}}' +
     '.panel{background:white;border-radius:1.25rem;box-shadow:0 4px 20px rgba(0,0,0,0.03);padding:1.75rem;border:1px solid #e2e8f0}' +
-    '.tools-panel{flex:0 0 400px;max-height:85vh;overflow-y:auto}.workflow-panel{flex:1}' +
+    '.tools-panel{flex:0 0 380px;max-height:85vh;overflow-y:auto}.workflow-panel{flex:1}' +
     '.panel-title{font-size:1.35rem;font-weight:800;margin-bottom:1.25rem;color:#0f172a}' +
     '.tool-item{display:flex;align-items:center;gap:0.8rem;padding:0.9rem 1.1rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:0.75rem;margin-bottom:0.6rem;cursor:pointer;transition:0.2s}' +
     '.tool-item:hover{background:#f1f5f9;border-color:#cbd5e1;transform:translateX(4px)}' +
     '.tool-icon{font-size:1.5rem}.tool-name{font-weight:700;color:#334155;font-size:14px}' +
     '.workflow-area{min-height:220px;border:2px dashed #cbd5e1;border-radius:1rem;padding:1.25rem;margin-bottom:1.25rem;background:#fafafa}' +
-    '.step{display:flex;align-items:center;gap:1rem;padding:1.1rem;background:white;border:1px solid #e2e8f0;border-radius:0.75rem;margin-bottom:0.75rem;transition:all 0.3s;box-shadow:0 2px 6px rgba(0,0,0,0.02)}' +
+    '.step{display:flex;flex-wrap:wrap;align-items:center;gap:1rem;padding:1.1rem;background:white;border:1px solid #e2e8f0;border-radius:0.75rem;margin-bottom:0.75rem;transition:all 0.3s;box-shadow:0 2px 6px rgba(0,0,0,0.02)}' +
     '.step.active-step{background:#e0f2fe;border:2px solid #0284c7;box-shadow:0 4px 12px rgba(2,132,199,0.2);transform:scale(1.01)}' +
     '.step-number{width:34px;height:34px;background:#dc2626;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px}' +
     '.remove-btn{background:#fee2e2;color:#dc2626;border:none;border-radius:0.5rem;padding:0.4rem 0.9rem;cursor:pointer;font-weight:800;font-size:13px;transition:0.2s}' +
     '.remove-btn:hover{background:#dc2626;color:white}' +
     '.controls{display:flex;gap:1rem;margin-bottom:1.5rem}' +
-    'input[type="text"]{flex:1;padding:0.9rem 1.25rem;border:1px solid #cbd5e1;border-radius:0.75rem;font-size:15px;font-weight:600;outline:none}' +
-    'input[type="text"]:focus{border-color:#0284c7;box-shadow:0 0 0 3px rgba(2,132,199,0.1)}' +
     '.btn{padding:0.9rem 1.75rem;background:#dc2626;color:white;border:none;border-radius:0.75rem;cursor:pointer;font-weight:800;font-size:15px;transition:0.2s}' +
     '.btn:hover{background:#b91c1c;transform:translateY(-1px);box-shadow:0 4px 12px rgba(220,38,38,0.2)}' +
     '.btn-secondary{background:#64748b}.btn-secondary:hover{background:#475569;box-shadow:0 4px 12px rgba(100,116,139,0.2)}' +
@@ -1742,8 +1739,7 @@ app.get('/workflow-builder', (req, res) => {
     '<div class="panel tools-panel"><div class="panel-title">🛠️ Tools (' + toolRegistry.length + ')</div>' + toolsListHTML + '</div>' +
     '<div class="panel workflow-panel"><div class="panel-title">📋 Your Workflow</div>' +
     '<div class="workflow-area" id="workflowArea"><p style="color:#94a3b8;font-weight:600;font-size:15px;">Click on tools to add steps</p></div>' +
-    '<div class="controls"><input type="text" id="wfName" placeholder="Workflow Name">' +
-    '<button class="btn" onclick="saveWorkflow()">💾 Save Workflow</button>' +
+    '<div class="controls">' +
     '<button class="btn btn-secondary" onclick="clearWorkflow()">🗑️ Clear</button></div>' +
     '<div class="file-upload-section"><h3 style="font-size:15px;font-weight:800;color:#0f172a;">📁 Test Your Workflow</h3>' +
     '<input type="file" id="wfFile" multiple>' + 
@@ -1770,7 +1766,7 @@ app.get('/workflow-builder', (req, res) => {
     '    let isActive = (i === activeIdx);' +
     '    let stepClass = isActive ? "step active-step" : "step";' +
     '    if (isActive) {' +
-    '       toggleHtml += "<div style=\'margin-left:auto; display:flex; align-items:center; gap:6px; background:#0284c7; color:white; padding:6px 12px; border-radius:8px; font-weight:800; font-size:13px;\'>⚡ Processing Step...</div>";' +
+    '        toggleHtml += "<div style=\'margin-left:auto; display:flex; align-items:center; gap:6px; background:#0284c7; color:white; padding:6px 12px; border-radius:8px; font-weight:800; font-size:13px;\'>⚡ Processing Step...</div>";' +
     '    } else if (steps[i].id === "pdf-to-excel") {' +
     '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:8px; border:1px solid #cbd5e1;\'>" +' +
     '        "<span style=\'font-size:13px; font-weight:bold; color:#475569;\'>Mode:</span>" +' +
@@ -1911,16 +1907,6 @@ app.get('/workflow-builder', (req, res) => {
     '}' +
     'function removeStep(index) { steps.splice(index, 1); renderSteps(); }' +
     'function clearWorkflow() { steps = []; renderSteps(); }' +
-    'async function saveWorkflow() {' +
-    '  const name = document.getElementById("wfName").value.trim() || "My Workflow";' +
-    '  if (steps.length === 0) { alert("Please add at least one tool"); return; }' +
-    '  const payload = { name: name, steps: steps.map(s => ({ toolId: s.id, isComplex: !!s.isComplex, mode: s.mode, range: s.range, sortOrder: s.sortOrder, customSequence: s.customSequence, pageOrder: s.pageOrder, rotatePages: s.rotatePages, rotateDegree: s.rotateDegree, watermarkText: s.watermarkText, watermarkMode: s.watermarkMode, compressQuality: s.compressQuality, convertFormat: s.convertFormat, convertQuality: s.convertQuality, reducerMode: s.reducerMode, reducerWidth: s.reducerWidth, reducerHeight: s.reducerHeight, reducerTargetKb: s.reducerTargetKb, sizePreset: s.sizePreset, bgColor: s.bgColor, zoom: s.zoom, copies: s.copies, removeBg: s.removeBg, printSheet: s.printSheet, mergeDirection: s.mergeDirection, customProcessedImages: s.customProcessedImages })) };' +
-    '  try {' +
-    '    const res = await fetch("/api/workflow/create", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });' +
-    '    const data = await res.json();' +
-    '    if (data.success) { alert("✅ Workflow saved!"); loadSavedWorkflows(); } else { alert("Error: " + data.error); }' +
-    '  } catch(e) { alert("Network error: " + e.message); }' +
-    '}' +
     'async function loadSavedWorkflows() {' +
     '  try {' +
     '    const res = await fetch("/api/workflow/list");' +
@@ -1946,7 +1932,7 @@ app.get('/workflow-builder', (req, res) => {
     '  sendWorkflowExecution();' +
     '}' +
     'function openMergeImageStudioModal(files, stepIdx) {' +
-    '  let modalHtml = \'<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.8);backdrop-filter:blur(8px);display:flex;justify-content:center;align-items:center;z-index:9999;font-family:\\\'Plus Jakarta Sans\\\',sans-serif;"><div style="background:white;padding:2.5rem;border-radius:1.75rem;width:980px;max-width:96%;box-shadow:0 25px 60px rgba(0,0,0,0.4);max-height:92vh;overflow-y:auto;border:1px solid #e2e8f0;"><div style="display:flex;align-items:center;margin-bottom:1.5rem;"><div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#0d9488,#4f46e5);display:flex;align-items:center;justify-content:center;color:white;font-size:24px;box-shadow:0 10px 20px rgba(13,148,136,0.3);margin-right:1rem;">🧩</div><div><h2 style="font-size:24px;font-weight:900;color:#0f172a;margin:0;letter-spacing:-0.5px;">Merge Image Studio Pro</h2><p style="font-size:12px;color:#64748b;font-weight:600;margin:2px 0 0 0;">Interactive Studio: Reorder, Rotate 90°, Crop & Split Bucket Extraction</p></div></div><hr style="border:0;border-top:1px solid #e2e8f0;margin-bottom:1.5rem;"><div style="margin-bottom:1.5rem;"><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Merge Direction / Flow</label><select id="studioMergeDir" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="horizontal">Horizontal (Side by Side)</option><option value="vertical" selected>Vertical (Top to Bottom)</option></select></div><div style="margin-bottom:1.5rem;"><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Uploaded Images Workspace</label><div id="studioFilesContainer" style="display:flex;flex-direction:column;gap:1rem;background:#f8fafc;padding:1rem;border-radius:12px;border:1px solid #e2e8f0;max-height:350px;overflow-y:auto;"></div></div><div style="display:flex;justify-content:flex-end;gap:12px;padding-top:1rem;border-top:1px solid #e2e8f0;"><button onclick="closeModal()" style="padding:12px 24px;background:#f1f5f9;color:#334155;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;transition:0.2s;">Cancel</button><button id="applyMergeBtn" style="padding:12px 28px;background:linear-gradient(135deg,#0d9488,#4f46e5);color:white;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;box-shadow:0 10px 20px rgba(13,148,136,0.3);transition:0.2s;">✨ Apply & Execute Workflow</button></div></div></div>\';' +
+    '  let modalHtml = \'<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.8);backdrop-filter:blur(8px);display:flex;justify-content:center;align-items:center;z-index:9999;font-family:\\\'Plus Jakarta Sans\\\',sans-serif;"><div style="background:white;padding:2.5rem;border-radius:1.75rem;width:980px;max-width:96%;box-shadow:0 25px 60px rgba(0,0,0,0.4);max-height:92vh;overflow-y:auto;border:1px solid #e2e8f0;"><div style="display:flex;align-items:center;margin-bottom:1.5rem;"><div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#0d9488,#4f46e5);display:flex;align-items:center;justify-content:center;color:white;font-size:24px;box-shadow:0 10px 20px rgba(13,148,136,0.3);margin-right:1rem;">🧩</div><div><h2 style="font-size:24px;font-weight:900;color:#0f172a;margin:0;letter-spacing:-0.5px;">Merge Image Studio Pro</h2><p style="font-size:12px;color:#64748b;font-weight:600;margin:2px 0 0 0;">Interactive Studio: Reorder, Rotate 90°, Crop & Split Bucket Extraction</p></div></div><hr style="border:0;border-top:1px solid #e2e8f0;margin-bottom:1.5rem;"><div style="margin-bottom:1.5rem;"><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Merge Direction / Flow</label><select id="studioMergeDir" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="horizontal">Horizontal (Side by Side)</option><option value="vertical" selected>Vertical (Top to Bottom)</option></select></div><div style="margin-bottom:1.5rem;"><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Uploaded Images Workspace</label><div id="studioFilesContainer" style="display:flex;flex-direction:column;gap:1rem;background:#f8fafc;padding:1rem;border-radius:12px;border:1px solid #e2e8f0;max-height:350px;overflow-y:auto;touch-action:none;"></div></div><div style="display:flex;justify-content:flex-end;gap:12px;padding-top:1rem;border-top:1px solid #e2e8f0;"><button onclick="closeModal()" style="padding:12px 24px;background:#f1f5f9;color:#334155;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;transition:0.2s;">Cancel</button><button id="applyMergeBtn" style="padding:12px 28px;background:linear-gradient(135deg,#0d9488,#4f46e5);color:white;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;box-shadow:0 10px 20px rgba(13,148,136,0.3);transition:0.2s;">✨ Apply & Execute Workflow</button></div></div></div>\';' +
     '  document.getElementById("modalContainer").innerHTML = modalHtml;' +
     '  document.getElementById("applyMergeBtn").onclick = function() { applyMergeStudioAndExecute(stepIdx); };' +
     '  window.studioItems = [];' +
@@ -2008,7 +1994,7 @@ app.get('/workflow-builder', (req, res) => {
     '}' +
     'function openStudioCropModal(targetIdx) {' +
     '  const item = window.studioItems[targetIdx];' +
-    '  const cropHtml = \'<div id="subStudioModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.85);z-index:10000;display:flex;justify-content:center;align-items:center;"><div style="background:white;padding:2rem;border-radius:1.5rem;width:700px;max-width:95%;box-shadow:0 25px 50px rgba(0,0,0,0.5);text-align:center;"><h3 style="font-size:18px;font-weight:900;color:#0f172a;margin-bottom:1rem;">Crop Image</h3><div style="background:#f1f5f9;padding:1rem;border-radius:12px;display:flex;justify-content:center;max-height:50vh;overflow:hidden;margin-bottom:1rem;"><canvas id="subCropCanvas" style="max-width:100%;max-height:45vh;object-fit:contain;cursor:crosshair;"></canvas></div><div style="display:flex;justify-content:flex-end;gap:10px;"><button onclick="document.getElementById(\\\'subStudioModal\\\").remove()" style="padding:10px 20px;background:#f1f5f9;color:#334155;border:none;border-radius:8px;font-weight:800;cursor:pointer;">Cancel</button><button id="saveCropBtn" style="padding:10px 24px;background:#0d9488;color:white;border:none;border-radius:8px;font-weight:800;cursor:pointer;">Save Crop</button></div></div></div>\';' +
+    '  const cropHtml = \'<div id="subStudioModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.85);z-index:10000;display:flex;justify-content:center;align-items:center;"><div style="background:white;padding:2rem;border-radius:1.5rem;width:700px;max-width:95%;box-shadow:0 25px 50px rgba(0,0,0,0.5);text-align:center;"><h3 style="font-size:18px;font-weight:900;color:#0f172a;margin-bottom:1rem;">Crop Image</h3><div style="background:#f1f5f9;padding:1rem;border-radius:12px;display:flex;justify-content:center;max-height:50vh;overflow:hidden;margin-bottom:1rem;"><canvas id="subCropCanvas" style="max-width:100%;max-height:45vh;object-fit:contain;cursor:crosshair;touch-action:none;"></canvas></div><div style="display:flex;justify-content:flex-end;gap:10px;"><button onclick="document.getElementById(\\\'subStudioModal\\\").remove()" style="padding:10px 20px;background:#f1f5f9;color:#334155;border:none;border-radius:8px;font-weight:800;cursor:pointer;">Cancel</button><button id="saveCropBtn" style="padding:10px 24px;background:#0d9488;color:white;border:none;border-radius:8px;font-weight:800;cursor:pointer;">Save Crop</button></div></div></div>\';' +
     '  const div = document.createElement("div"); div.innerHTML = cropHtml; document.body.appendChild(div);' +
     '  document.getElementById("saveCropBtn").onclick = function() { saveStudioCrop(targetIdx); };' +
     '  const canvas = document.getElementById("subCropCanvas");' +
@@ -2025,22 +2011,13 @@ app.get('/workflow-builder', (req, res) => {
     '    ctx.strokeStyle = "#0d9488"; ctx.lineWidth = 3; ctx.strokeRect(window.subCropBox.x, window.subCropBox.y, window.subCropBox.w, window.subCropBox.h);' +
     '  }' +
     '  redrawSubCrop();' +
-    '  canvas.onmousedown = function(e) {' +
-    '    const rect = canvas.getBoundingClientRect();' +
-    '    const scaleX = canvas.width / rect.width; const scaleY = canvas.height / rect.height;' +
-    '    startX = (e.clientX - rect.left) * scaleX; startY = (e.clientY - rect.top) * scaleY;' +
-    '    isSubDragging = true;' +
-    '  };' +
-    '  canvas.onmousemove = function(e) {' +
-    '    if (!isSubDragging) return;' +
-    '    const rect = canvas.getBoundingClientRect();' +
-    '    const scaleX = canvas.width / rect.width; const scaleY = canvas.height / rect.height;' +
-    '    const curX = (e.clientX - rect.left) * scaleX; const curY = (e.clientY - rect.top) * scaleY;' +
-    '    window.subCropBox.w = Math.max(30, Math.min(canvas.width - window.subCropBox.x, curX - startX + window.subCropBox.w));' +
-    '    window.subCropBox.h = Math.max(30, Math.min(canvas.height - window.subCropBox.y, curY - startY + window.subCropBox.h));' +
-    '    redrawSubCrop();' +
-    '  };' +
+    '  const getClientPos = (e) => { const rect = canvas.getBoundingClientRect(); const scaleX = canvas.width / rect.width; const scaleY = canvas.height / rect.height; const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY; return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY }; };' +
+    '  const handleStart = function(e) { const pos = getClientPos(e); startX = pos.x; startY = pos.y; isSubDragging = true; };' +
+    '  const handleMove = function(e) { if (!isSubDragging) return; const pos = getClientPos(e); window.subCropBox.w = Math.max(30, Math.min(canvas.width - window.subCropBox.x, pos.x - startX + window.subCropBox.w)); window.subCropBox.h = Math.max(30, Math.min(canvas.height - window.subCropBox.y, pos.y - startY + window.subCropBox.h)); redrawSubCrop(); if(e.touches) e.preventDefault(); };' +
+    '  canvas.onmousedown = handleStart; canvas.ontouchstart = handleStart;' +
+    '  canvas.onmousemove = handleMove; canvas.ontouchmove = handleMove;' +
     '  window.onmouseup = function() { isSubDragging = false; };' +
+    '  window.ontouchend = function() { isSubDragging = false; };' +
     '}' +
     'function saveStudioCrop(targetIdx) {' +
     '  const canvas = document.getElementById("subCropCanvas");' +
@@ -2058,7 +2035,7 @@ app.get('/workflow-builder', (req, res) => {
     '}' +
     'function openStudioSplitModal(targetIdx) {' +
     '  const item = window.studioItems[targetIdx];' +
-    '  const splitHtml = \'<div id="subSplitModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.85);z-index:10000;display:flex;justify-content:center;align-items:center;"><div style="background:white;padding:2rem;border-radius:1.5rem;width:750px;max-width:95%;box-shadow:0 25px 50px rgba(0,0,0,0.5);text-align:center;"><h3 style="font-size:18px;font-weight:900;color:#0f172a;margin-bottom:0.5rem;">Split Image</h3><p style="font-size:12px;color:#64748b;margin-bottom:1rem;">Drag box on image and click "Add Part" to add parts to merge list.</p><div style="background:#f1f5f9;padding:1rem;border-radius:12px;display:flex;justify-content:center;max-height:45vh;overflow:hidden;margin-bottom:1rem;"><canvas id="subSplitCanvas" style="max-width:100%;max-height:40vh;object-fit:contain;cursor:crosshair;"></canvas></div><div style="margin-bottom:1.0rem;display:flex;gap:8px;overflow-x:auto;padding:6px;background:#f8fafc;border-radius:8px;min-height:50px;align-items:center;" id="subSplitBucket"></div><div style="display:flex;justify-content:space-between;align-items:center;"><button onclick="addSubSplitPart()" style="padding:10px 18px;background:#4f46e5;color:white;border:none;border-radius:8px;font-weight:800;cursor:pointer;">➕ Add Part to Bucket</button><div style="display:flex;gap:10px;"><button onclick="document.getElementById(\\\'subSplitModal\\\").remove()" style="padding:10px 20px;background:#f1f5f9;color:#334155;border:none;border-radius:8px;font-weight:800;cursor:pointer;">Cancel</button><button id="saveSplitBtn" style="padding:10px 24px;background:#0d9488;color:white;border:none;border-radius:8px;font-weight:800;cursor:pointer;">Done & Replace</button></div></div></div></div>\';' +
+    '  const splitHtml = \'<div id="subSplitModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.85);z-index:10000;display:flex;justify-content:center;align-items:center;"><div style="background:white;padding:2rem;border-radius:1.5rem;width:750px;max-width:95%;box-shadow:0 25px 50px rgba(0,0,0,0.5);text-align:center;"><h3 style="font-size:18px;font-weight:900;color:#0f172a;margin-bottom:0.5rem;">Split Image</h3><p style="font-size:12px;color:#64748b;margin-bottom:1rem;">Drag box on image and click "Add Part" to add parts to merge list.</p><div style="background:#f1f5f9;padding:1rem;border-radius:12px;display:flex;justify-content:center;max-height:45vh;overflow:hidden;margin-bottom:1rem;"><canvas id="subSplitCanvas" style="max-width:100%;max-height:40vh;object-fit:contain;cursor:crosshair;touch-action:none;"></canvas></div><div style="margin-bottom:1.0rem;display:flex;gap:8px;overflow-x:auto;padding:6px;background:#f8fafc;border-radius:8px;min-height:50px;align-items:center;" id="subSplitBucket"></div><div style="display:flex;justify-content:space-between;align-items:center;"><button onclick="addSubSplitPart()" style="padding:10px 18px;background:#4f46e5;color:white;border:none;border-radius:8px;font-weight:800;cursor:pointer;">➕ Add Part to Bucket</button><div style="display:flex;gap:10px;"><button onclick="document.getElementById(\\\'subSplitModal\\\").remove()" style="padding:10px 20px;background:#f1f5f9;color:#334155;border:none;border-radius:8px;font-weight:800;cursor:pointer;">Cancel</button><button id="saveSplitBtn" style="padding:10px 24px;background:#0d9488;color:white;border:none;border-radius:8px;font-weight:800;cursor:pointer;">Done & Replace</button></div></div></div></div>\';' +
     '  const div = document.createElement("div"); div.innerHTML = splitHtml; document.body.appendChild(div);' +
     '  document.getElementById("saveSplitBtn").onclick = function() { saveStudioSplit(targetIdx); };' +
     '  const canvas = document.getElementById("subSplitCanvas");' +
@@ -2076,22 +2053,13 @@ app.get('/workflow-builder', (req, res) => {
     '    ctx.strokeStyle = "#4f46e5"; ctx.lineWidth = 3; ctx.strokeRect(window.subSplitBox.x, window.subSplitBox.y, window.subSplitBox.w, window.subSplitBox.h);' +
     '  }' +
     '  redrawSubSplit();' +
-    '  canvas.onmousedown = function(e) {' +
-    '    const rect = canvas.getBoundingClientRect();' +
-    '    const scaleX = canvas.width / rect.width; const scaleY = canvas.height / rect.height;' +
-    '    startX = (e.clientX - rect.left) * scaleX; startY = (e.clientY - rect.top) * scaleY;' +
-    '    isSubSplitting = true;' +
-    '  };' +
-    '  canvas.onmousemove = function(e) {' +
-    '    if (!isSubSplitting) return;' +
-    '    const rect = canvas.getBoundingClientRect();' +
-    '    const scaleX = canvas.width / rect.width; const scaleY = canvas.height / rect.height;' +
-    '    const curX = (e.clientX - rect.left) * scaleX; const curY = (e.clientY - rect.top) * scaleY;' +
-    '    window.subSplitBox.w = Math.max(30, Math.min(canvas.width - window.subSplitBox.x, curX - startX + window.subSplitBox.w));' +
-    '    window.subSplitBox.h = Math.max(30, Math.min(canvas.height - window.subSplitBox.y, curY - startY + window.subSplitBox.h));' +
-    '    redrawSubSplit();' +
-    '  };' +
+    '  const getClientPos = (e) => { const rect = canvas.getBoundingClientRect(); const scaleX = canvas.width / rect.width; const scaleY = canvas.height / rect.height; const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY; return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY }; };' +
+    '  const handleStart = function(e) { const pos = getClientPos(e); startX = pos.x; startY = pos.y; isSubSplitting = true; };' +
+    '  const handleMove = function(e) { if (!isSubSplitting) return; const pos = getClientPos(e); window.subSplitBox.w = Math.max(30, Math.min(canvas.width - window.subSplitBox.x, pos.x - startX + window.subSplitBox.w)); window.subSplitBox.h = Math.max(30, Math.min(canvas.height - window.subSplitBox.y, pos.y - startY + window.subSplitBox.h)); redrawSubSplit(); if(e.touches) e.preventDefault(); };' +
+    '  canvas.onmousedown = handleStart; canvas.ontouchstart = handleStart;' +
+    '  canvas.onmousemove = handleMove; canvas.ontouchmove = handleMove;' +
     '  window.onmouseup = function() { isSubSplitting = false; };' +
+    '  window.ontouchend = function() { isSubSplitting = false; };' +
     '}' +
     'function addSubSplitPart() {' +
     '  const canvas = document.getElementById("subSplitCanvas");' +
@@ -2136,7 +2104,7 @@ app.get('/workflow-builder', (req, res) => {
     '  const reader = new FileReader();' +
     '  reader.onload = function(e) {' +
     '    const imgSrc = e.target.result;' +
-    '    const modalHtml = \'<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.8);backdrop-filter:blur(8px);display:flex;justify-content:center;align-items:center;z-index:9999;font-family:\\\'Plus Jakarta Sans\\\',sans-serif;"><div style="background:white;padding:2.5rem;border-radius:1.75rem;width:820px;max-width:96%;box-shadow:0 25px 60px rgba(0,0,0,0.4);max-height:92vh;overflow-y:auto;border:1px solid #e2e8f0;"><div style="display:flex;align-items:center;margin-bottom:1.5rem;"><div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#4f46e5,#e11d48);display:flex;align-items:center;justify-content:center;color:white;font-size:24px;box-shadow:0 10px 20px rgba(79,70,229,0.3);margin-right:1rem;">🛂</div><div><h2 style="font-size:24px;font-weight:900;color:#0f172a;margin:0;letter-spacing:-0.5px;">Passport Photo Studio Pro</h2><p style="font-size:12px;color:#64748b;font-weight:600;margin:2px 0 0 0;">Professional Studio: Cloud AI Background Removal & HD Print Layout</p></div></div><hr style="border:0;border-top:1px solid #e2e8f0;margin-bottom:1.5rem;"><div style="display:grid;grid-template-columns:1.2fr 1fr;gap:2rem;margin-bottom:2rem;"><div style="display:flex;flex-direction:column;gap:1.2rem;"><div><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">1. Background Color Palette</label><select id="studioBg" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="#ffffff">Pure White (#FFFFFF)</option><option value="#a5cbf7">Light Blue (#A5CBF7)</option><option value="#3b82f6">Royal Blue (#3B82F6)</option><option value="#f87171" selected>Soft Red (#F87171)</option></select></div><div><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">2. Passport Size Preset</label><select id="studioSize" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="3.5x4.5">Standard Indian Passport (3.5 x 4.5 cm)</option><option value="2x2">US Visa Layout (2 x 2 inch)</option><option value="3.5x3.5">Indian PAN Card Size (3.5 x 3.5 cm)</option></select></div><div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><label style="font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;">3. Zoom & Face Position</label><span id="zoomValBadge" style="font-size:11px;font-weight:800;color:#4f46e5;background:#e0e7ff;padding:2px 8px;border-radius:6px;">100%</span></div><input type="range" id="studioZoom" min="50" max="250" value="100" style="width:100%;height:6px;background:#cbd5e1;border-radius:4px;accent-color:#4f46e5;cursor:pointer;"></div><div><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">4. Copies & Grid Layout</label><select id="studioCopies" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="4">4 Photos Grid</option><option value="8">8 Photos Grid</option><option value="16">16 Photos Grid</option><option value="32" selected>32 Photos Grid (Full A4 Sheet)</option></select></div><div style="background:#e0e7ff;border:1px solid #c7d2fe;padding:12px 14px;border-radius:12px;display:flex;align-items:center;gap:10px;"><input type="checkbox" id="studioRemoveBg" style="width:18px;height:18px;accent-color:#4f46e5;cursor:pointer;"><label for="studioRemoveBg" style="font-size:12px;font-weight:800;color:#3730a3;cursor:pointer;">Remove Background Pro (Cloud AI Engine)</label></div></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f1f5f9;padding:1.5rem;border-radius:16px;border:1px solid #e2e8f0;position:relative;"><span style="font-size:11px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Live Studio Preview</span><div id="modalPreviewBox" style="width:160px;height:200px;background:#f87171;box-shadow:0 20px 30px rgba(0,0,0,0.15);border:2px solid white;overflow:hidden;position:relative;border-radius:8px;transition:background 0.3s;display:flex;align-items:center;justify-content:center;"><img src="\' + imgSrc + \'" id="modalPreviewImg" style="width:100%;height:100%;object-fit:contain;transform:scale(1);transform-origin:center;transition:transform 0.1s;" /></div><p style="font-size:11px;color:#64748b;font-weight:600;margin-top:12px;text-align:center;">Interactive preview updates instantly</p></div></div><div style="display:flex;justify-content:flex-end;gap:12px;padding-top:1rem;border-top:1px solid #e2e8f0;"><button onclick="closeModal()" style="padding:12px 24px;background:#f1f5f9;color:#334155;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;transition:0.2s;">Cancel</button><button onclick="applyStudioAndExecute(\' + stepIdx + \')" style="padding:12px 28px;background:linear-gradient(135deg,#4f46e5,#e11d48);color:white;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;box-shadow:0 10px 20px rgba(79,70,229,0.3);transition:0.2s;">✨ Apply & Execute Workflow</button></div></div></div>\';' +
+    '    const modalHtml = \'<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.8);backdrop-filter:blur(8px);display:flex;justify-content:center;align-items:center;z-index:9999;font-family:\\\'Plus Jakarta Sans\\\',sans-serif;"><div style="background:white;padding:2.5rem;border-radius:1.75rem;width:820px;max-width:96%;box-shadow:0 25px 60px rgba(0,0,0,0.4);max-height:92vh;overflow-y:auto;border:1px solid #e2e8f0;"><div style="display:flex;align-items:center;margin-bottom:1.5rem;"><div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#4f46e5,#e11d48);display:flex;align-items:center;justify-content:center;color:white;font-size:24px;box-shadow:0 10px 20px rgba(79,70,229,0.3);margin-right:1rem;">🛂</div><div><h2 style="font-size:24px;font-weight:900;color:#0f172a;margin:0;letter-spacing:-0.5px;">Passport Photo Studio Pro</h2><p style="font-size:12px;color:#64748b;font-weight:600;margin:2px 0 0 0;">Professional Studio: Cloud AI Background Removal & HD Print Layout</p></div></div><hr style="border:0;border-top:1px solid #e2e8f0;margin-bottom:1.5rem;"><div style="display:grid;grid-template-columns:1.2fr 1fr;gap:2rem;margin-bottom:2rem;"><div style="display:flex;flex-direction:column;gap:1.2rem;"><div><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">1. Background Color Palette</label><select id="studioBg" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="#ffffff">Pure White (#FFFFFF)</option><option value="#a5cbf7">Light Blue (#A5CBF7)</option><option value="#3b82f6">Royal Blue (#3B82F6)</option><option value="#f87171" selected>Soft Red (#F87171)</option></select></div><div><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">2. Passport Size Preset</label><select id="studioSize" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="3.5x4.5">Standard Indian Passport (3.5 x 4.5 cm)</option><option value="2x2">US Visa Layout (2 x 2 inch)</option><option value="3.5x3.5">Indian PAN Card Size (3.5 x 3.5 cm)</option></select></div><div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><label style="font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;">3. Zoom & Face Position</label><span id="zoomValBadge" style="font-size:11px;font-weight:800;color:#4f46e5;background:#e0e7ff;padding:2px 8px;border-radius:6px;">100%</span></div><input type="range" id="studioZoom" min="50" max="250" value="100" style="width:100%;height:6px;background:#cbd5e1;border-radius:4px;accent-color:#4f46e5;cursor:pointer;"></div><div><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">4. Copies & Grid Layout</label><select id="studioCopies" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="4">4 Photos Grid</option><option value="8">8 Photos Grid</option><option value="16">16 Photos Grid</option><option value="32" selected>32 Photos Grid (Full A4 Sheet)</option></select></div><div style="background:#e0e7ff;border:1px solid #c7d2fe;padding:12px 14px;border-radius:12px;display:flex;align-items:center;gap:10px;"><input type="checkbox" id="studioRemoveBg" style="width:18px;height:18px;accent-color:#4f46e5;cursor:pointer;"><label for="studioRemoveBg" style="font-size:12px;font-weight:800;color:#3730a3;cursor:pointer;">Remove Background Pro (Cloud AI Engine)</label></div></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f1f5f9;padding:1.5rem;border-radius:16px;border:1px solid #e2e8f0;position:relative;"><span style="font-size:11px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Live Studio Preview</span><div id="modalPreviewBox" style="width:160px;height:200px;background:#f87171;box-shadow:0 20px 30px rgba(0,0,0,0.15);border:2px solid white;overflow:hidden;position:relative;border-radius:8px;transition:background 0.3s;display:flex;align-items:center;justify-content:center;"><img src="\' + imgSrc + \'" id="modalPreviewImg" style="width:100%;height:100%;object-fit:contain;transform:scale(1);transform-origin:center;transition:transform 0.1s;touch-action:none;" /></div><p style="font-size:11px;color:#64748b;font-weight:600;margin-top:12px;text-align:center;">Interactive preview updates instantly</p></div></div><div style="display:flex;justify-content:flex-end;gap:12px;padding-top:1rem;border-top:1px solid #e2e8f0;"><button onclick="closeModal()" style="padding:12px 24px;background:#f1f5f9;color:#334155;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;transition:0.2s;">Cancel</button><button onclick="applyStudioAndExecute(\' + stepIdx + \')" style="padding:12px 28px;background:linear-gradient(135deg,#4f46e5,#e11d48);color:white;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;box-shadow:0 10px 20px rgba(79,70,229,0.3);transition:0.2s;">✨ Apply & Execute Workflow</button></div></div></div>\';' +
     '    document.getElementById("modalContainer").innerHTML = modalHtml;' +
     '    document.getElementById("studioZoom").addEventListener("input", function(e) {' +
     '        const val = e.target.value;' +
@@ -2161,12 +2129,6 @@ app.get('/workflow-builder', (req, res) => {
     '  sendWorkflowExecution();' +
     '}' +
     'async function sendWorkflowExecution() {' +
-    '  const name = document.getElementById("wfName").value.trim() || "My Workflow";' +
-    '  let saveRes;' +
-    '  try { saveRes = await fetch("/api/workflow/create", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name, steps: steps.map(s => ({ toolId: s.id, isComplex: !!s.isComplex, mode: s.mode, range: s.range, sortOrder: s.sortOrder, customSequence: s.customSequence, pageOrder: s.pageOrder, rotatePages: s.rotatePages, rotateDegree: s.rotateDegree, watermarkText: s.watermarkText, watermarkMode: s.watermarkMode, compressQuality: s.compressQuality, convertFormat: s.convertFormat, convertQuality: s.convertQuality, reducerMode: s.reducerMode, reducerWidth: s.reducerWidth, reducerHeight: s.reducerHeight, reducerTargetKb: s.reducerTargetKb, sizePreset: s.sizePreset, bgColor: s.bgColor, zoom: s.zoom, copies: s.copies, removeBg: s.removeBg, printSheet: s.printSheet, mergeDirection: s.mergeDirection })) }) }); }' +
-    '  catch(e) { alert("Save failed: " + e.message); return; }' +
-    '  const saveData = await saveRes.json();' +
-    '  if (!saveData.success) { alert("Save error: " + saveData.error); return; }' +
     '  const formData = new FormData();' +
     '  for (let i = 0; i < selectedFiles.length; i++) { formData.append("file", selectedFiles[i]); }' +
     '  try {' +
@@ -2175,6 +2137,9 @@ app.get('/workflow-builder', (req, res) => {
     '       renderSteps(i);' +
     '       await new Promise(r => setTimeout(r, 600));' +
     '    }' +
+    '    const saveRes = await fetch("/api/workflow/create", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: "Temp Workflow", steps: steps.map(s => ({ toolId: s.id, isComplex: !!s.isComplex, mode: s.mode, range: s.range, sortOrder: s.sortOrder, customSequence: s.customSequence, pageOrder: s.pageOrder, rotatePages: s.rotatePages, rotateDegree: s.rotateDegree, watermarkText: s.watermarkText, watermarkMode: s.watermarkMode, compressQuality: s.compressQuality, convertFormat: s.convertFormat, convertQuality: s.convertQuality, reducerMode: s.reducerMode, reducerWidth: s.reducerWidth, reducerHeight: s.reducerHeight, reducerTargetKb: s.reducerTargetKb, sizePreset: s.sizePreset, bgColor: s.bgColor, zoom: s.zoom, copies: s.copies, removeBg: s.removeBg, printSheet: s.printSheet, mergeDirection: s.mergeDirection })) }) });' +
+    '    const saveData = await saveRes.json();' +
+    '    if (!saveData.success) { alert("Execution error"); return; }' +
     '    const execRes = await fetch("/api/workflow/execute/" + saveData.workflow.id, { method: "POST", body: formData });' +
     '    renderSteps(-1);' +
     '    if (execRes.ok) {' +
