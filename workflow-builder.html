@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Workflow Builder - Filesque</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:"Plus Jakarta Sans",sans-serif;background:#f8fafc;min-height:100vh}
+    .navbar{background:white;border-bottom:1px solid #e2e8f0;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center}
+    .logo{font-size:1.8rem;font-weight:900;color:#0f172a}.logo span{color:#dc2626}
+    .nav-right{display:flex;align-items:center;gap:1.5rem}
+    .back-link{color:#dc2626;text-decoration:none;font-weight:700}
+    .auth-box{display:flex;align-items:center;gap:0.8rem}
+    .auth-btn{padding:0.5rem 1.2rem;background:#dc2626;color:white;border:none;border-radius:0.5rem;cursor:pointer;font-weight:700;font-size:0.9rem;transition:0.2s}
+    .auth-btn:hover{background:#b91c1c}
+    .user-badge{font-weight:700;color:#047857;background:#ecfdf5;padding:0.4rem 0.8rem;border-radius:0.4rem;border:1px solid #a7f3d0;font-size:0.9rem}
+    .container{display:flex;gap:2rem;max-width:1400px;margin:2rem auto;padding:0 1rem}
+    .panel{background:white;border-radius:1rem;box-shadow:0 2px 10px rgba(0,0,0,0.05);padding:1.5rem}
+    .tools-panel{flex:1;max-height:80vh;overflow-y:auto}.workflow-panel{flex:2}
+    .panel-title{font-size:1.3rem;font-weight:800;margin-bottom:1rem}
+    .tool-item{display:flex;align-items:center;gap:0.8rem;padding:0.8rem 1rem;background:#f1f5f9;border-radius:0.5rem;margin-bottom:0.5rem;cursor:pointer;transition:0.2s}
+    .tool-item:hover{background:#e2e8f0;transform:translateX(5px)}
+    .tool-icon{font-size:1.4rem}.tool-name{font-weight:600}
+    .workflow-area{min-height:200px;border:2px dashed #cbd5e1;border-radius:0.75rem;padding:1rem;margin-bottom:1rem}
+    .step{display:flex;align-items:center;gap:1rem;padding:0.8rem;background:#f1f5f9;border-radius:0.5rem;margin-bottom:0.5rem}
+    .step-number{width:30px;height:30px;background:#dc2626;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold}
+    .remove-btn{background:#ef4444;color:white;border:none;border-radius:0.25rem;padding:0.3rem 0.7rem;cursor:pointer}
+    .controls{display:flex;gap:0.8rem;margin-bottom:1rem}
+    input[type="text"], input[type="password"]{flex:1;padding:0.7rem 1rem;border:1px solid #cbd5e1;border-radius:0.5rem;font-size:1rem}
+    .btn{padding:0.7rem 1.5rem;background:#dc2626;color:white;border:none;border-radius:0.5rem;cursor:pointer;font-weight:700}
+    .btn:hover{background:#b91c1c}.btn-secondary{background:#64748b}.btn-secondary:hover{background:#475569}
+    .saved-list{margin-top:1rem}.saved-item{padding:0.8rem 1rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:0.5rem;margin-bottom:0.5rem;display:flex;justify-content:space-between;align-items:center;transition:0.2s}
+    .saved-item:hover{background:#f1f5f9;border-color:#cbd5e1}
+    .action-btns{display:flex;gap:6px}
+    .action-btn{padding:0.3rem 0.7rem;border-radius:0.3rem;font-size:11px;font-weight:800;cursor:pointer;border:none}
+    .load-btn{background:#0d9488;color:white}.load-btn:hover{background:#0f766e}
+    .mod-btn{background:#f59e0b;color:white}.mod-btn:hover{background:#d97706}
+    .del-btn{background:#ef4444;color:white}.del-btn:hover{background:#dc2626}
+    .file-upload-section{margin-top:1.5rem;padding:1rem;background:#f8fafc;border-radius:0.5rem}
+    .file-upload-section input[type="file"]{margin-top:0.5rem}
+    .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.75);backdrop-filter:blur(6px);display:flex;justify-content:center;align-items:center;z-index:99999}
+    .modal-card{background:white;padding:2.5rem;border-radius:1.5rem;width:440px;max-width:92%;box-shadow:0 25px 50px rgba(0,0,0,0.3);border:1px solid #e2e8f0}
+    .modal-title{font-size:22px;font-weight:900;color:#0f172a;margin-bottom:0.5rem}
+    .modal-sub{font-size:13px;color:#64748b;font-weight:600;margin-bottom:1.5rem}
+    .modal-input{width:100%;padding:0.8rem 1rem;border:1px solid #cbd5e1;border-radius:0.5rem;font-size:1rem;margin-bottom:1rem;outline:none}
+    .modal-input:focus{border-color:#dc2626}
+    .modal-btn{width:100%;padding:0.8rem;background:#dc2626;color:white;border:none;border-radius:0.5rem;font-weight:800;font-size:1rem;cursor:pointer;margin-bottom:1rem}
+    .modal-btn:hover{background:#b91c1c}
+    .social-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem}
+    .social-btn{padding:0.6rem;background:white;color:#334155;border:1px solid #cbd5e1;border-radius:0.5rem;font-weight:700;font-size:0.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+    .social-btn:hover{background:#f8fafc}
+    .modal-footer{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;color:#64748b;margin-top:1rem}
+    .modal-footer span{color:#dc2626;cursor:pointer;text-decoration:underline}
+  </style>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+  <!-- Top Navigation Bar -->
+<nav class="w-full bg-white/90 backdrop-blur-md border-b border-slate-100 px-6 sm:px-12 py-4 flex justify-between items-center fixed top-0 left-0 z-50 shadow-xs">
+    
+    <!-- Creative Animated Brand Name -->
+    <div class="cursor-pointer flex items-center space-x-2 group shrink-0" onclick="window.location.href='index.html'">
+        <span class="text-4xl sm:text-7xl font-black tracking-tighter text-[#0f172a] flex items-center overflow-hidden">
+            <span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span><span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span>
+        </span>
+        <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping ml-1 hidden sm:inline-block"></span>
+    </div>
+    
+    <!-- Desktop Navbar Links & Categories -->
+    <div class="hidden lg:flex items-center space-x-8 text-base font-black text-slate-800 tracking-wide ml-auto">
+        <a href="index.html" class="hover:text-red-600 transition-colors uppercase">Home</a>
+
+        <!-- 1. PDF Core Tools -->
+        <div class="relative group py-2">
+            <a href="index.html#pdf-section" class="flex items-center space-x-1 hover:text-red-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>PDF Core Tools</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-red-600 uppercase tracking-wider mb-2 px-2">PDF Utilities (8)</div>
+                <a href="pdf-to-word.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📄</span> <span>PDF to Word</span></a>
+                <a href="pdf-to-excel.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📊</span> <span>PDF to Excel</span></a>
+                <a href="merge.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💼</span> <span>Merge PDF</span></a>
+                <a href="pdf-splitter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>✂️</span> <span>PDF Splitter</span></a>
+                <a href="pdf-organizer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📑</span> <span>PDF Organizer</span></a>
+                <a href="pdf-watermark.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💧</span> <span>PDF Watermark</span></a>
+                <a href="remove-watermark.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>🛡️</span> <span>Remove Watermark PDF</span></a>
+                <a href="pdf-to-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>🖼️</span> <span>PDF to Image</span></a>
+            </div>
+        </div>
+
+        <!-- 2. Image Utilities -->
+        <div class="relative group py-2">
+            <a href="index.html#image-section" class="flex items-center space-x-1 hover:text-teal-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Image Utilities</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-teal-600 uppercase tracking-wider mb-2 px-2">Image Utilities (8)</div>
+                <a href="compress.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🗜️</span> <span>Compress Image</span></a>
+                <a href="image-converter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🖼️</span> <span>Image Converter</span></a>
+                <a href="image-to-pdf.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📷</span> <span>Image to PDF</span></a>
+                <a href="image-reducer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📉</span> <span>Image Reducer</span></a>
+                <a href="image-to-text.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🔍</span> <span>Image to Text</span></a>
+                <a href="image-to-excel.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📈</span> <span>Image to Excel</span></a>
+                <a href="passport-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🛂</span> <span>Passport Studio</span></a>
+                <a href="merge-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🧩</span> <span>Merge Image</span></a>
+            </div>
+        </div>
+
+        <!-- 3. Business Suite -->
+        <div class="relative group py-2">
+            <a href="index.html#business-section" class="flex items-center space-x-1 hover:text-purple-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Business Suite</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-purple-600 uppercase tracking-wider mb-2 px-2">Business Utilities (6)</div>
+                <a href="invoice-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🧾</span> <span>Invoice Generator</span></a>
+                <a href="barcode-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🏷️</span> <span>Barcode Generator</span></a>
+                <a href="qr-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📱</span> <span>QR Code Studio</span></a>
+                <a href="sign-maker.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>✍️</span> <span>Digital Signature Studio</span></a>
+                <a href="code-formatter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>⚡</span> <span>Code Formatter</span></a>
+                <a href="product-listing.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📦</span> <span>Product Listing</span></a>
+            </div>
+        </div>
+
+        <!-- Auth Area for Workflow Builder -->
+        <div id="authArea" class="flex items-center"></div>
+
+        <!-- Active Workflow Indicator Badge -->
+        <div class="bg-red-600/10 border border-red-200 text-red-600 px-4 py-2 rounded-xl font-bold text-xs flex items-center space-x-1.5">
+            <span class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
+            <span>Workflow Active</span>
+        </div>
+    </div>
+
+    <!-- Mobile Hamburger Menu Button -->
+    <div class="lg:hidden flex items-center">
+        <button type="button" onclick="toggleMobileMenu()" class="p-2 rounded-xl bg-slate-100 text-slate-800 focus:outline-none hover:bg-slate-200 transition-colors">
+            <svg id="menu-icon" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+        </button>
+    </div>
+</nav>
+
+<!-- Mobile Navigation Drawer -->
+<div id="mobile-menu" class="fixed inset-x-0 top-[73px] bg-white border-b border-slate-200 shadow-xl lg:hidden hidden z-40 max-h-[85vh] overflow-y-auto p-6 space-y-6">
+    <a href="index.html" class="block text-sm font-black uppercase text-slate-800 hover:text-red-600">Home</a>
+    
+    <!-- Mobile PDF Core Tools -->
+    <div class="space-y-2">
+        <div class="text-xs font-black text-red-600 uppercase tracking-wider">PDF Core Tools (8)</div>
+        <div class="grid grid-cols-1 gap-1 pl-2">
+            <a href="pdf-to-word.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>📄</span> <span>PDF to Word</span></a>
+            <a href="pdf-to-excel.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>📊</span> <span>PDF to Excel</span></a>
+            <a href="merge.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>💼</span> <span>Merge PDF</span></a>
+            <a href="pdf-splitter.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>✂️</span> <span>PDF Splitter</span></a>
+            <a href="pdf-organizer.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>📑</span> <span>PDF Organizer</span></a>
+            <a href="pdf-watermark.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>💧</span> <span>PDF Watermark</span></a>
+            <a href="remove-watermark.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>🛡️</span> <span>Remove Watermark PDF</span></a>
+            <a href="pdf-to-image.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>🖼️</span> <span>PDF to Image</span></a>
+        </div>
+    </div>
+
+    <!-- Mobile Image Utilities -->
+    <div class="space-y-2">
+        <div class="text-xs font-black text-teal-600 uppercase tracking-wider">Image Utilities (8)</div>
+        <div class="grid grid-cols-1 gap-1 pl-2">
+            <a href="compress.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>🗜️</span> <span>Compress Image</span></a>
+            <a href="image-converter.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>🖼️</span> <span>Image Converter</span></a>
+            <a href="image-to-pdf.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>📷</span> <span>Image to PDF</span></a>
+            <a href="image-reducer.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>📉</span> <span>Image Reducer</span></a>
+            <a href="image-to-text.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>🔍</span> <span>Image to Text</span></a>
+            <a href="image-to-excel.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>📈</span> <span>Image to Excel</span></a>
+            <a href="passport-studio.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>🛂</span> <span>Passport Studio</span></a>
+            <a href="merge-image.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>🧩</span> <span>Merge Image</span></a>
+        </div>
+    </div>
+
+    <!-- Mobile Business Suite -->
+    <div class="space-y-2">
+        <div class="text-xs font-black text-purple-600 uppercase tracking-wider">Business Suite (6)</div>
+        <div class="grid grid-cols-1 gap-1 pl-2">
+            <a href="invoice-gen.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>🧾</span> <span>Invoice Generator</span></a>
+            <a href="barcode-gen.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>🏷️</span> <span>Barcode Generator</span></a>
+            <a href="qr-studio.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>📱</span> <span>QR Code Studio</span></a>
+            <a href="sign-maker.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>✍️</span> <span>Digital Signature Studio</span></a>
+            <a href="code-formatter.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>⚡</span> <span>Code Formatter</span></a>
+            <a href="product-listing.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>📦</span> <span>Product Listing</span></a>
+        </div>
+    </div>
+</div>
+
+  <div style="margin-top: 6.5rem;"></div>
+  <div class="container">
+    <div class="panel tools-panel" id="toolsPanel">
+      <div class="panel-title">🛠️ Tools</div>
+      <div id="toolsListContainer"></div>
+    </div>
+    <div class="panel workflow-panel">
+      <div class="panel-title">📋 Your Workflow</div>
+      <div class="workflow-area" id="workflowArea">
+        <p style="color:#94a3b8;">Click on tools to add steps</p>
+      </div>
+      <div class="controls">
+        <input type="text" id="wfName" placeholder="Enter Workflow Name (Required to Save/Modify)" autocomplete="off">
+        <button class="btn" onclick="saveWorkflow()">💾 Save New</button>
+        <button class="btn btn-secondary" onclick="clearWorkflow()">🗑️ Clear</button>
+      </div>
+      <div class="file-upload-section">
+        <h3>📁 Test Your Workflow</h3>
+        <input type="file" id="wfFile" multiple>
+        <button class="btn" onclick="executeWorkflow()" style="margin-left: 10px;">▶️ Execute Workflow</button>
+        <div id="executionResult" style="margin-top:10px;"></div>
+      </div>
+      <div class="saved-list">
+        <h3>Your Saved Workflows (Access, Modify, Delete)</h3>
+        <div id="savedList"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalContainer"></div>
+
+  <script>
+    let steps = [];
+    let selectedFiles = [];
+    let activeWorkflowId = null;
+    let currentUser = localStorage.getItem("filesque_user") || "";
+    let toolRegistryData = [];
+
+    async function initTools() {
+      try {
+        const res = await fetch('/api/tools');
+        const data = await res.json();
+        if (data.success) {
+          toolRegistryData = data.tools;
+          const container = document.getElementById('toolsListContainer');
+          container.innerHTML = toolRegistryData.map(tool => 
+            '<div class="tool-item" onclick="checkAuthAndAdd(\'' + tool.id + '\', \'' + tool.name.replace(/'/g, "\\'") + '\', \'' + tool.icon + '\')">' +
+              '<span class="tool-icon">' + tool.icon + '</span>' +
+              '<span class="tool-name">' + tool.name + '</span>' +
+            '</div>'
+          ).join('');
+          document.querySelector('.tools-panel .panel-title').textContent = '🛠️ Tools (' + toolRegistryData.length + ')';
+        }
+      } catch (e) {
+        console.error("Failed to load tools", e);
+      }
+    }
+
+    function renderAuth() {
+      const area = document.getElementById("authArea");
+      if (!area) return;
+      if (!currentUser) {
+        area.innerHTML = '<button class="auth-btn" onclick="openAuthModal(\'signin\')">🔐 Sign In / Sign Up</button>';
+      } else {
+        area.innerHTML = '<div class="auth-box"><span class="user-badge">👤 ' + currentUser + '</span><button class="auth-btn" style="background:#ef4444; padding:0.4rem 0.8rem; font-size:0.8rem;" onclick="signOut()">Sign Out</button></div>';
+        loadSavedWorkflows();
+      }
+    }
+
+    function openAuthModal(mode) {
+      let title = "Sign In to Filesque";
+      let sub = "Access your workflows and automated tools securely.";
+      let btnText = "Sign In";
+      let switchHtml = "Don't have an account? <span onclick=\"openAuthModal('signup')\">Sign Up</span>";
+      let forgotHtml = "<span onclick=\"openAuthModal('forgot')\">Forgot Password?</span>";
+      
+      if (mode === "signup") {
+        title = "Create an Account";
+        sub = "Register with Email/Mobile and Password.";
+        btnText = "Sign Up";
+        switchHtml = "Already have an account? <span onclick=\"openAuthModal('signin')\">Sign In</span>";
+        forgotHtml = "";
+      } else if (mode === "forgot") {
+        title = "Recover Password";
+        sub = "Enter your registered Email or Mobile.";
+        btnText = "Reset Password";
+        switchHtml = "Remembered password? <span onclick=\"openAuthModal('signin')\">Sign In</span>";
+        forgotHtml = "";
+      }
+
+      const modalHtml = '<div class="modal-overlay" id="authModalOverlay"><div class="modal-card"><h2 class="modal-title">' + title + '</h2><p class="modal-sub">' + sub + '</p><input type="text" id="modalCred" class="modal-input" placeholder="Email ID or Mobile Number" autocomplete="off"><input type="password" id="modalPass" class="modal-input" placeholder="Password" autocomplete="new-password" ' + (mode === "forgot" ? "style='display:none;'" : "") + '><button class="modal-btn" onclick="submitAuth(\'' + mode + '\')">' + btnText + '</button><div style="text-align:center; margin-bottom:1rem; font-size:12px; font-weight:700; color:#94a3b8;">OR AUTHENTICATE WITH WEB</div><div class="social-grid"><button class="social-btn" onclick="socialLogin(\'Google\')">Google</button><button class="social-btn" onclick="socialLogin(\'GitHub\')">GitHub</button><button class="social-btn" onclick="socialLogin(\'Microsoft\')">Microsoft</button><button class="social-btn" onclick="socialLogin(\'Apple\')">Apple</button></div><div class="modal-footer"><div>' + switchHtml + '</div><div>' + forgotHtml + '</div></div><div style="text-align:center; margin-top:12px;"><button onclick="closeAuthModal()" style="background:none; border:none; color:#64748b; font-size:12px; cursor:pointer; font-weight:bold;">✕ Close</button></div></div></div>';
+      document.getElementById("modalContainer").innerHTML = modalHtml;
+    }
+
+    function closeAuthModal() {
+      document.getElementById("modalContainer").innerHTML = "";
+    }
+
+    async function submitAuth(mode) {
+      const credential = document.getElementById("modalCred").value.trim();
+      const password = document.getElementById("modalPass") ? document.getElementById("modalPass").value.trim() : "";
+      if (!credential || (mode !== "forgot" && !password)) {
+        alert("Please fill in all required fields.");
+        return;
+      }
+
+      let endpoint = "/api/auth/signin";
+      if (mode === "signup") endpoint = "/api/auth/signup";
+      if (mode === "forgot") endpoint = "/api/auth/forgot";
+
+      try {
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ credential, password })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert("✅ " + data.message);
+          if (mode === "signin" || mode === "signup") {
+            currentUser = data.credential || credential;
+            localStorage.setItem("filesque_user", currentUser);
+            closeAuthModal();
+            renderAuth();
+          } else {
+            openAuthModal("signin");
+          }
+        } else {
+          alert("❌ " + data.error);
+        }
+      } catch (e) {
+        alert("Network error: " + e.message);
+      }
+    }
+
+    async function socialLogin(provider) {
+      const email = prompt("Enter your " + provider + " Account Email:");
+      if (!email || !email.includes("@")) {
+        alert("Valid email required.");
+        return;
+      }
+      try {
+        const res = await fetch("/api/auth/social", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, provider })
+        });
+        const data = await res.json();
+        if (data.success) {
+          currentUser = data.credential;
+          localStorage.setItem("filesque_user", currentUser);
+          closeAuthModal();
+          renderAuth();
+          alert("✅ Authenticated via " + provider + "!");
+        }
+      } catch (e) {
+        alert("Network error: " + e.message);
+      }
+    }
+
+    function signOut() {
+      currentUser = "";
+      activeWorkflowId = null;
+      localStorage.removeItem("filesque_user");
+      steps = [];
+      document.getElementById("wfName").value = "";
+      renderAuth();
+      renderSteps();
+      alert("🔒 Signed out successfully.");
+    }
+
+    document.getElementById("wfFile").addEventListener("change", function(e) {
+      selectedFiles = e.target.files;
+    });
+
+    function updateStepConfig(idx, key, val) {
+      steps[idx][key] = val;
+    }
+
+    function checkAuthAndAdd(id, name, icon) {
+      if (!currentUser) {
+        openAuthModal("signin");
+        return;
+      }
+      addToWorkflow(id, name, icon);
+    }
+
+    function addToWorkflow(id, name, icon) {
+      steps.push({
+        id: id, name: name, icon: icon, isComplex: false, mode: "all", range: "", sortOrder: "upload", customSequence: "", pageOrder: "", rotatePages: "", rotateDegree: "90", watermarkText: "CONFIDENTIAL", watermarkMode: "diagonal", compressQuality: "0.70", convertFormat: "jpg", convertQuality: "0.92", reducerMode: "resize", reducerWidth: "800", reducerHeight: "600", reducerTargetKb: "50", sizePreset: "3.5x4.5", bgColor: "#f87171", zoom: "100", copies: "32", removeBg: false
+      });
+      renderSteps();
+    }
+
+    function renderSteps() {
+      const area = document.getElementById("workflowArea");
+      if (!area) return;
+      if (steps.length === 0) {
+        area.innerHTML = "<p style='color:#94a3b8;'>Click on tools to add steps</p>";
+        return;
+      }
+      let html = "";
+      for (let i = 0; i < steps.length; i++) {
+        let toggleHtml = "";
+        if (steps[i].id === "pdf-to-excel") {
+          toggleHtml = '<div style="margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1;"><span style="font-size:12px; font-weight:bold; color:#475569;">Mode:</span><select onchange="updateStepConfig(' + i + ', \'isComplex\', this.value === \'complex\')" style="padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;"><option value="simple" ' + (!steps[i].isComplex ? "selected" : "") + '>Simple Table</option><option value="complex" ' + (steps[i].isComplex ? "selected" : "") + '>Complex Table</option></select></div>';
+        } else if (steps[i].id === "pdf-splitter") {
+          let mode = steps[i].mode || "all";
+          let rangeVal = steps[i].range || "";
+          let displayRange = mode === "all" ? "display:none;" : "";
+          toggleHtml = '<div style="margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1;"><span style="font-size:12px; font-weight:bold; color:#475569;">Mode:</span><select onchange="updateStepConfig(' + i + ', \'mode\', this.value); renderSteps();" style="padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;"><option value="all" ' + (mode === "all" ? "selected" : "") + '>Split All (ZIP)</option><option value="range" ' + (mode === "range" ? "selected" : "") + '>Custom Range</option></select><input type="text" onkeyup="updateStepConfig(' + i + ', \'range\', this.value)" value="' + rangeVal + '" placeholder="e.g. 1-3, 5" style="padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; width:100px; outline:none; ' + displayRange + '"></div>';
+        } else if (steps[i].id === "merge-pdf" || steps[i].id === "image-to-pdf") {
+          let sOrder = steps[i].sortOrder || "upload";
+          toggleHtml = '<div style="margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1;"><span style="font-size:12px; font-weight:bold; color:#475569;">Combine Order:</span><select onchange="updateStepConfig(' + i + ', \'sortOrder\', this.value)" style="padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;"><option value="upload" ' + (sOrder === "upload" ? "selected" : "") + '>As Uploaded</option><option value="az" ' + (sOrder === "az" ? "selected" : "") + '>Alphabetical (A-Z)</option><option value="za" ' + (sOrder === "za" ? "selected" : "") + '>Alphabetical (Z-A)</option></select></div>';
+        } else if (steps[i].id === "passport-studio") {
+          toggleHtml = '<div style="margin-left:auto; display:flex; align-items:center; gap:8px; background:linear-gradient(135deg, #4f46e5, #e11d48); padding:6px 14px; border-radius:8px; color:white; font-weight:bold; font-size:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1);"><span>✨ Auto Studio Dialog Ready</span></div>';
+        }
+        html += '<div class="step"><div class="step-number">' + (i+1) + '</div><span style="font-size:1.2rem;">' + steps[i].icon + '</span><strong style="font-size:1.1rem;">' + steps[i].name + '</strong>' + (toggleHtml ? toggleHtml : '<div style="margin-left:auto;"></div>') + '<button class="remove-btn" style="margin-left:10px;" onclick="removeStep(' + i + ')">✕</button></div>';
+      }
+      area.innerHTML = html;
+    }
+
+    function removeStep(index) {
+      steps.splice(index, 1);
+      renderSteps();
+    }
+
+    function clearWorkflow() {
+      steps = [];
+      activeWorkflowId = null;
+      document.getElementById("wfName").value = "";
+      document.querySelector("button[onclick='saveWorkflow()']").textContent = "💾 Save New";
+      renderSteps();
+    }
+
+    async function saveWorkflow() {
+      if (!currentUser) {
+        openAuthModal("signin");
+        return;
+      }
+      const nameInput = document.getElementById("wfName");
+      const name = nameInput.value.trim();
+      if (!name) {
+        alert("⚠️ Please enter a workflow name before saving/modifying!");
+        nameInput.focus();
+        return;
+      }
+      if (steps.length === 0) {
+        alert("Please add at least one tool to the workflow.");
+        return;
+      }
+
+      const payload = {
+        name: name,
+        userId: currentUser,
+        steps: steps.map(s => ({
+          toolId: s.id, isComplex: !!s.isComplex, mode: s.mode, range: s.range, sortOrder: s.sortOrder, customSequence: s.customSequence, pageOrder: s.pageOrder, rotatePages: s.rotatePages, rotateDegree: s.rotateDegree, watermarkText: s.watermarkText, watermarkMode: s.watermarkMode, compressQuality: s.compressQuality, convertFormat: s.convertFormat, convertQuality: s.convertQuality, reducerMode: s.reducerMode, reducerWidth: s.reducerWidth, reducerHeight: s.reducerHeight, reducerTargetKb: s.reducerTargetKb, sizePreset: s.sizePreset, bgColor: s.bgColor, zoom: s.zoom, copies: s.copies, removeBg: s.removeBg, printSheet: s.printSheet
+        }))
+      };
+
+      try {
+        let endpoint = "/api/workflow/create";
+        let method = "POST";
+        if (activeWorkflowId) {
+          endpoint = "/api/workflow/update/" + activeWorkflowId;
+          method = "PUT";
+        }
+        const res = await fetch(endpoint, {
+          method: method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert(activeWorkflowId ? "✅ Workflow updated successfully!" : "✅ Workflow saved successfully!");
+          activeWorkflowId = data.workflow.id;
+          document.querySelector("button[onclick='saveWorkflow()']").textContent = "✏️ Update Modified";
+          loadSavedWorkflows();
+        } else {
+          alert("❌ " + data.error);
+        }
+      } catch (e) {
+        alert("Network error: " + e.message);
+      }
+    }
+
+    async function loadSavedWorkflows() {
+      if (!currentUser) return;
+      try {
+        const res = await fetch("/api/workflow/list?userId=" + encodeURIComponent(currentUser));
+        const data = await res.json();
+        const list = document.getElementById("savedList");
+        if (!list) return;
+
+        if (!data.workflows || data.workflows.length === 0) {
+          list.innerHTML = "<p style='color:#94a3b8; font-size:12px;'>No saved workflows found for: " + currentUser + "</p>";
+          return;
+        }
+
+        let html = "";
+        for (const w of data.workflows) {
+          html += '<div class="saved-item">' +
+            '<div><strong>' + w.name + '</strong> <span style="color:#64748b; font-size:12px;">(' + w.steps.length + ' steps)</span></div>' +
+            '<div class="action-btns">' +
+              '<button class="action-btn load-btn" onclick=\'loadWorkflowData(' + JSON.stringify(w) + ')\'>📂 Access</button>' +
+              '<button class="action-btn mod-btn" onclick=\'modifyWorkflowData(' + JSON.stringify(w) + ')\'>✏️ Modify</button>' +
+              '<button class="action-btn del-btn" onclick="deleteWorkflow(\'' + w.id + '\')">🗑️ Delete</button>' +
+            '</div>' +
+          '</div>';
+        }
+        list.innerHTML = html;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function loadWorkflowData(wf) {
+      activeWorkflowId = wf.id;
+      document.getElementById("wfName").value = wf.name;
+      document.querySelector("button[onclick='saveWorkflow()']").textContent = "✏️ Update Modified";
+      steps = wf.steps.map(s => {
+        const tool = toolRegistryData.find(t => t.id === s.toolId);
+        return {
+          id: s.toolId, name: tool ? tool.name : s.toolId, icon: tool ? tool.icon : "📦", isComplex: s.isComplex, mode: s.mode || "all", range: s.range || "", sortOrder: s.sortOrder || "upload", customSequence: s.customSequence || "", pageOrder: s.pageOrder || "", rotatePages: s.rotatePages || "", rotateDegree: s.rotateDegree || "90", watermarkText: s.watermarkText || "CONFIDENTIAL", watermarkMode: s.watermarkMode || "diagonal", compressQuality: s.compressQuality || "0.70", convertFormat: s.convertFormat || "jpg", convertQuality: s.convertQuality || "0.92", reducerMode: s.reducerMode || "resize", reducerWidth: s.reducerWidth || "800", reducerHeight: s.reducerHeight || "600", reducerTargetKb: s.reducerTargetKb || "50", sizePreset: s.sizePreset || "3.5x4.5", bgColor: s.bgColor || "#f87171", zoom: s.zoom || "100", copies: s.copies || "32", removeBg: s.removeBg || false
+        };
+      });
+      renderSteps();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      alert("📂 Workflow '" + wf.name + "' loaded successfully!");
+    }
+
+    function modifyWorkflowData(wf) {
+      loadWorkflowData(wf);
+      alert("✏️ You are now in modification mode for '" + wf.name + "'. Make changes and click 'Update Modified'.");
+    }
+
+    async function deleteWorkflow(wfId) {
+      if (!confirm("Are you sure you want to delete this saved workflow?")) return;
+      try {
+        const res = await fetch("/api/workflow/delete/" + wfId + "?userId=" + encodeURIComponent(currentUser), { method: "DELETE" });
+        const data = await res.json();
+        if (data.success) {
+          alert("🗑️ Workflow deleted successfully.");
+          if (activeWorkflowId === wfId) clearWorkflow();
+          loadSavedWorkflows();
+        } else {
+          alert("❌ " + data.error);
+        }
+      } catch (e) {
+        alert("Network error: " + e.message);
+      }
+    }
+
+    async function executeWorkflow() {
+      if (!currentUser) {
+        openAuthModal("signin");
+        return;
+      }
+      if (selectedFiles.length === 0 || steps.length === 0) {
+        alert("Please select file(s) and add workflow steps.");
+        return;
+      }
+      const passportStepIdx = steps.findIndex(s => s.id === "passport-studio");
+      if (passportStepIdx !== -1) {
+        openProfessionalStudioModal(selectedFiles[0], passportStepIdx);
+        return;
+      }
+      sendWorkflowExecution();
+    }
+
+    function openProfessionalStudioModal(file, stepIdx) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const imgSrc = e.target.result;
+        const modalHtml = '<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.8);backdrop-filter:blur(8px);display:flex;justify-content:center;align-items:center;z-index:9999;font-family:\'Plus Jakarta Sans\',sans-serif;"><div style="background:white;padding:2.5rem;border-radius:1.75rem;width:820px;max-width:96%;box-shadow:0 25px 60px rgba(0,0,0,0.4);max-height:92vh;overflow-y:auto;border:1px solid #e2e8f0;"><div style="display:flex;align-items:center;margin-bottom:1.5rem;"><div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#4f46e5,#e11d48);display:flex;align-items:center;justify-content:center;color:white;font-size:24px;box-shadow:0 10px 20px rgba(79,70,229,0.3);margin-right:1rem;">🛂</div><div><h2 style="font-size:24px;font-weight:900;color:#0f172a;margin:0;letter-spacing:-0.5px;">Passport Photo Studio Pro</h2><p style="font-size:12px;color:#64748b;font-weight:600;margin:2px 0 0 0;">Professional Studio: Cloud AI Background Removal & HD Print Layout</p></div></div><hr style="border:0;border-top:1px solid #e2e8f0;margin-bottom:1.5rem;"><div style="display:grid;grid-template-columns:1.2fr 1fr;gap:2rem;margin-bottom:2rem;"><div style="display:flex;flex-direction:column;gap:1.2rem;"><div><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">1. Background Color Palette</label><select id="studioBg" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="#ffffff">Pure White (#FFFFFF)</option><option value="#a5cbf7">Light Blue (#A5CBF7)</option><option value="#3b82f6">Royal Blue (#3B82F6)</option><option value="#f87171" selected>Soft Red (#F87171)</option></select></div><div><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">2. Passport Size Preset</label><select id="studioSize" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="3.5x4.5">Standard Indian Passport (3.5 x 4.5 cm)</option><option value="2x2">US Visa Layout (2 x 2 inch)</option><option value="3.5x3.5">Indian PAN Card Size (3.5 x 3.5 cm)</option></select></div><div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><label style="font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;">3. Zoom & Face Position</label><span id="zoomValBadge" style="font-size:11px;font-weight:800;color:#4f46e5;background:#e0e7ff;padding:2px 8px;border-radius:6px;">100%</span></div><input type="range" id="studioZoom" min="50" max="250" value="100" style="width:100%;height:6px;background:#cbd5e1;border-radius:4px;accent-color:#4f46e5;cursor:pointer;"></div><div><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">4. Copies & Grid Layout</label><select id="studioCopies" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="4">4 Photos Grid</option><option value="8">8 Photos Grid</option><option value="16">16 Photos Grid</option><option value="32" selected>32 Photos Grid (Full A4 Sheet)</option></select></div><div style="background:#e0e7ff;border:1px solid #c7d2fe;padding:12px 14px;border-radius:12px;display:flex;align-items:center;gap:10px;"><input type="checkbox" id="studioRemoveBg" style="width:18px;height:18px;accent-color:#4f46e5;cursor:pointer;"><label for="studioRemoveBg" style="font-size:12px;font-weight:800;color:#3730a3;cursor:pointer;">Remove Background Pro (Cloud AI Engine)</label></div></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f1f5f9;padding:1.5rem;border-radius:16px;border:1px solid #e2e8f0;position:relative;"><span style="font-size:11px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Live Studio Preview</span><div id="modalPreviewBox" style="width:160px;height:200px;background:#f87171;box-shadow:0 20px 30px rgba(0,0,0,0.15);border:2px solid white;overflow:hidden;position:relative;border-radius:8px;transition:background 0.3s;display:flex;align-items:center;justify-content:center;"><img src="' + imgSrc + '" id="modalPreviewImg" style="width:100%;height:100%;object-fit:contain;transform:scale(1);transform-origin:center;transition:transform 0.1s;" /></div><p style="font-size:11px;color:#64748b;font-weight:600;margin-top:12px;text-align:center;">Interactive preview updates instantly</p></div></div><div style="display:flex;justify-content:flex-end;gap:12px;padding-top:1rem;border-top:1px solid #e2e8f0;"><button onclick="closeModal()" style="padding:12px 24px;background:#f1f5f9;color:#334155;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;transition:0.2s;">Cancel</button><button onclick="applyStudioAndExecute(' + stepIdx + ')" style="padding:12px 28px;background:linear-gradient(135deg,#4f46e5,#e11d48);color:white;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;box-shadow:0 10px 20px rgba(79,70,229,0.3);transition:0.2s;">✨ Apply & Execute Workflow</button></div></div></div>';
+        document.getElementById("modalContainer").innerHTML = modalHtml;
+        document.getElementById("studioZoom").addEventListener("input", function(e) {
+          const val = e.target.value;
+          document.getElementById("zoomValBadge").textContent = val + "%";
+          document.getElementById("modalPreviewImg").style.transform = "scale(" + (val / 100) + ")";
+        });
+        document.getElementById("studioBg").addEventListener("change", function(e) {
+          document.getElementById("modalPreviewBox").style.backgroundColor = e.target.value;
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function closeModal() {
+      document.getElementById("modalContainer").innerHTML = "";
+    }
+
+    function applyStudioAndExecute(stepIdx) {
+      steps[stepIdx].sizePreset = document.getElementById("studioSize").value;
+      steps[stepIdx].bgColor = document.getElementById("studioBg").value;
+      steps[stepIdx].zoom = document.getElementById("studioZoom").value;
+      steps[stepIdx].copies = document.getElementById("studioCopies").value;
+      steps[stepIdx].removeBg = document.getElementById("studioRemoveBg").checked;
+      steps[stepIdx].printSheet = true;
+      closeModal();
+      sendWorkflowExecution();
+    }
+
+    async function sendWorkflowExecution() {
+      if (!activeWorkflowId) {
+        alert("⚠️ Please save or load a workflow before executing.");
+        return;
+      }
+      const formData = new FormData();
+      for (let i = 0; i < selectedFiles.length; i++) {
+        formData.append("file", selectedFiles[i]);
+      }
+      try {
+        document.getElementById("executionResult").innerHTML = "<p style='color:blue;'>⏳ Processing workflow steps...</p>";
+        const execRes = await fetch("/api/workflow/execute/" + activeWorkflowId, { method: "POST", body: formData });
+        if (execRes.ok) {
+          const blob = await execRes.blob();
+          let fname = "workflow_output";
+          const cd = execRes.headers.get("content-disposition");
+          if (cd) {
+            const m = cd.match(/filename="?([^";]+)"?/i);
+            if (m && m[1]) fname = m[1];
+          } else {
+            const mimeExtMap = { "application/pdf": ".pdf", "image/jpeg": ".jpg", "image/png": ".png", "image/webp": ".webp", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": ".xlsx", "application/zip": ".zip", "application/msword": ".doc" };
+            fname = "workflow_output" + (mimeExtMap[blob.type] || "");
+          }
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = fname;
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.getElementById("executionResult").innerHTML = "<p style='color:green;'>✅ Workflow executed successfully! Check download.</p>";
+        } else {
+          const errorData = await execRes.json().catch(() => ({ error: "Execution failed" }));
+          document.getElementById("executionResult").innerHTML = "<p style='color:red;'>❌ " + (errorData.error || "Execution failed") + "</p>";
+        }
+      } catch (e) {
+        document.getElementById("executionResult").innerHTML = "<p style='color:red;'>Network error during execution: " + e.message + "</p>";
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      initTools();
+      renderAuth();
+    });
+  </script>
+
+<script>
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobile-menu');
+    if (menu) {
+        menu.classList.toggle('hidden');
+    }
+}
+</script>
+</body>
+</html>
