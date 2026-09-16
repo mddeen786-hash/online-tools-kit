@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remove Watermark from PDF | Professional Online Tool | Filesque</title>
+    <meta name="description" content="Remove unwanted watermarks, stamps, and transparent overlay layers from PDF documents securely in your browser.">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- PDF-Lib for Client-Side PDF Generation -->
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <!-- PDF.js for High-Definition Rendering & Text Extraction -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- Pako for Flate/Zlib Stream Decompression in Browser -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .hero-glow {
+            background: radial-gradient(circle at 50% 0%, rgba(220, 38, 38, 0.05) 0%, transparent 60%);
+        }
+        .canvas-container {
+            position: relative;
+            display: inline-block;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            user-select: none;
+        }
+        .eraser-box {
+            position: absolute;
+            border: 2px dashed #ef4444;
+            background-color: rgba(239, 68, 68, 0.2);
+            cursor: move;
+            z-index: 20;
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-end;
+            box-sizing: border-box;
+            transition: background-color 0.15s ease;
+        }
+        .eraser-box:hover {
+            background-color: rgba(239, 68, 68, 0.35);
+        }
+        .eraser-box .del-btn {
+            background: #dc2626;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            cursor: pointer;
+            margin: -8px -8px 0 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: transform 0.15s;
+        }
+        .eraser-box .del-btn:hover {
+            transform: scale(1.15);
+        }
+        .eraser-box .box-label {
+            position: absolute;
+            bottom: 2px;
+            left: 4px;
+            font-size: 10px;
+            font-weight: 800;
+            color: #b91c1c;
+            background: rgba(255,255,255,0.85);
+            padding: 1px 4px;
+            border-radius: 4px;
+            pointer-events: none;
+        }
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="text-slate-900 min-h-screen flex flex-col antialiased selection:bg-red-600 selection:text-white hero-glow">
+
+<!-- Top Navigation Bar -->
+<nav class="w-full bg-white/90 backdrop-blur-md border-b border-slate-100 px-6 sm:px-12 py-4 flex justify-between items-center fixed top-0 left-0 z-50 shadow-xs">
+    
+    <!-- Creative Animated Brand Name -->
+    <div class="cursor-pointer flex items-center space-x-2 group shrink-0" onclick="window.location.href='index.html'">
+        <span class="text-4xl sm:text-7xl font-black tracking-tighter text-[#0f172a] flex items-center overflow-hidden">
+            <span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span><span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span>
+        </span>
+        <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping ml-1 hidden sm:inline-block"></span>
+    </div>
+    
+    <!-- Desktop Navbar Links & Categories -->
+    <div class="hidden lg:flex items-center space-x-8 text-base font-black text-slate-800 tracking-wide ml-auto">
+        <a href="index.html" class="hover:text-red-600 transition-colors uppercase">Home</a>
+
+        <!-- 1. PDF Core Tools -->
+        <div class="relative group py-2">
+            <a href="index.html#pdf-section" class="flex items-center space-x-1 hover:text-red-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>PDF Core Tools</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-red-600 uppercase tracking-wider mb-2 px-2">PDF Utilities (8)</div>
+                <a href="pdf-to-word.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📄</span> <span>PDF to Word</span></a>
+                <a href="pdf-to-excel.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📊</span> <span>PDF to Excel</span></a>
+                <a href="merge.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💼</span> <span>Merge PDF</span></a>
+                <a href="pdf-splitter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>✂️</span> <span>PDF Splitter</span></a>
+                <a href="pdf-organizer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>📑</span> <span>PDF Organizer</span></a>
+                <a href="pdf-watermark.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>💧</span> <span>PDF Watermark</span></a>
+                <a href="remove-watermark.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>🛡️</span> <span>Remove Watermark PDF</span></a>
+                <a href="pdf-to-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all"><span>🖼️</span> <span>PDF to Image</span></a>
+            </div>
+        </div>
+
+        <!-- 2. Image Utilities -->
+        <div class="relative group py-2">
+            <a href="index.html#image-section" class="flex items-center space-x-1 hover:text-teal-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Image Utilities</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-teal-600 uppercase tracking-wider mb-2 px-2">Image Utilities (7)</div>
+                <a href="compress.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🗜️</span> <span>Compress Image</span></a>
+                <a href="image-converter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🖼️</span> <span>Image Converter</span></a>
+                <a href="image-to-pdf.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📷</span> <span>Image to PDF</span></a>
+                <a href="image-reducer.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>📉</span> <span>Image Reducer</span></a>
+                <a href="image-to-text.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🔍</span> <span>Image to Text</span></a>
+                <a href="passport-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🛂</span> <span>Passport Studio</span></a>
+                <a href="merge-image.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-teal-50 hover:text-teal-600 transition-all"><span>🧩</span> <span>Merge Image</span></a>
+            </div>
+        </div>
+
+        <!-- 3. Business Suite -->
+        <div class="relative group py-2">
+            <a href="index.html#business-section" class="flex items-center space-x-1 hover:text-purple-600 transition-colors cursor-pointer uppercase font-black text-slate-900">
+                <span>Business Suite</span>
+                <span class="text-xs transform group-hover:rotate-180 transition-transform duration-200">▼</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-slate-100 rounded-2xl shadow-2xl p-4 w-72 normal-case transition-all duration-200 z-50">
+                <div class="text-xs font-black text-purple-600 uppercase tracking-wider mb-2 px-2">Business Utilities (6)</div>
+                <a href="invoice-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🧾</span> <span>Invoice Generator</span></a>
+                <a href="barcode-gen.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>🏷️</span> <span>Barcode Generator</span></a>
+                <a href="qr-studio.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📱</span> <span>QR Code Studio</span></a>
+                <a href="sign-maker.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>✍️</span> <span>Digital Signature Studio</span></a>
+                <a href="code-formatter.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>⚡</span> <span>Code Formatter</span></a>
+                <a href="product-listing.html" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all"><span>📦</span> <span>Product Listing</span></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Hamburger Menu Button -->
+    <div class="lg:hidden flex items-center">
+        <button type="button" onclick="toggleMobileMenu()" class="p-2 rounded-xl bg-slate-100 text-slate-800 focus:outline-none hover:bg-slate-200 transition-colors">
+            <svg id="menu-icon" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+        </button>
+    </div>
+</nav>
+
+<!-- Mobile Navigation Drawer -->
+<div id="mobile-menu" class="fixed inset-x-0 top-[73px] bg-white border-b border-slate-200 shadow-xl lg:hidden hidden z-40 max-h-[85vh] overflow-y-auto p-6 space-y-6">
+    <a href="index.html" class="block text-sm font-black uppercase text-slate-800 hover:text-red-600">Home</a>
+    
+    <!-- Mobile PDF Core Tools -->
+    <div class="space-y-2">
+        <div class="text-xs font-black text-red-600 uppercase tracking-wider">PDF Core Tools (8)</div>
+        <div class="grid grid-cols-1 gap-1 pl-2">
+            <a href="pdf-to-word.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>📄</span> <span>PDF to Word</span></a>
+            <a href="pdf-to-excel.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>📊</span> <span>PDF to Excel</span></a>
+            <a href="merge.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>💼</span> <span>Merge PDF</span></a>
+            <a href="pdf-splitter.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>✂️</span> <span>PDF Splitter</span></a>
+            <a href="pdf-organizer.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>📑</span> <span>PDF Organizer</span></a>
+            <a href="pdf-watermark.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>💧</span> <span>PDF Watermark</span></a>
+            <a href="remove-watermark.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>🛡️</span> <span>Remove Watermark PDF</span></a>
+            <a href="pdf-to-image.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>🖼️</span> <span>PDF to Image</span></a>
+        </div>
+    </div>
+
+    <!-- Mobile Image Utilities -->
+    <div class="space-y-2">
+        <div class="text-xs font-black text-teal-600 uppercase tracking-wider">Image Utilities (7)</div>
+        <div class="grid grid-cols-1 gap-1 pl-2">
+            <a href="compress.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>🗜️</span> <span>Compress Image</span></a>
+            <a href="image-converter.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>🖼️</span> <span>Image Converter</span></a>
+            <a href="image-to-pdf.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>📷</span> <span>Image to PDF</span></a>
+            <a href="image-reducer.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>📉</span> <span>Image Reducer</span></a>
+            <a href="image-to-text.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>🔍</span> <span>Image to Text</span></a>
+            <a href="passport-studio.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>🛂</span> <span>Passport Studio</span></a>
+            <a href="merge-image.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>🧩</span> <span>Merge Image</span></a>
+        </div>
+    </div>
+
+    <!-- Mobile Business Suite -->
+    <div class="space-y-2">
+        <div class="text-xs font-black text-purple-600 uppercase tracking-wider">Business Suite (6)</div>
+        <div class="grid grid-cols-1 gap-1 pl-2">
+            <a href="invoice-gen.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>🧾</span> <span>Invoice Generator</span></a>
+            <a href="barcode-gen.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>🏷️</span> <span>Barcode Generator</span></a>
+            <a href="qr-studio.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>📱</span> <span>QR Code Studio</span></a>
+            <a href="sign-maker.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>✍️</span> <span>Digital Signature Studio</span></a>
+            <a href="code-formatter.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>⚡</span> <span>Code Formatter</span></a>
+            <a href="product-listing.html" class="text-xs font-bold text-slate-700 py-1.5 flex items-center space-x-2"><span>📦</span> <span>Product Listing</span></a>
+        </div>
+    </div>
+</div>
+
+<!-- Main Container wrapped in Professional Card Style -->
+<main class="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-28 pb-16 flex-1 flex flex-col items-center">
+
+    <!-- Professional Box Wrapper matching standard Filesque tool cards -->
+    <div class="w-full max-w-6xl bg-white rounded-3xl shadow-xl border border-slate-100 p-6 sm:p-10 my-4">
+
+        <!-- Back to Dashboard Link inside the Box Top-Left -->
+        <div class="mb-6 flex justify-between items-center">
+            <a href="index.html" class="inline-flex items-center gap-2 text-xs font-extrabold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-xl transition-all">
+                <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+            </a>
+            <button type="button" onclick="resetAllState()" class="text-xs font-bold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
+                <i class="fa-solid fa-rotate"></i> Reset All
+            </button>
+        </div>
+
+        <!-- Hero Header -->
+        <div class="text-center max-w-2xl mx-auto mb-8">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-50 text-red-600 text-xs font-black uppercase tracking-wider mb-3 border border-red-100 shadow-xs">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Professional PDF Watermark Remover
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+                Remove Watermark from PDF
+            </h1>
+            <p class="text-sm sm:text-base text-slate-500 font-medium mt-2">
+                Strip unwanted watermarks, stamps, transparent overlay layers, or select any area to erase cleanly. Fast, private, and 100% offline in your browser.
+            </p>
+        </div>
+
+        <!-- Upload Box (Visible initially or when changing file) -->
+        <div id="uploadSection" class="w-full max-w-3xl mx-auto">
+            <div class="bg-slate-50/50 p-6 sm:p-10 rounded-2xl border border-slate-200/80 text-center">
+                <div id="dropZone" class="border-3 border-dashed border-slate-200 hover:border-red-500 rounded-2xl p-10 bg-white hover:bg-red-50/20 block cursor-pointer transition-all duration-200 group">
+                    <input type="file" id="pdfFileInput" accept="application/pdf" class="hidden" onchange="handleFileSelect(this.files[0])">
+                    <div class="w-16 h-16 bg-red-50 group-hover:bg-red-100 text-red-600 rounded-2xl mx-auto flex items-center justify-center text-2xl shadow-inner mb-4 transition-transform group-hover:scale-110">
+                        <i class="fa-solid fa-file-pdf"></i>
+                    </div>
+                    <h3 class="text-lg font-black text-slate-800 mb-1">Click to browse or drop your PDF here</h3>
+                    <p class="text-xs text-slate-400 font-semibold mb-4">Supports multi-page documents • Standard &amp; Watermarked PDFs</p>
+                    <button type="button" onclick="document.getElementById('pdfFileInput').click()" class="bg-slate-900 hover:bg-red-600 text-white font-bold text-xs uppercase tracking-wider px-6 py-2.5 rounded-xl transition-all shadow-sm cursor-pointer">
+                        Select PDF File
+                    </button>
+                </div>
+
+                <!-- Features Highlights -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 pt-6 border-t border-slate-200/60 text-left">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center shrink-0 text-sm font-bold">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-black text-slate-800">Auto Smart-Clean</h4>
+                            <p class="text-[11px] text-slate-500 font-medium">Strips watermark layers, stamps, and transparent overlays.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 text-sm font-bold">
+                            <i class="fa-solid fa-crop-simple"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-black text-slate-800">Visual Area Eraser</h4>
+                            <p class="text-[11px] text-slate-500 font-medium">Drag a box over any watermark to erase it across all pages.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 text-sm font-bold">
+                            <i class="fa-solid fa-lock"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-black text-slate-800">Zero Server Uploads</h4>
+                            <p class="text-[11px] text-slate-500 font-medium">Your private documents stay 100% on your device.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Workspace (Visible once a PDF is loaded) -->
+        <div id="workspaceSection" class="w-full hidden space-y-6">
+
+            <!-- File Status Card -->
+            <div class="w-full bg-slate-50 p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/80 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center text-xl font-black shrink-0">
+                        <i class="fa-solid fa-file-pdf"></i>
+                    </div>
+                    <div>
+                        <h3 id="workspaceFileName" class="text-sm sm:text-base font-black text-slate-800 break-all">document.pdf</h3>
+                        <div class="flex items-center gap-3 text-xs text-slate-400 font-semibold mt-0.5">
+                            <span id="workspaceFileSize">0 MB</span>
+                            <span>•</span>
+                            <span id="workspacePageCount">0 Pages</span>
+                            <span id="autoDetectedBadge" class="hidden px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-50 text-amber-600 border border-amber-200">
+                                Watermark Detected
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="resetFile()" class="text-xs font-bold text-slate-600 hover:text-red-600 bg-white hover:bg-red-50 px-3.5 py-2 rounded-xl transition-all border border-slate-200 cursor-pointer">
+                        <i class="fa-solid fa-arrow-rotate-left mr-1"></i> Choose Another File
+                    </button>
+                </div>
+            </div>
+
+            <!-- Two Column Interactive Studio -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+                <!-- LEFT: PDF Canvas Preview & Drawing Surface (col-span-8) -->
+                <div class="lg:col-span-8 bg-slate-50/50 rounded-2xl border border-slate-200/80 p-4 sm:p-6 flex flex-col items-center">
+                    
+                    <!-- Canvas Toolbar -->
+                    <div class="w-full bg-white border border-slate-200/80 rounded-2xl p-2.5 mb-4 flex flex-wrap items-center justify-between gap-3 text-xs font-bold shadow-xs">
+                        
+                        <!-- Page Navigation -->
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" onclick="changePage(-1)" id="btnPrevPage" class="px-2.5 py-1.5 bg-white hover:bg-slate-200 text-slate-700 rounded-lg shadow-xs border border-slate-200 transition-all disabled:opacity-40 cursor-pointer">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </button>
+                            <span class="px-2 text-slate-600 font-black">
+                                Page <span id="currentPageNum">1</span> / <span id="totalPagesNum">1</span>
+                            </span>
+                            <button type="button" onclick="changePage(1)" id="btnNextPage" class="px-2.5 py-1.5 bg-white hover:bg-slate-200 text-slate-700 rounded-lg shadow-xs border border-slate-200 transition-all disabled:opacity-40 cursor-pointer">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+                        </div>
+
+                        <!-- Mode Selection -->
+                        <div class="flex items-center bg-slate-100 p-1 rounded-xl gap-1">
+                            <button type="button" id="toolPan" onclick="setDrawingMode(false)" class="px-3 py-1.5 rounded-lg bg-white text-slate-800 shadow-xs transition-all font-extrabold flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-eye"></i> View
+                            </button>
+                            <button type="button" id="toolErase" onclick="setDrawingMode(true)" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all font-extrabold flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-crop-simple text-red-500"></i> Draw Eraser Box
+                            </button>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="clearCurrentPageBoxes()" title="Clear boxes on current page" class="px-2.5 py-1.5 bg-white hover:bg-red-50 text-slate-600 hover:text-red-600 rounded-lg border border-slate-200 shadow-xs transition-all cursor-pointer">
+                                <i class="fa-regular fa-trash-can mr-1"></i> Clear Page
+                            </button>
+                            <button type="button" onclick="clearAllBoxes()" title="Clear all boxes across all pages" class="px-2.5 py-1.5 bg-white hover:bg-red-50 text-slate-600 hover:text-red-600 rounded-lg border border-slate-200 shadow-xs transition-all cursor-pointer">
+                                Clear All
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Drawing Helper Prompt -->
+                    <div id="drawPrompt" class="w-full text-center py-1.5 px-3 bg-red-50 border border-red-100 rounded-xl text-xs text-red-700 font-bold mb-3 hidden">
+                        <i class="fa-solid fa-hand-pointer mr-1"></i> Click and drag on the document below to draw an eraser box over any watermark!
+                    </div>
+
+                    <!-- Scrollable Document Viewport -->
+                    <div class="w-full flex-1 overflow-auto max-h-[700px] flex justify-center p-2 bg-white rounded-2xl border border-slate-200/60 custom-scroll">
+                        <div id="canvasWrapper" class="canvas-container bg-white rounded-lg overflow-hidden">
+                            <canvas id="pdfCanvas" class="block"></canvas>
+                            <!-- Transparent interactive overlay for drawing eraser boxes -->
+                            <div id="drawingOverlay" class="absolute inset-0 z-10 cursor-default"></div>
+                        </div>
+                    </div>
+
+                    <div class="w-full text-center mt-3 text-[11px] font-semibold text-slate-400">
+                        Tip: Any box drawn will erase underlying content when clicking Clean &amp; Download.
+                    </div>
+                </div>
+
+                <!-- RIGHT: Controls & Cleaning Options (col-span-4) -->
+                <div class="lg:col-span-4 space-y-6">
+
+                    <!-- Clean Methods Card -->
+                    <div class="bg-slate-50/50 rounded-2xl border border-slate-200/80 p-6 space-y-5">
+                        
+                        <h3 class="text-base font-black text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-red-600"></i> Watermark Removal Settings
+                        </h3>
+
+                        <!-- Option 1: Smart Auto-Clean (Toggle) -->
+                        <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-2">
+                            <div class="flex items-center justify-between">
+                                <label for="optAutoClean" class="font-extrabold text-xs text-slate-800 flex items-center gap-2 cursor-pointer">
+                                    <i class="fa-solid fa-wand-magic-sparkles text-red-500"></i> Smart Auto-Clean
+                                </label>
+                                <input type="checkbox" id="optAutoClean" checked class="w-4 h-4 accent-red-600 cursor-pointer rounded">
+                            </div>
+                            <p class="text-[11px] text-slate-500 leading-relaxed font-medium">
+                                Automatically strips watermark streams, stamp annotations, and transparent overlay layers added by PDF editors.
+                            </p>
+                        </div>
+
+                        <!-- Option 2: Remove by Text Keyword -->
+                        <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-3">
+                            <div class="flex items-center justify-between">
+                                <label for="optTextClean" class="font-extrabold text-xs text-slate-800 flex items-center gap-2 cursor-pointer">
+                                    <i class="fa-solid fa-font text-blue-500"></i> Erase Text by Keyword
+                                </label>
+                                <input type="checkbox" id="optTextClean" checked class="w-4 h-4 accent-red-600 cursor-pointer rounded">
+                            </div>
+                            <p class="text-[11px] text-slate-500 leading-relaxed font-medium">
+                                Search for specific text watermarks and remove matching words automatically.
+                            </p>
+                            <div id="textCleanInputs" class="space-y-2">
+                                <input type="text" id="targetWatermarkText" placeholder="e.g. CONFIDENTIAL, DRAFT, SAMPLE" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-red-500 transition-colors">
+                                <div class="flex flex-wrap gap-1.5 pt-1">
+                                    <button type="button" onclick="setQuickKeyword('CONFIDENTIAL')" class="px-2 py-1 bg-white hover:bg-slate-100 border border-slate-200 text-slate-600 rounded-md text-[10px] font-bold transition-all cursor-pointer">CONFIDENTIAL</button>
+                                    <button type="button" onclick="setQuickKeyword('SAMPLE')" class="px-2 py-1 bg-white hover:bg-slate-100 border border-slate-200 text-slate-600 rounded-md text-[10px] font-bold transition-all cursor-pointer">SAMPLE</button>
+                                    <button type="button" onclick="setQuickKeyword('DRAFT')" class="px-2 py-1 bg-white hover:bg-slate-100 border border-slate-200 text-slate-600 rounded-md text-[10px] font-bold transition-all cursor-pointer">DRAFT</button>
+                                    <button type="button" onclick="setQuickKeyword('WATERMARK')" class="px-2 py-1 bg-white hover:bg-slate-100 border border-slate-200 text-slate-600 rounded-md text-[10px] font-bold transition-all cursor-pointer">WATERMARK</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Option 3: Visual Eraser Box Options -->
+                        <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="font-extrabold text-xs text-slate-800 flex items-center gap-2">
+                                    <i class="fa-solid fa-eraser text-amber-500"></i> Visual Eraser Boxes
+                                </span>
+                                <span id="activeBoxesCount" class="text-[10px] font-black px-2 py-0.5 bg-red-100 text-red-700 rounded-full">0 boxes</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" id="optApplyAllPages" checked class="w-4 h-4 accent-red-600 cursor-pointer rounded">
+                                <label for="optApplyAllPages" class="text-xs font-bold text-slate-700 cursor-pointer">
+                                    Apply eraser boxes to ALL pages
+                                </label>
+                            </div>
+                            <div class="flex items-center justify-between pt-1">
+                                <span class="text-xs font-bold text-slate-600">Eraser Fill Color:</span>
+                                <div class="flex items-center gap-2">
+                                    <input type="color" id="eraserColorPicker" value="#ffffff" class="w-7 h-7 rounded-lg border border-slate-300 cursor-pointer p-0.5">
+                                    <span class="text-[11px] font-bold text-slate-500">Pure White</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Clean & Remove Watermark Action Button -->
+                        <button type="button" id="btnCleanPdf" onclick="executeCleanAndDownload()" class="w-full bg-gradient-to-r from-red-600 via-rose-600 to-red-600 hover:from-red-700 hover:to-rose-700 text-white font-black py-4 px-6 rounded-2xl shadow-lg shadow-red-500/25 hover:shadow-red-500/40 transition-all text-sm uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]">
+                            <i class="fa-solid fa-bolt"></i> Clean &amp; Download PDF
+                        </button>
+
+                        <!-- Progress & Status Info -->
+                        <div id="processStatusBox" class="hidden space-y-2.5 pt-2">
+                            <div class="flex justify-between items-center text-xs font-bold text-slate-700">
+                                <span id="processStatusText">Processing PDF...</span>
+                                <span id="processPercentText">0%</span>
+                            </div>
+                            <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                                <div id="processProgressBar" class="bg-red-600 h-2.5 rounded-full transition-all duration-200" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Security & Privacy Card -->
+                    <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-6 shadow-sm space-y-3">
+                        <div class="flex items-center gap-2 text-emerald-400 font-extrabold text-xs uppercase tracking-wider">
+                            <i class="fa-solid fa-shield-check"></i> High Security &amp; Privacy
+                        </div>
+                        <h4 class="text-sm font-black">All processing is 100% Client-Side</h4>
+                        <p class="text-xs text-slate-300 leading-relaxed font-normal">
+                            Unlike other tools, Filesque runs PDF-Lib directly inside your local web browser. Your confidential files are never uploaded to any remote server or cloud database.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+<!-- Filesque Enterprise Dark Footer -->
+<footer class="bg-[#1e2029] text-slate-300 pt-16 pb-12 px-6 sm:px-12 border-t border-slate-800 font-sans mt-auto">
+    <div class="max-w-[1600px] mx-auto w-full">
+        <!-- Main Links Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 mb-12">
+            
+            <!-- Column 1: PRODUCT -->
+            <div>
+                <h4 class="text-white font-extrabold text-xs uppercase tracking-widest mb-4">Product</h4>
+                <ul class="space-y-2.5 text-xs font-semibold text-slate-400">
+                    <li><a href="index.html" class="hover:text-white transition-colors">Home</a></li>
+                    <li><a href="features.html" class="hover:text-white transition-colors">Features</a></li>
+                    <li><a href="tools.html" class="hover:text-white transition-colors">Tools</a></li>
+                    <li><a href="faq.html" class="hover:text-white transition-colors">FAQ</a></li>
+                </ul>
+            </div>
+
+            <!-- Column 2: RESOURCES -->
+            <div>
+                <h4 class="text-white font-extrabold text-xs uppercase tracking-widest mb-4">Resources</h4>
+                <ul class="space-y-2.5 text-xs font-semibold text-slate-400">
+                    <li><a href="index.html#pdf-section" class="hover:text-white transition-colors">PDF Tools</a></li>
+                    <li><a href="index.html#image-section" class="hover:text-white transition-colors">Image Tools</a></li>
+                    <li><a href="index.html#business-section" class="hover:text-white transition-colors">Business Tools</a></li>
+                </ul>
+            </div>
+
+            <!-- Column 3: SOLUTIONS -->
+            <div>
+                <h4 class="text-white font-extrabold text-xs uppercase tracking-widest mb-4">Solutions</h4>
+                <ul class="space-y-2.5 text-xs font-semibold text-slate-400">
+                    <li><a href="freelancer.html" class="hover:text-white transition-colors">Freelancer</a></li>
+                    <li><a href="business.html" class="hover:text-white transition-colors">Business</a></li>
+                    <li><a href="education.html" class="hover:text-white transition-colors">Education</a></li>
+                </ul>
+            </div>
+
+            <!-- Column 4: LEGAL -->
+            <div>
+                <h4 class="text-white font-extrabold text-xs uppercase tracking-widest mb-4">Legal</h4>
+                <ul class="space-y-2.5 text-xs font-semibold text-slate-400">
+                    <li><a href="security.html" class="hover:text-white transition-colors">Security</a></li>
+                    <li><a href="privacy.html" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                    <li><a href="terms.html" class="hover:text-white transition-colors">Terms &amp; Conditions</a></li>
+                    <li><a href="cookies.html" class="hover:text-white transition-colors">Cookies</a></li>
+                </ul>
+            </div>
+
+            <!-- Column 5: COMPANY -->
+            <div>
+                <h4 class="text-white font-extrabold text-xs uppercase tracking-widest mb-4">Company</h4>
+                <ul class="space-y-2.5 text-xs font-semibold text-slate-400">
+                    <li><a href="about.html" class="hover:text-white transition-colors">About Us</a></li>
+                    <li><a href="contact.html" class="hover:text-white transition-colors">Contact Us</a></li>
+                </ul>
+            </div>
+
+            <!-- Column 6: APP STORE BADGES -->
+            <div class="col-span-2 md:col-span-1 lg:col-span-1 space-y-2.5">
+                <!-- Google Play Badge -->
+                <a href="#" onclick="alert('FilesQue mobile & desktop native apps are releasing soon in 2026!'); return false;" class="flex items-center space-x-3 bg-black/40 hover:bg-black/70 border border-slate-700/80 rounded-xl px-3.5 py-2 transition-all group">
+                    <svg class="w-5 h-5 fill-current text-white shrink-0" viewBox="0 0 24 24"><path d="M3.609 1.814L13.792 12 3.61 22.186a1.996 1.996 0 0 1-.61-.92L3 2.735a2.002 2.002 0 0 1 .609-.921zm11.233 11.236l2.195 2.195-12.01 6.84 9.815-9.035zm0-2.1l-9.815-9.035 12.01 6.84-2.195 2.195zm1.455 1.05l3.878-2.21a1.2 1.2 0 0 1 0 2.083l-3.878 2.21 1.05-1.041-1.05-1.042z"/></svg>
+                    <div class="text-left leading-tight">
+                        <div class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">GET IT ON</div>
+                        <div class="text-xs font-black text-white">Google Play</div>
+                    </div>
+                </a>
+
+                <!-- App Store Badge -->
+                <a href="#" onclick="alert('FilesQue iOS app releasing soon in 2026!'); return false;" class="flex items-center space-x-3 bg-black/40 hover:bg-black/70 border border-slate-700/80 rounded-xl px-3.5 py-2 transition-all group">
+                    <svg class="w-5 h-5 fill-current text-white shrink-0" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 1.01-2.85-.9.04-1.99.6-2.61 1.33-.55.63-.99 1.66-.86 2.67 1 .08 2.04-.51 2.46-1.15z"/></svg>
+                    <div class="text-left leading-tight">
+                        <div class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Download on the</div>
+                        <div class="text-xs font-black text-white">App Store</div>
+                    </div>
+                </a>
+
+                <!-- Mac App Store Badge -->
+                <a href="#" onclick="alert('FilesQue macOS native version releasing soon in 2026!'); return false;" class="flex items-center space-x-3 bg-black/40 hover:bg-black/70 border border-slate-700/80 rounded-xl px-3.5 py-2 transition-all group">
+                    <svg class="w-5 h-5 fill-current text-white shrink-0" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 1.01-2.85-.9.04-1.99.6-2.61 1.33-.55.63-.99 1.66-.86 2.67 1 .08 2.04-.51 2.46-1.15z"/></svg>
+                    <div class="text-left leading-tight">
+                        <div class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Download on the</div>
+                        <div class="text-xs font-black text-white">Mac App Store</div>
+                    </div>
+                </a>
+
+                <!-- Microsoft Store Badge -->
+                <a href="#" onclick="alert('FilesQue Windows Desktop release coming in 2026!'); return false;" class="flex items-center space-x-3 bg-black/40 hover:bg-black/70 border border-slate-700/80 rounded-xl px-3.5 py-2 transition-all group">
+                    <svg class="w-5 h-5 fill-current text-white shrink-0" viewBox="0 0 24 24"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
+                    <div class="text-left leading-tight">
+                        <div class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">GET IT FROM</div>
+                        <div class="text-xs font-black text-white">Microsoft Store</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Horizontal Divider -->
+        <div class="border-t border-slate-800/80 pt-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            
+            <!-- Language Selector Dropdown -->
+            <div class="relative inline-block text-left">
+                <div class="flex items-center space-x-2 bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-slate-700 rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all cursor-pointer">
+                    <span>🌐</span>
+                    <select id="footer-lang-select" onchange="alert('Language preference set to ' + this.options[this.selectedIndex].text)" class="bg-transparent border-none text-slate-200 text-xs font-bold focus:outline-none cursor-pointer">
+                        <option value="en" class="bg-slate-900 text-slate-200" selected>English</option>
+                        <option value="es" class="bg-slate-900 text-slate-200">Español</option>
+                        <option value="fr" class="bg-slate-900 text-slate-200">Français</option>
+                        <option value="de" class="bg-slate-900 text-slate-200">Deutsch</option>
+                        <option value="hi" class="bg-slate-900 text-slate-200">हिन्दी (Hindi)</option>
+                        <option value="pt" class="bg-slate-900 text-slate-200">Português</option>
+                        <option value="ar" class="bg-slate-900 text-slate-200">العربية</option>
+                        <option value="zh" class="bg-slate-900 text-slate-200">中文 (Chinese)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Social Media Icons -->
+            <div class="flex items-center space-x-5 text-slate-400">
+                <!-- X (Twitter) -->
+                <a href="https://x.com" target="_blank" rel="noopener" class="hover:text-white transition-colors" title="Follow on X">
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </a>
+                <!-- Facebook -->
+                <a href="https://facebook.com" target="_blank" rel="noopener" class="hover:text-white transition-colors" title="Facebook">
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                </a>
+                <!-- LinkedIn -->
+                <a href="https://linkedin.com" target="_blank" rel="noopener" class="hover:text-white transition-colors" title="LinkedIn">
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                </a>
+                <!-- Instagram -->
+                <a href="https://instagram.com" target="_blank" rel="noopener" class="hover:text-white transition-colors" title="Instagram">
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                </a>
+                <!-- TikTok -->
+                <a href="https://tiktok.com" target="_blank" rel="noopener" class="hover:text-white transition-colors" title="TikTok">
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-1.01-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.24 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+                </a>
+                <!-- Reddit -->
+                <a href="https://reddit.com" target="_blank" rel="noopener" class="hover:text-white transition-colors" title="Reddit">
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.56 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.197-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg>
+                </a>
+            </div>
+
+            <!-- Copyright Notice -->
+            <div class="text-xs text-slate-500 font-medium">
+                &copy; FilesQue 2026 &reg; - Your Files Editor
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Global Application State
+    let originalFile = null;
+    let originalArrayBuffer = null;
+    let currentPdfDoc = null; // pdf.js document
+    let currentPage = 1;
+    let totalPages = 1;
+    let currentViewport = null;
+    let isDrawingMode = false;
+    let isDrawing = false;
+    let startX = 0, startY = 0;
+    let currentDrawBox = null;
+
+    // Eraser Boxes Storage: Map of pageNum -> Array of { id, x, y, w, h }
+    let pageBoxes = {}; 
+
+    // Setup Drag & Drop Handlers
+    const dropZone = document.getElementById('dropZone');
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-red-500', 'bg-red-50/30');
+        });
+    });
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-red-500', 'bg-red-50/30');
+        });
+    });
+    dropZone.addEventListener('drop', (e) => {
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            handleFileSelect(e.dataTransfer.files[0]);
+        }
+    });
+
+    // Handle File Selection
+    async function handleFileSelect(file) {
+        if (!file || (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf'))) {
+            alert('Please select a valid PDF file.');
+            return;
+        }
+
+        originalFile = file;
+        document.getElementById('workspaceFileName').textContent = file.name;
+        document.getElementById('workspaceFileSize').textContent = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+
+        // Read ArrayBuffer
+        originalArrayBuffer = await file.arrayBuffer();
+
+        // Switch View
+        document.getElementById('uploadSection').classList.add('hidden');
+        document.getElementById('workspaceSection').classList.remove('hidden');
+
+        // Load with pdf.js for rendering
+        await loadPdfViewer();
+
+        // Check if common watermark keywords exist in filename
+        const lowerName = file.name.toLowerCase();
+        if (lowerName.includes('watermark') || lowerName.includes('draft') || lowerName.includes('sample')) {
+            document.getElementById('autoDetectedBadge').classList.remove('hidden');
+        }
+    }
+
+    // Reset and choose another file
+    function resetFile() {
+        originalFile = null;
+        originalArrayBuffer = null;
+        currentPdfDoc = null;
+        pageBoxes = {};
+        currentPage = 1;
+        document.getElementById('workspaceSection').classList.add('hidden');
+        document.getElementById('uploadSection').classList.remove('hidden');
+        document.getElementById('pdfFileInput').value = '';
+    }
+
+    // Reset All State (Fully clears file, boxes, and settings back to initial state)
+    function resetAllState() {
+        resetFile();
+        document.getElementById('targetWatermarkText').value = '';
+        document.getElementById('optAutoClean').checked = true;
+        document.getElementById('optTextClean').checked = true;
+        document.getElementById('optApplyAllPages').checked = true;
+        document.getElementById('eraserColorPicker').value = '#ffffff';
+        document.getElementById('processStatusBox').classList.add('hidden');
+        document.getElementById('autoDetectedBadge').classList.add('hidden');
+    }
+
+    // Load PDF using pdf.js
+    async function loadPdfViewer() {
+        try {
+            const loadingTask = pdfjsLib.getDocument({ data: originalArrayBuffer.slice(0) });
+            currentPdfDoc = await loadingTask.promise;
+            totalPages = currentPdfDoc.numPages;
+
+            document.getElementById('workspacePageCount').textContent = totalPages + (totalPages === 1 ? ' Page' : ' Pages');
+            document.getElementById('totalPagesNum').textContent = totalPages;
+            currentPage = 1;
+
+            await renderPage(currentPage);
+        } catch (err) {
+            alert('Error loading PDF: ' + err.message);
+        }
+    }
+
+    // Render specified page on Canvas
+    async function renderPage(pageNum) {
+        if (!currentPdfDoc) return;
+
+        currentPage = pageNum;
+        document.getElementById('currentPageNum').textContent = pageNum;
+        document.getElementById('btnPrevPage').disabled = (pageNum <= 1);
+        document.getElementById('btnNextPage').disabled = (pageNum >= totalPages);
+
+        const page = await currentPdfDoc.getPage(pageNum);
+        const canvas = document.getElementById('pdfCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Calculate suitable scale to fit in viewer (target width ~ 720px on desktop)
+        const unscaledViewport = page.getViewport({ scale: 1.0 });
+        const targetWidth = Math.min(window.innerWidth - 80, 720);
+        const scale = targetWidth / unscaledViewport.width;
+        currentViewport = page.getViewport({ scale: scale });
+
+        // High DPI support
+        const outputScale = window.devicePixelRatio || 1;
+        canvas.width = Math.floor(currentViewport.width * outputScale);
+        canvas.height = Math.floor(currentViewport.height * outputScale);
+        canvas.style.width = Math.floor(currentViewport.width) + 'px';
+        canvas.style.height = Math.floor(currentViewport.height) + 'px';
+
+        const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
+
+        const renderContext = {
+            canvasContext: ctx,
+            transform: transform,
+            viewport: currentViewport
+        };
+
+        await page.render(renderContext).promise;
+
+        // Sync drawing overlay dimensions
+        const overlay = document.getElementById('drawingOverlay');
+        overlay.style.width = canvas.style.width;
+        overlay.style.height = canvas.style.height;
+
+        // Render existing eraser boxes for this page
+        renderEraserBoxes();
+    }
+
+    function changePage(delta) {
+        const newPage = currentPage + delta;
+        if (newPage >= 1 && newPage <= totalPages) {
+            renderPage(newPage);
+        }
+    }
+
+    // Mode: View vs Draw Eraser Box
+    function setDrawingMode(active) {
+        isDrawingMode = active;
+        const toolPan = document.getElementById('toolPan');
+        const toolErase = document.getElementById('toolErase');
+        const overlay = document.getElementById('drawingOverlay');
+        const prompt = document.getElementById('drawPrompt');
+
+        if (active) {
+            toolErase.classList.add('bg-white', 'text-slate-900', 'shadow-xs');
+            toolErase.classList.remove('text-slate-600');
+            toolPan.classList.remove('bg-white', 'text-slate-800', 'shadow-xs');
+            toolPan.classList.add('text-slate-600');
+            overlay.classList.add('cursor-crosshair');
+            prompt.classList.remove('hidden');
+        } else {
+            toolPan.classList.add('bg-white', 'text-slate-800', 'shadow-xs');
+            toolPan.classList.remove('text-slate-600');
+            toolErase.classList.remove('bg-white', 'text-slate-900', 'shadow-xs');
+            toolErase.classList.add('text-slate-600');
+            overlay.classList.remove('cursor-crosshair');
+            prompt.classList.add('hidden');
+        }
+    }
+
+    // Overlay Mouse Events for Drawing Eraser Rectangles
+    const overlay = document.getElementById('drawingOverlay');
+
+    overlay.addEventListener('mousedown', (e) => {
+        if (!isDrawingMode || e.button !== 0) return;
+        // Don't start drawing if clicking on existing box delete button
+        if (e.target.closest('.del-btn')) return;
+
+        const rect = overlay.getBoundingClientRect();
+        startX = e.clientX - rect.left;
+        startY = e.clientY - rect.top;
+        isDrawing = true;
+
+        currentDrawBox = document.createElement('div');
+        currentDrawBox.className = 'eraser-box';
+        currentDrawBox.style.left = startX + 'px';
+        currentDrawBox.style.top = startY + 'px';
+        currentDrawBox.style.width = '0px';
+        currentDrawBox.style.height = '0px';
+        overlay.appendChild(currentDrawBox);
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!isDrawing || !currentDrawBox) return;
+        const rect = overlay.getBoundingClientRect();
+        let curX = e.clientX - rect.left;
+        let curY = e.clientY - rect.top;
+
+        curX = Math.max(0, Math.min(curX, rect.width));
+        curY = Math.max(0, Math.min(curY, rect.height));
+
+        const x = Math.min(startX, curX);
+        const y = Math.min(startY, curY);
+        const w = Math.abs(curX - startX);
+        const h = Math.abs(curY - startY);
+
+        currentDrawBox.style.left = x + 'px';
+        currentDrawBox.style.top = y + 'px';
+        currentDrawBox.style.width = w + 'px';
+        currentDrawBox.style.height = h + 'px';
+    });
+
+    window.addEventListener('mouseup', (e) => {
+        if (!isDrawing) return;
+        isDrawing = false;
+
+        if (currentDrawBox) {
+            const w = parseInt(currentDrawBox.style.width);
+            const h = parseInt(currentDrawBox.style.height);
+
+            // Minimum 10x10 px to prevent accidental click dots
+            if (w > 10 && h > 10) {
+                const boxObj = {
+                    id: 'box_' + Date.now() + '_' + Math.floor(Math.random()*1000),
+                    x: parseInt(currentDrawBox.style.left),
+                    y: parseInt(currentDrawBox.style.top),
+                    w: w,
+                    h: h
+                };
+                if (!pageBoxes[currentPage]) pageBoxes[currentPage] = [];
+                pageBoxes[currentPage].push(boxObj);
+            }
+            currentDrawBox.remove();
+            currentDrawBox = null;
+            renderEraserBoxes();
+            updateBoxesCounter();
+        }
+    });
+
+    // Render Eraser Boxes for Current Page
+    function renderEraserBoxes() {
+        overlay.innerHTML = '';
+        const boxes = pageBoxes[currentPage] || [];
+        boxes.forEach((box, idx) => {
+            const boxEl = document.createElement('div');
+            boxEl.className = 'eraser-box';
+            boxEl.style.left = box.x + 'px';
+            boxEl.style.top = box.y + 'px';
+            boxEl.style.width = box.w + 'px';
+            boxEl.style.height = box.h + 'px';
+
+            const del = document.createElement('div');
+            del.className = 'del-btn';
+            del.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+            del.title = 'Remove this eraser box';
+            del.onclick = (e) => {
+                e.stopPropagation();
+                removeBox(currentPage, box.id);
+            };
+
+            const label = document.createElement('div');
+            label.className = 'box-label';
+            label.textContent = 'Eraser ' + (idx + 1);
+
+            boxEl.appendChild(del);
+            boxEl.appendChild(label);
+            overlay.appendChild(boxEl);
+        });
+    }
+
+    function removeBox(pageNum, boxId) {
+        if (!pageBoxes[pageNum]) return;
+        pageBoxes[pageNum] = pageBoxes[pageNum].filter(b => b.id !== boxId);
+        renderEraserBoxes();
+        updateBoxesCounter();
+    }
+
+    function clearCurrentPageBoxes() {
+        pageBoxes[currentPage] = [];
+        renderEraserBoxes();
+        updateBoxesCounter();
+    }
+
+    function clearAllBoxes() {
+        pageBoxes = {};
+        renderEraserBoxes();
+        updateBoxesCounter();
+    }
+
+    function updateBoxesCounter() {
+        let total = 0;
+        Object.values(pageBoxes).forEach(arr => total += arr.length);
+        document.getElementById('activeBoxesCount').textContent = total + (total === 1 ? ' box' : ' boxes');
+    }
+
+    function setQuickKeyword(kw) {
+        const input = document.getElementById('targetWatermarkText');
+        if (input.value) {
+            input.value += ', ' + kw;
+        } else {
+            input.value = kw;
+        }
+        document.getElementById('optTextClean').checked = true;
+    }
+
+    // Helper: parse Hex to PDFLib RGB
+    function hexToRgbPdfLib(hex) {
+        hex = hex.replace('#', '');
+        if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+        const r = parseInt(hex.substring(0, 2), 16) / 255;
+        const g = parseInt(hex.substring(2, 4), 16) / 255;
+        const b = parseInt(hex.substring(4, 6), 16) / 255;
+        return PDFLib.rgb(r, g, b);
+    }
+
+    // =========================================================================
+    // Core Engine: 100% Client-Side PDF Watermark Cleaning & Removal
+    // =========================================================================
+    async function executeCleanAndDownload() {
+        if (!originalArrayBuffer) {
+            alert('Please select a PDF first.');
+            return;
+        }
+
+        const btn = document.getElementById('btnCleanPdf');
+        const statusBox = document.getElementById('processStatusBox');
+        const statusText = document.getElementById('processStatusText');
+        const percentText = document.getElementById('processPercentText');
+        const progressBar = document.getElementById('processProgressBar');
+
+        btn.disabled = true;
+        btn.classList.add('opacity-50', 'pointer-events-none');
+        statusBox.classList.remove('hidden');
+
+        const updateProgress = (pct, msg) => {
+            progressBar.style.width = pct + '%';
+            percentText.textContent = pct + '%';
+            statusText.textContent = msg;
+        };
+
+        try {
+            updateProgress(15, 'Loading PDF structure in memory...');
+
+            // Load document using PDF-Lib with encryption handling
+            const pdfDoc = await PDFLib.PDFDocument.load(originalArrayBuffer.slice(0), { ignoreEncryption: true });
+            const pageCount = pdfDoc.getPageCount();
+            const PDFName = PDFLib.PDFName;
+            const PDFArray = PDFLib.PDFArray;
+
+            const optAutoClean = document.getElementById('optAutoClean').checked;
+            const optTextClean = document.getElementById('optTextClean').checked;
+            const optApplyAllPages = document.getElementById('optApplyAllPages').checked;
+            const targetKeywordsRaw = document.getElementById('targetWatermarkText').value.trim();
+            const targetKeywords = targetKeywordsRaw.split(',').map(s => s.trim()).filter(Boolean);
+            const fillColorHex = document.getElementById('eraserColorPicker').value || '#ffffff';
+            const fillColorRgb = hexToRgbPdfLib(fillColorHex);
+
+            // Determine boxes for processing
+            let universalBoxes = [];
+            if (optApplyAllPages) {
+                if (pageBoxes[currentPage] && pageBoxes[currentPage].length > 0) {
+                    universalBoxes = pageBoxes[currentPage];
+                } else {
+                    Object.values(pageBoxes).forEach(arr => {
+                        arr.forEach(b => universalBoxes.push(b));
+                    });
+                }
+            }
+
+            // Loop through each page
+            for (let i = 0; i < pageCount; i++) {
+                const pct = Math.floor(20 + ((i + 1) / pageCount) * 55);
+                updateProgress(pct, `Cleaning Page ${i + 1} of ${pageCount}...`);
+
+                const page = pdfDoc.getPage(i);
+                const { width: pageWidth, height: pageHeight } = page.getSize();
+
+                // -------------------------------------------------------------
+                // 1. SMART AUTO-CLEAN: Remove Annotations & Overlay Streams
+                // -------------------------------------------------------------
+                if (optAutoClean) {
+                    // A. Remove Watermark & Stamp Annotations
+                    const annotsRef = page.node.get(PDFName.of('Annots'));
+                    if (annotsRef) {
+                        const annots = pdfDoc.context.lookup(annotsRef);
+                        if (annots && annots instanceof PDFArray) {
+                            const keptAnnots = [];
+                            for (let aIdx = 0; aIdx < annots.size(); aIdx++) {
+                                const aRef = annots.get(aIdx);
+                                const annotDict = pdfDoc.context.lookup(aRef);
+                                const subtype = annotDict && annotDict.get ? annotDict.get(PDFName.of('Subtype')) : null;
+                                const subStr = subtype ? subtype.toString() : '';
+                                if (subStr !== '/Watermark' && subStr !== '/Stamp') {
+                                    keptAnnots.push(aRef);
+                                }
+                            }
+                            page.node.set(PDFName.of('Annots'), pdfDoc.context.obj(keptAnnots));
+                        }
+                    }
+
+                    // B. Inspect Page Content Streams
+                    const contentsRef = page.node.get(PDFName.of('Contents'));
+                    if (contentsRef) {
+                        const contentsLookup = pdfDoc.context.lookup(contentsRef);
+                        if (contentsLookup && contentsLookup instanceof PDFArray) {
+                            const streamsCount = contentsLookup.size();
+                            const keptStreamRefs = [];
+                            for (let sIdx = 0; sIdx < streamsCount; sIdx++) {
+                                const sRef = contentsLookup.get(sIdx);
+                                const streamObj = pdfDoc.context.lookup(sRef);
+                                if (streamObj && streamObj.asUint8Array) {
+                                    let streamText = '';
+                                    const rawBytes = streamObj.asUint8Array();
+                                    try {
+                                        streamText = pako.inflate(rawBytes, { to: 'string' });
+                                    } catch (e) {
+                                        streamText = new TextDecoder('latin1').decode(rawBytes);
+                                    }
+
+                                    let isWatermarkStream = false;
+                                    const isAppendedStream = (sIdx === streamsCount - 1 && streamsCount >= 2);
+
+                                    if (streamText.includes('/GS') && streamText.includes('gs') && 
+                                       (streamText.includes('Do') || streamText.includes('Tj') || streamText.includes('TJ'))) {
+                                        isWatermarkStream = true;
+                                    }
+
+                                    const upperText = streamText.toUpperCase();
+                                    ['WATERMARK', 'CONFIDENTIAL', 'DRAFT', 'SAMPLE', 'EVALUATION'].forEach(kw => {
+                                        if (upperText.includes(kw)) isWatermarkStream = true;
+                                    });
+
+                                    if (isWatermarkStream && isAppendedStream) {
+                                        continue;
+                                    }
+                                }
+                                keptStreamRefs.push(sRef);
+                            }
+
+                            if (keptStreamRefs.length === 3) {
+                                page.node.set(PDFName.of('Contents'), keptStreamRefs[1]);
+                            } else if (keptStreamRefs.length > 0 && keptStreamRefs.length < streamsCount) {
+                                page.node.set(PDFName.of('Contents'), pdfDoc.context.obj(keptStreamRefs));
+                            }
+                        }
+                    }
+                }
+
+                // -------------------------------------------------------------
+                // 2. TEXT KEYWORD ERASER: Locate and erase target text keywords
+                // -------------------------------------------------------------
+                if (optTextClean && targetKeywords.length > 0 && currentPdfDoc) {
+                    try {
+                        const pdfJsPage = await currentPdfDoc.getPage(i + 1);
+                        const textContent = await pdfJsPage.getTextContent();
+                        
+                        textContent.items.forEach(item => {
+                            const itemStr = item.str.trim();
+                            if (!itemStr) return;
+
+                            targetKeywords.forEach(kw => {
+                                if (itemStr.toLowerCase().includes(kw.toLowerCase())) {
+                                    const tx = item.transform[4];
+                                    const ty = item.transform[5];
+                                    const tw = Math.max(item.width, 20);
+                                    const th = Math.max(item.height || 14, 12);
+
+                                    page.drawRectangle({
+                                        x: Math.max(0, tx - 2),
+                                        y: Math.max(0, ty - 2),
+                                        width: tw + 4,
+                                        height: th + 4,
+                                        color: fillColorRgb,
+                                        opacity: 1.0
+                                    });
+                                }
+                            });
+                        });
+                    } catch (textErr) {
+                        console.warn('Text keyword scan skipped on page', i + 1, textErr);
+                    }
+                }
+
+                // -------------------------------------------------------------
+                // 3. VISUAL ERASER BOXES: Apply user-drawn eraser rectangles
+                // -------------------------------------------------------------
+                const boxesToApply = optApplyAllPages ? universalBoxes : (pageBoxes[i + 1] || []);
+                if (boxesToApply && boxesToApply.length > 0 && currentViewport) {
+                    const scaleX = pageWidth / currentViewport.width;
+                    const scaleY = pageHeight / currentViewport.height;
+
+                    boxesToApply.forEach(box => {
+                        const pdfX = box.x * scaleX;
+                        const pdfW = box.w * scaleX;
+                        const pdfH = box.h * scaleY;
+                        const pdfY = pageHeight - ((box.y + box.h) * scaleY);
+
+                        page.drawRectangle({
+                            x: Math.max(0, pdfX),
+                            y: Math.max(0, pdfY),
+                            width: Math.min(pageWidth, pdfW),
+                            height: Math.min(pageHeight, pdfH),
+                            color: fillColorRgb,
+                            opacity: 1.0
+                        });
+                    });
+                }
+            }
+
+            updateProgress(85, 'Assembling and saving clean PDF document...');
+
+            // Generate clean bytes
+            const cleanedPdfBytes = await pdfDoc.save();
+
+            updateProgress(98, 'Preparing download file...');
+
+            // Trigger instant browser download
+            const blob = new Blob([cleanedPdfBytes], { type: 'application/pdf' });
+            const downloadUrl = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const baseName = originalFile.name.replace(/\.pdf$/i, '');
+            a.download = `${baseName}_cleaned.pdf`;
+            a.href = downloadUrl;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+
+            updateProgress(100, 'Watermarks removed successfully!');
+
+            setTimeout(() => {
+                statusText.innerHTML = '<span class="text-emerald-600 font-black"><i class="fa-solid fa-circle-check"></i> Watermarks cleaned &amp; PDF downloaded successfully!</span>';
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'pointer-events-none');
+            }, 600);
+
+        } catch (err) {
+            console.error('Removal Error:', err);
+            statusText.innerHTML = '<span class="text-red-600 font-black"><i class="fa-solid fa-circle-exclamation"></i> Error: ' + err.message + '</span>';
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'pointer-events-none');
+            alert('Failed to process PDF: ' + err.message);
+        }
+    }
+
+    function toggleMobileMenu() {
+        const menu = document.getElementById('mobile-menu');
+        menu.classList.toggle('hidden');
+    }
+</script>
+</body>
+</html>
