@@ -28,7 +28,14 @@ app.use(fileUpload({ createParentPath: true, limits: { fileSize: 100 * 1024 * 10
 const tempDir = path.join(__dirname, 'temp');
 if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
 
-app.use(express.static(path.join(__dirname, 'public')));
+// Strict No-Cache Middleware for real-time updates
+app.use((req, res, next) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    next();
+});
+app.use(express.static(path.join(__dirname, 'public'), { etag: false, maxAge: 0 }));
 app.use(express.static(__dirname));
 
 const toolRegistry = [
