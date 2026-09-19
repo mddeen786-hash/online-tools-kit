@@ -2327,6 +2327,27 @@ app.get('/workflow-builder', (req, res) => {
     '</body></html>');
 });
 
+// --- Self-Ping / Cron-job Feature to Keep Render Server Alive ---
+const http = require('http');
+const https = require('https');
+
+// Yahan apna Render wala live URL dalein
+const RENDER_URL = process.env.RENDER_EXTERNAL_URL || 'https://filesques.onrender.com';
+
+function keepServerAlive() {
+  const client = RENDER_URL.startsWith('https') ? https : http;
+
+  setInterval(() => {
+    client.get(RENDER_URL, (res) => {
+      console.log(`[Keep-Alive Ping]: Status Code ${res.statusCode} at ${new Date().toISOString()}`);
+    }).on('error', (err) => {
+      console.error(`[Keep-Alive Ping Error]: ${err.message}`);
+    });
+  }, 5 * 60 * 1000); // Har 5 minute (5 * 60 * 1000 ms) mein server ko ping karega
+}
+
+keepServerAlive();
+
 app.listen(PORT, () => {
   console.log('========================================');
   console.log('✅ Filesque server running');
@@ -2335,3 +2356,4 @@ app.listen(PORT, () => {
   console.log('🔧 Total Tools: ' + toolRegistry.length);
   console.log('========================================');
 });
+
