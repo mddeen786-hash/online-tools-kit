@@ -2343,7 +2343,7 @@ function keepServerAlive() {
     }).on('error', (err) => {
       console.error(`[Keep-Alive Ping Error]: ${err.message}`);
     });
-  }, 5 * 60 * 1000); // Har 5 minute (5 * 60 * 1000 ms) mein server ko ping karega
+  }, 15 * 60 * 1000); // Har 5 minute (5 * 60 * 1000 ms) mein server ko ping karega
 }
 
 keepServerAlive();
@@ -2356,4 +2356,3 @@ app.listen(PORT, () => {
   console.log('🔧 Total Tools: ' + toolRegistry.length);
   console.log('========================================');
 });
-
