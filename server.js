@@ -2286,7 +2286,7 @@ app.get('/workflow-builder', (req, res) => {
     '<div class="workflow-area" id="workflowArea"><p style="color:#94a3b8;font-weight:600;font-size:15px;">Click on tools to add steps</p></div>' +
     '<div class="controls">' +
     '<button class="btn btn-secondary" onclick="clearWorkflow()">🗑️ Clear</button></div>' +
-    '<div class="file-upload-section"><h3 style="font-size:15px;font-weight:800;color:#0f172a;">📁 Test Your Workflow</h3>' +
+    '<div class="file-upload-section"><h3 style="font-size:15px;font-weight:800;color:#0f172a;">📁 Upload Documents</h3>' +
     '<input type="file" id="wfFile" multiple>' + 
     '<button class="btn" onclick="executeWorkflow()" style="margin-left: 10px;">▶️ Execute Workflow</button>' +
     '<div id="executionResult" style="margin-top:10px;font-weight:700;font-size:14px;"></div></div>' +
