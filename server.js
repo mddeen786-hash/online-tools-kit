@@ -7,7 +7,7 @@ const crypto = require('crypto');
 const pdfjsLib = require('pdfjs-dist/legacy/build/pdf.js');
 const { createCanvas, loadImage } = require('canvas'); 
 const XLSX = require('xlsx');
-const { PDFDocument, degrees, rgb } = require('pdf-lib'); 
+const { PDFDocument, degrees, rgb, PDFName, PDFArray, PDFRawStream } = require('pdf-lib'); 
 const JSZip = require('jszip'); 
 
 // OCR Module (Tesseract)
@@ -44,7 +44,9 @@ const toolRegistry = [
   { id: 'merge-pdf',           name: 'Merge PDF',                 icon: '💼', file: 'merge.html', outputExt: '.pdf' },
   { id: 'pdf-splitter',        name: 'PDF Splitter',              icon: '✂️', file: 'pdf-splitter.html', outputExt: '.pdf' },
   { id: 'pdf-organizer',       name: 'PDF Organizer',             icon: '📑', file: 'pdf-organizer.html', outputExt: '.pdf' },
+  { id: 'compress-pdf',        name: 'Compress PDF',              icon: '🗜️', file: 'compress-pdf.html', outputExt: '.pdf' },
   { id: 'pdf-watermark',       name: 'PDF Watermark',             icon: '💧', file: 'pdf-watermark.html', outputExt: '.pdf' },
+  { id: 'remove-watermark',    name: 'Remove Watermark PDF',      icon: '🛡️', file: 'remove-watermark.html', outputExt: '.pdf' },
   { id: 'pdf-to-image',        name: 'PDF to Image',              icon: '🖼️', file: 'pdf-to-image.html', outputExt: '.zip' },
   { id: 'compress-image',      name: 'Compress Image',            icon: '🗜️', file: 'compress.html', outputExt: '.jpg' },
   { id: 'image-converter',     name: 'Image Converter',           icon: '🖼️', file: 'image-converter.html' }, 
@@ -758,37 +760,167 @@ async function pdfOrganizerConvert(inputPath, outputPath, config = {}) {
   }
 }
 
-// ========== PDF Watermark Logic ==========
+// ========== PDF Watermark Logic (Full Text & Image Watermark Engine) ==========
 async function pdfWatermarkConvert(inputPath, outputPath, config = {}) {
   try {
     const data = fs.readFileSync(inputPath);
-    const pdfDoc = await PDFDocument.load(data);
+    const pdfDoc = await PDFDocument.load(data, { ignoreEncryption: true });
     const pages = pdfDoc.getPages();
 
+    const wmType = config.watermarkType || 'text';
     const text = config.watermarkText || "CONFIDENTIAL";
-    const mode = config.watermarkMode || "diagonal";
+    const mode = config.watermarkMode || "watermark_only";
+
+    function hexToRgb(hex) {
+      let c = (hex || '#dc2626').replace('#', '');
+      if (c.length === 3) c = c.split('').map(x => x + x).join('');
+      const num = parseInt(c, 16);
+      if (isNaN(num)) return rgb(0.86, 0.15, 0.15);
+      return rgb(((num >> 16) & 255) / 255, ((num >> 8) & 255) / 255, (num & 255) / 255);
+    }
+
+    let wmColor = rgb(0.86, 0.15, 0.15);
+    if (config.watermarkColor) {
+      if (config.watermarkColor === 'red' || config.watermarkColor === '#dc2626') wmColor = rgb(0.86, 0.15, 0.15);
+      else if (config.watermarkColor === 'blue' || config.watermarkColor === '#2563eb') wmColor = rgb(0.15, 0.39, 0.92);
+      else if (config.watermarkColor === 'green' || config.watermarkColor === '#059669') wmColor = rgb(0.02, 0.59, 0.41);
+      else if (config.watermarkColor === 'purple' || config.watermarkColor === '#7c3aed') wmColor = rgb(0.49, 0.23, 0.93);
+      else if (config.watermarkColor === 'slate' || config.watermarkColor === '#0f172a') wmColor = rgb(0.06, 0.09, 0.16);
+      else wmColor = hexToRgb(config.watermarkColor);
+    }
+
+    let wmOpacity = 0.30;
+    if (config.watermarkOpacity !== undefined && config.watermarkOpacity !== null && config.watermarkOpacity !== '') {
+      const parsed = parseFloat(config.watermarkOpacity);
+      if (!isNaN(parsed)) {
+        wmOpacity = parsed > 1 ? parsed / 100 : parsed;
+      }
+    }
+
+    // -------------------------------------------------------------
+    // Image Watermark Preparation (Embed Image or Canvas Stamp)
+    // -------------------------------------------------------------
+    let embeddedImg = null;
+    const isImageWm = (wmType === 'image') || !!config.watermarkImageBase64 || (config.imagePreset && config.imagePreset.startsWith('stamp_'));
+    
+    if (isImageWm) {
+      try {
+        let imgBuffer = null;
+        if (config.watermarkImageBase64 && config.watermarkImageBase64.includes('base64,')) {
+          const b64 = config.watermarkImageBase64.split('base64,')[1];
+          imgBuffer = Buffer.from(b64, 'base64');
+        } else {
+          // Generate professional vector-rendered stamp PNG using canvas
+          const preset = config.imagePreset || 'stamp_confidential';
+          let stampText = 'CONFIDENTIAL';
+          let stampColor = '#dc2626';
+          if (preset === 'stamp_approved') { stampText = 'APPROVED ✓'; stampColor = '#059669'; }
+          else if (preset === 'stamp_draft') { stampText = 'DRAFT COPY'; stampColor = '#d97706'; }
+          else if (preset === 'stamp_sample') { stampText = 'SAMPLE ONLY'; stampColor = '#2563eb'; }
+
+          const stampCanvas = createCanvas(420, 140);
+          const sCtx = stampCanvas.getContext('2d');
+          sCtx.strokeStyle = stampColor;
+          sCtx.lineWidth = 8;
+          sCtx.strokeRect(10, 10, 400, 120);
+          sCtx.lineWidth = 2.5;
+          sCtx.strokeRect(18, 18, 384, 104);
+          sCtx.fillStyle = stampColor;
+          sCtx.font = 'bold 42px sans-serif';
+          sCtx.textAlign = 'center';
+          sCtx.textBaseline = 'middle';
+          sCtx.fillText(stampText, 210, 70);
+          imgBuffer = stampCanvas.toBuffer('image/png');
+        }
+
+        if (imgBuffer) {
+          try {
+            embeddedImg = await pdfDoc.embedPng(imgBuffer);
+          } catch(pngErr) {
+            embeddedImg = await pdfDoc.embedJpg(imgBuffer);
+          }
+        }
+      } catch (imgErr) {
+        console.warn('Image watermark embedding notice:', imgErr.message);
+      }
+    }
 
     pages.forEach((page, index) => {
       const { width, height } = page.getSize();
       
-      if (mode === 'diagonal' || mode === 'both' || mode === 'watermark_only') {
-        page.drawText(text, {
-          x: width / 4,
-          y: height / 2,
-          size: 45,
-          color: rgb(0.8, 0.2, 0.2),
-          opacity: 0.25,
-          rotate: degrees(45)
+      // 1. Image Watermark Drawing
+      if (embeddedImg) {
+        const pos = config.imagePosition || 'center';
+        let imgW = 260;
+        let imgH = 90;
+        let imgX = (width - imgW) / 2;
+        let imgY = (height - imgH) / 2;
+
+        if (pos === 'center_large') {
+          imgW = width * 0.70;
+          imgH = imgW * (embeddedImg.height / embeddedImg.width);
+          imgX = (width - imgW) / 2;
+          imgY = (height - imgH) / 2;
+        } else if (pos === 'top_right') {
+          imgW = 160;
+          imgH = imgW * (embeddedImg.height / embeddedImg.width);
+          imgX = width - imgW - 25;
+          imgY = height - imgH - 25;
+        } else if (pos === 'bottom_right') {
+          imgW = 160;
+          imgH = imgW * (embeddedImg.height / embeddedImg.width);
+          imgX = width - imgW - 25;
+          imgY = 25;
+        } else if (pos === 'diagonal') {
+          imgW = 280;
+          imgH = imgW * (embeddedImg.height / embeddedImg.width);
+          imgX = width / 4;
+          imgY = height / 2;
+        }
+
+        page.drawImage(embeddedImg, {
+          x: Math.max(0, imgX),
+          y: Math.max(0, imgY),
+          width: Math.min(width, imgW),
+          height: Math.min(height, imgH),
+          opacity: wmOpacity,
+          rotate: pos === 'diagonal' ? degrees(45) : undefined
         });
       }
 
-      if (mode === 'footer_num' || mode === 'both') {
+      // 2. Footer Page Numbers (Page 1 of N)
+      if (mode === 'footer_num' || mode === 'both' || config.imgIncludePageNums) {
         page.drawText(`Page ${index + 1} of ${pages.length}`, {
           x: width / 2 - 35,
           y: 20,
           size: 10,
-          color: rgb(0.3, 0.3, 0.3)
+          color: rgb(0.3, 0.3, 0.3),
+          opacity: 0.8
         });
+      }
+
+      // 3. Text Watermark Drawing
+      if (!isImageWm || (wmType === 'text')) {
+        if (mode === 'watermark_only' || mode === 'both' || mode === 'diagonal' || mode === 'horizontal' || !mode) {
+          if (mode === 'horizontal') {
+            page.drawText(text, {
+              x: Math.max(20, width / 2 - (text.length * 12)),
+              y: height / 2,
+              size: 40,
+              color: wmColor,
+              opacity: wmOpacity
+            });
+          } else {
+            page.drawText(text, {
+              x: width / 4,
+              y: height / 2,
+              size: 45,
+              color: wmColor,
+              opacity: wmOpacity,
+              rotate: degrees(45)
+            });
+          }
+        }
       }
     });
 
@@ -801,7 +933,190 @@ async function pdfWatermarkConvert(inputPath, outputPath, config = {}) {
   }
 }
 
-// ========== PDF to Image Logic ==========
+
+// ========== Remove Watermark PDF Logic (Full Text & Image / Stamp Removal Engine) ==========
+async function removeWatermarkConvert(inputPath, outputPath, config = {}) {
+  try {
+    const inputBuf = fs.readFileSync(inputPath);
+    const pdfDoc = await PDFDocument.load(inputBuf, { ignoreEncryption: true });
+    const pageCount = pdfDoc.getPageCount();
+
+    const optAutoClean = config.optAutoClean !== false && config.rmWatermarkMode !== 'keywords';
+    const optImageClean = config.optImageClean !== false;
+    const optTextClean = config.optTextClean !== false && config.rmWatermarkMode !== 'auto';
+
+    const targetKeywordsRaw = config.targetWatermarkText || config.rmKeywords || 'CONFIDENTIAL, DRAFT, SAMPLE, WATERMARK, EVALUATION';
+    const targetKeywords = targetKeywordsRaw.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+
+    function hexToRgb(hex) {
+      let c = (hex || '#ffffff').replace('#', '');
+      if (c.length === 3) c = c.split('').map(x => x + x).join('');
+      const num = parseInt(c, 16);
+      if (isNaN(num)) return rgb(1, 1, 1);
+      return rgb(((num >> 16) & 255) / 255, ((num >> 8) & 255) / 255, (num & 255) / 255);
+    }
+    const fillColorRgb = hexToRgb(config.eraserColor || '#ffffff');
+
+    // 1. SMART AUTO-CLEAN & IMAGE / STAMP ANNOTATIONS REMOVAL
+    if (optAutoClean || optImageClean) {
+      for (let i = 0; i < pageCount; i++) {
+        const page = pdfDoc.getPage(i);
+        // A. Remove Watermark & Stamp (Image) Annotations
+        const annotsRef = page.node.get(PDFName.of('Annots'));
+        if (annotsRef) {
+          const annots = pdfDoc.context.lookup(annotsRef);
+          if (annots && annots instanceof PDFArray) {
+            const keptAnnots = [];
+            for (let aIdx = 0; aIdx < annots.size(); aIdx++) {
+              const aRef = annots.get(aIdx);
+              const annotDict = pdfDoc.context.lookup(aRef);
+              const subtype = annotDict && annotDict.get ? annotDict.get(PDFName.of('Subtype')) : null;
+              const subStr = subtype ? subtype.toString() : '';
+              if (subStr !== '/Watermark' && subStr !== '/Stamp') {
+                keptAnnots.push(aRef);
+              }
+            }
+            page.node.set(PDFName.of('Annots'), pdfDoc.context.obj(keptAnnots));
+          }
+        }
+
+        // B. Inspect Page Content Streams (Filter overlay graphics & image XObject streams)
+        const contentsRef = page.node.get(PDFName.of('Contents'));
+        if (contentsRef) {
+          const contentsLookup = pdfDoc.context.lookup(contentsRef);
+          if (contentsLookup && contentsLookup instanceof PDFArray) {
+            const streamsCount = contentsLookup.size();
+            const keptStreamRefs = [];
+            for (let sIdx = 0; sIdx < streamsCount; sIdx++) {
+              const sRef = contentsLookup.get(sIdx);
+              const streamObj = pdfDoc.context.lookup(sRef);
+              if (streamObj && streamObj.asUint8Array) {
+                let streamText = '';
+                const rawBytes = streamObj.asUint8Array();
+                try {
+                  const zlib = require('zlib');
+                  streamText = zlib.inflateSync(Buffer.from(rawBytes)).toString('utf8');
+                } catch (e) {
+                  streamText = Buffer.from(rawBytes).toString('latin1');
+                }
+
+                let isWatermarkStream = false;
+                const isAppendedStream = (sIdx === streamsCount - 1 && streamsCount >= 2);
+
+                // Detect graphics state overlays and XObject image draws (/Do)
+                if (streamText.includes('/GS') && streamText.includes('gs') && 
+                   (streamText.includes('Do') || streamText.includes('Tj') || streamText.includes('TJ'))) {
+                  isWatermarkStream = true;
+                }
+
+                const upperText = streamText.toUpperCase();
+                ['WATERMARK', 'CONFIDENTIAL', 'DRAFT', 'SAMPLE', 'EVALUATION', 'STAMP', 'LOGO'].forEach(kw => {
+                  if (upperText.includes(kw)) isWatermarkStream = true;
+                });
+
+                if (isWatermarkStream && isAppendedStream) {
+                  continue;
+                }
+              }
+              keptStreamRefs.push(sRef);
+            }
+
+            if (keptStreamRefs.length > 0 && keptStreamRefs.length < streamsCount) {
+              page.node.set(PDFName.of('Contents'), pdfDoc.context.obj(keptStreamRefs));
+            }
+          }
+        }
+      }
+    }
+
+    // 2. IMAGE WATERMARK POSITION ERASER (Matching HTML visual eraser boxes)
+    if (config.imageEraserPreset && config.imageEraserPreset !== 'none') {
+      for (let i = 0; i < pageCount; i++) {
+        const page = pdfDoc.getPage(i);
+        const { width, height } = page.getSize();
+        let boxX = 0, boxY = 0, boxW = 0, boxH = 0;
+
+        if (config.imageEraserPreset === 'center') {
+          boxW = width * 0.65;
+          boxH = height * 0.35;
+          boxX = (width - boxW) / 2;
+          boxY = (height - boxH) / 2;
+        } else if (config.imageEraserPreset === 'top_right') {
+          boxW = width * 0.32;
+          boxH = height * 0.15;
+          boxX = width - boxW - 15;
+          boxY = height - boxH - 15;
+        } else if (config.imageEraserPreset === 'bottom_right') {
+          boxW = width * 0.32;
+          boxH = height * 0.15;
+          boxX = width - boxW - 15;
+          boxY = 15;
+        } else if (config.imageEraserPreset === 'diagonal') {
+          boxW = width * 0.85;
+          boxH = height * 0.55;
+          boxX = (width - boxW) / 2;
+          boxY = (height - boxH) / 2;
+        }
+
+        if (boxW > 0 && boxH > 0) {
+          page.drawRectangle({
+            x: Math.max(0, boxX),
+            y: Math.max(0, boxY),
+            width: Math.min(width, boxW),
+            height: Math.min(height, boxH),
+            color: fillColorRgb,
+            opacity: 1.0
+          });
+        }
+      }
+    }
+
+    // 3. TEXT KEYWORD ERASER: Locate and erase target text keywords
+    if (optTextClean && targetKeywords.length > 0) {
+      try {
+        const pdfJsDoc = await pdfjsLib.getDocument({ data: new Uint8Array(inputBuf) }).promise;
+        for (let i = 0; i < pageCount; i++) {
+          const page = pdfDoc.getPage(i);
+          const pdfJsPage = await pdfJsDoc.getPage(i + 1);
+          const textContent = await pdfJsPage.getTextContent();
+
+          for (const item of textContent.items) {
+            const itemStr = item.str.trim();
+            if (!itemStr) continue;
+
+            const matches = targetKeywords.some(kw => itemStr.toLowerCase().includes(kw));
+            if (matches) {
+              const tx = item.transform[4];
+              const ty = item.transform[5];
+              const tw = Math.max(item.width || 40, 20);
+              const th = Math.max(item.height || 14, 12);
+
+              page.drawRectangle({
+                x: Math.max(0, tx - 2),
+                y: Math.max(0, ty - 2),
+                width: tw + 4,
+                height: th + 4,
+                color: fillColorRgb,
+                opacity: 1.0
+              });
+            }
+          }
+        }
+      } catch (kwErr) {
+        console.warn('Keyword text cleaner notice:', kwErr.message);
+      }
+    }
+
+    const cleanedBytes = await pdfDoc.save();
+    fs.writeFileSync(outputPath, cleanedBytes);
+    return outputPath;
+  } catch (err) {
+    console.error('Remove Watermark error:', err);
+    fs.copyFileSync(inputPath, outputPath);
+    return outputPath;
+  }
+}
+
 async function pdfToImageConvert(inputPath, outputPath, config = {}) {
   try {
     const data = new Uint8Array(fs.readFileSync(inputPath));
@@ -844,6 +1159,225 @@ async function pdfToImageConvert(inputPath, outputPath, config = {}) {
   } catch (error) {
     console.error('PDF to Image error:', error);
     throw error;
+  }
+}
+
+
+// ========== Compress PDF Logic ==========
+async function compressPdfConvert(inputPath, outputPath, config = {}) {
+  try {
+    const inputBuf = fs.readFileSync(inputPath);
+    const isMax = config.compressLevel === 'max';
+    const targetPreset = config.targetLimitKb || 'custom';
+
+    let targetBytes;
+    if (targetPreset === '500') {
+      targetBytes = 500 * 1024;
+    } else if (targetPreset === '1024') {
+      targetBytes = 1000 * 1024;
+    } else {
+      // Automatic Best Optimization
+      // Balanced: aims for ~60-75% reduction on raw, high visual fidelity
+      // Maximum: aims for ~80-92% reduction on raw, aggressive compression
+      targetBytes = isMax ? Math.round(inputBuf.length * 0.20) : Math.round(inputBuf.length * 0.45);
+    }
+
+    // Analyze PDF
+    const pdfDoc = await PDFDocument.load(inputBuf, { ignoreEncryption: true });
+    const numPages = pdfDoc.getPageCount();
+
+    // Collect image objects and calculate non-image stream bytes
+    const imageObjects = [];
+    let nonImgBytes = 50 * 1024; // base PDF structural overhead
+    for (const [ref, obj] of pdfDoc.context.enumerateIndirectObjects()) {
+      if (obj instanceof PDFRawStream) {
+        const subtype = (obj.dict.get(PDFName.of('Subtype')) || '').toString();
+        if (subtype === '/Image') {
+          // Avoid corrupting transparency masks if present
+          if (!obj.dict.get(PDFName.of('SMask'))) {
+            imageObjects.push(obj);
+          }
+        } else {
+          nonImgBytes += obj.contents.length;
+        }
+      }
+    }
+
+    let out1 = null;
+
+    // Engine 1: Multi-Pass Adaptive Stream Optimizer for embedded images
+    if (sharp && imageObjects.length > 0) {
+      try {
+        const originalContents = imageObjects.map(obj => Buffer.from(obj.contents));
+
+        async function applyStreamPass(currentDim, currentQ) {
+          for (let i = 0; i < imageObjects.length; i++) {
+            const obj = imageObjects[i];
+            try {
+              const comp = await sharp(originalContents[i])
+                .resize({ width: currentDim, height: currentDim, fit: 'inside', withoutEnlargement: true })
+                .jpeg({ quality: currentQ, mozjpeg: true, chromaSubsampling: '4:2:0' })
+                .toBuffer();
+              if (comp.length < originalContents[i].length) {
+                obj.contents = comp;
+                obj.dict.set(PDFName.of('Length'), pdfDoc.context.obj(comp.length));
+                obj.dict.set(PDFName.of('Filter'), PDFName.of('DCTDecode'));
+              }
+            } catch (e) {}
+          }
+          pdfDoc.setTitle(''); pdfDoc.setAuthor(''); pdfDoc.setSubject(''); pdfDoc.setKeywords([]);
+          return await pdfDoc.save({ useObjectStreams: true });
+        }
+
+        let dim, q;
+        const imgBudget = Math.max(15 * 1024, targetBytes - nonImgBytes);
+        const perImg = imgBudget / imageObjects.length;
+
+        if (targetPreset === '500') {
+          if (isMax) { dim = 340; q = 17; }
+          else { dim = 390; q = 20; }
+        } else if (targetPreset === '1024') {
+          if (isMax) { dim = 500; q = 26; }
+          else { dim = 800; q = 42; }
+        } else {
+          // Automatic Custom
+          if (isMax) {
+            if (perImg < 10 * 1024) { dim = 320; q = 16; }
+            else if (perImg < 20 * 1024) { dim = 380; q = 19; }
+            else if (perImg < 40 * 1024) { dim = 480; q = 24; }
+            else { dim = 650; q = 30; }
+          } else {
+            if (perImg < 10 * 1024) { dim = 500; q = 26; }
+            else if (perImg < 25 * 1024) { dim = 650; q = 34; }
+            else if (perImg < 50 * 1024) { dim = 850; q = 44; }
+            else { dim = 1100; q = 55; }
+          }
+        }
+
+        out1 = await applyStreamPass(dim, q);
+
+        // Pass 2 Refinement if strict target preset was chosen (500 or 1024) and exceeded:
+        if (targetPreset !== 'custom' && out1.length > targetBytes) {
+          const factor = Math.max(0.3, (targetBytes - nonImgBytes) / (out1.length - nonImgBytes));
+          dim = Math.max(220, Math.round(dim * Math.sqrt(factor) * 0.90));
+          q = Math.max(12, Math.round(q * factor * 0.90));
+          out1 = await applyStreamPass(dim, q);
+        }
+
+        // Final safety pass for 500 KB preset
+        if (targetPreset === '500' && out1.length > 512 * 1024) {
+          out1 = await applyStreamPass(250, 14);
+        }
+      } catch (e1) {
+        console.warn('Engine 1 error:', e1.message);
+      }
+    }
+
+    // Determine if Engine 1 met the target
+    const engine1Pass = out1 && (out1.length <= targetBytes);
+
+    let out2 = null;
+
+    // Engine 2: Page Flattener & Re-Renderer (for scanned / micro-sliced PDFs or when Engine 1 cannot run)
+    if (!engine1Pass && numPages > 0 && numPages <= 50) {
+      try {
+        const { createCanvas } = require('canvas');
+        const pdfjsDoc = await pdfjsLib.getDocument({ data: new Uint8Array(inputBuf) }).promise;
+
+        async function renderPages(scale, q) {
+          const newDoc = await PDFDocument.create();
+          for (let i = 1; i <= numPages; i++) {
+            const page = await pdfjsDoc.getPage(i);
+            const vp = page.getViewport({ scale });
+            const canvas = createCanvas(vp.width, vp.height);
+            await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+            const jpg = canvas.toBuffer('image/jpeg', { quality: q });
+            const emb = await newDoc.embedJpg(jpg);
+            const origVp = page.getViewport({ scale: 1.0 });
+            const p = newDoc.addPage([origVp.width, origVp.height]);
+            p.drawImage(emb, { x: 0, y: 0, width: origVp.width, height: origVp.height });
+          }
+          return await newDoc.save({ useObjectStreams: true });
+        }
+
+        const perPageKb = (targetBytes / 1024) / numPages;
+        let scale, q;
+        if (perPageKb < 25) { scale = 0.80; q = 0.30; }
+        else if (perPageKb < 45) { scale = 1.00; q = 0.42; }
+        else if (perPageKb < 85) { scale = 1.20; q = 0.55; }
+        else { scale = 1.40; q = 0.68; }
+
+        out2 = await renderPages(scale, q);
+
+        if (out2.length > targetBytes) {
+          const ratio = targetBytes / out2.length;
+          scale = Math.max(0.65, scale * Math.sqrt(ratio) * 0.92);
+          q = Math.max(0.20, q * ratio * 0.92);
+          out2 = await renderPages(scale, q);
+        }
+      } catch (e2) {
+        console.warn('Engine 2 error:', e2.message);
+      }
+    }
+
+    // Select the best candidate based on active configuration
+    let candidates = [];
+    if (out1 && out1.length < inputBuf.length) candidates.push(out1);
+    if (out2 && out2.length < inputBuf.length) candidates.push(out2);
+
+    let best = null;
+    if (targetPreset === '500') {
+      const under500 = candidates.filter(c => c.length <= 512 * 1024);
+      if (under500.length > 0) {
+        if (isMax) {
+          under500.sort((a, b) => a.length - b.length);
+          best = under500[0];
+        } else {
+          under500.sort((a, b) => b.length - a.length); // best quality under 500 KB
+          best = under500[0];
+        }
+      } else if (candidates.length > 0) {
+        candidates.sort((a, b) => a.length - b.length);
+        best = candidates[0];
+      }
+    } else if (targetPreset === '1024') {
+      const under1024 = candidates.filter(c => c.length <= 1024 * 1024);
+      if (under1024.length > 0) {
+        if (isMax) {
+          under1024.sort((a, b) => a.length - b.length);
+          best = under1024[0];
+        } else {
+          under1024.sort((a, b) => b.length - a.length); // best quality under 1 MB
+          best = under1024[0];
+        }
+      } else if (candidates.length > 0) {
+        candidates.sort((a, b) => a.length - b.length);
+        best = candidates[0];
+      }
+    } else {
+      // Automatic
+      if (isMax) {
+        candidates.sort((a, b) => a.length - b.length);
+        best = candidates[0];
+      } else {
+        const meeting = candidates.filter(c => c.length <= targetBytes);
+        if (meeting.length > 0) {
+          meeting.sort((a, b) => b.length - a.length);
+          best = meeting[0];
+        } else if (candidates.length > 0) {
+          candidates.sort((a, b) => a.length - b.length);
+          best = candidates[0];
+        }
+      }
+    }
+
+    const finalBuf = (best && best.length < inputBuf.length) ? best : inputBuf;
+    fs.writeFileSync(outputPath, finalBuf);
+    return outputPath;
+  } catch (err) {
+    console.error('Compress PDF error:', err);
+    fs.copyFileSync(inputPath, outputPath);
+    return outputPath;
   }
 }
 
@@ -1541,8 +2075,12 @@ async function processFile(toolId, inputPath, outputPath, config = {}) {
       return await pdfOrganizerConvert(inputPath, outputPath, config);
     case 'pdf-watermark':
       return await pdfWatermarkConvert(inputPath, outputPath, config);
+    case 'remove-watermark':
+      return await removeWatermarkConvert(inputPath, outputPath, config);
     case 'pdf-to-image':
       return await pdfToImageConvert(inputPath, outputPath, config);
+    case 'compress-pdf':
+      return await compressPdfConvert(inputPath, outputPath, config);
     case 'compress-image':
       return await compressImageConvert(inputPath, outputPath, config);
     case 'image-converter':
@@ -1752,7 +2290,7 @@ app.get('/workflow-builder', (req, res) => {
     '<input type="file" id="wfFile" multiple>' + 
     '<button class="btn" onclick="executeWorkflow()" style="margin-left: 10px;">▶️ Execute Workflow</button>' +
     '<div id="executionResult" style="margin-top:10px;font-weight:700;font-size:14px;"></div></div>' +
-    '<div class="saved-list"><h3 style="font-size:15px;font-weight:800;color:#0f172a;margin-bottom:0.75rem;">Saved Workflows</h3><div id="savedList"></div></div>' +
+    
     '</div></div>' +
     '<div id="modalContainer"></div>' +
     '<script>' +
@@ -1761,8 +2299,8 @@ app.get('/workflow-builder', (req, res) => {
     'document.getElementById("wfFile").addEventListener("change", function(e) { selectedFiles = e.target.files; });' +
     'function updateStepConfig(idx, key, val) { steps[idx][key] = val; }' +
     'function addToWorkflow(id, name, icon) { ' +
-    '  steps.push({ id: id, name: name, icon: icon, isComplex: false, mode: "all", range: "", sortOrder: "upload", customSequence: "", pageOrder: "", rotatePages: "", rotateDegree: "90", watermarkText: "CONFIDENTIAL", watermarkMode: "diagonal", compressQuality: "0.70", convertFormat: "jpg", convertQuality: "0.92", reducerMode: "resize", reducerWidth: "800", reducerHeight: "600", reducerTargetKb: "50", sizePreset: "3.5x4.5", bgColor: "#f87171", zoom: "100", copies: "32", removeBg: false, mergeDirection: "horizontal" });' +
-    '  renderSteps();' +
+    '  steps.push({ id: id, name: name, icon: icon, watermarkType: "text", watermarkText: "CONFIDENTIAL", watermarkMode: "watermark_only", watermarkColor: "#dc2626", watermarkOpacity: "30", imagePreset: "stamp_confidential", watermarkImageBase64: "", imagePosition: "center", imgIncludePageNums: false, optAutoClean: true, optImageClean: true, imageEraserPreset: "none", optTextClean: true, targetWatermarkText: "CONFIDENTIAL, DRAFT", eraserColor: "#ffffff", compressLevel: "balanced", targetLimitKb: "custom", rmWatermarkMode: "auto", rmKeywords: "CONFIDENTIAL, DRAFT", isComplex: false, mode: "all", range: "", sortOrder: "upload", customSequence: "", pageOrder: "", rotatePages: "", rotateDegree: "90", compressQuality: "0.70", convertFormat: "jpg", convertQuality: "0.92", reducerMode: "resize", reducerWidth: "800", reducerHeight: "600", reducerTargetKb: "50", sizePreset: "3.5x4.5", bgColor: "#f87171", zoom: "100", copies: "32", removeBg: false, mergeDirection: "horizontal" });' +
+'  renderSteps();' +
     '}' +
     'function renderSteps(activeIdx = -1) {' +
     '  const area = document.getElementById("workflowArea");' +
@@ -1834,22 +2372,137 @@ app.get('/workflow-builder', (req, res) => {
     '        "</div>" +' +
     '      "</div>";' +
     '    } else if (steps[i].id === "pdf-watermark") {' +
-    '      let wmText = steps[i].watermarkText || "CONFIDENTIAL";' +
-    '      let wmMode = steps[i].watermarkMode || "diagonal";' +
-    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px;\'>" +' +
-    '        "<div style=\'display:flex; align-items:flex-start; gap:5px; background:#e2e8f0; padding:6px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '          "<span style=\'font-size:13px; font-weight:bold; color:#475569; margin-top:2px;\'>Text:</span>" +' +
-    '          "<div style=\'display:flex; flex-direction:column; gap:2px;\'>" +' +
-    '            "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"watermarkText\\\", this.value)\' value=\'" + wmText + "\' placeholder=\'e.g. CONFIDENTIAL\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; width:120px; outline:none;\'>" +' +
-    '            "<span style=\'font-size:10px; color:#64748b; line-height:1;\'>e.g. DRAFT</span>" +' +
-    '          "</div>" +' +
+    '      let wmType = steps[i].watermarkType || "text";' +
+    '      let wmText = steps[i].watermarkText !== undefined ? steps[i].watermarkText : "CONFIDENTIAL";' +
+    '      let wmMode = steps[i].watermarkMode || "watermark_only";' +
+    '      let wmColor = steps[i].watermarkColor || "#dc2626";' +
+    '      let wmOpacity = steps[i].watermarkOpacity || "30";' +
+    '      let imgPreset = steps[i].imagePreset || "stamp_confidential";' +
+    '      let imgPos = steps[i].imagePosition || "center";' +
+    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; flex-wrap:wrap; align-items:center; gap:8px;\'>" +' +
+    '        "<div style=\'display:flex; align-items:center; gap:4px; background:#e0f2fe; padding:5px 9px; border-radius:8px; border:1px solid #bae6fd;\'>" +' +
+    '          "<span style=\'font-size:12px; font-weight:800; color:#0369a1;\'>Type:</span>" +' +
+    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"watermarkType\\\", this.value); renderSteps();\' style=\'padding:2px 6px; border-radius:6px; border:1px solid #7dd3fc; font-size:12px; font-weight:700; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '            "<option value=\\\"text\\\" " + (wmType === "text" ? "selected" : "") + ">✍️ Text Watermark</option>" +' +
+    '            "<option value=\\\"image\\\" " + (wmType === "image" ? "selected" : "") + ">🖼️ Image Watermark</option>" +' +
+    '          "</select>" +' +
+    '        "</div>";' +
+    '      if (wmType === "text") {' +
+    '        toggleHtml += "<div style=\'display:flex; align-items:center; gap:4px; background:#e0f2fe; padding:5px 9px; border-radius:8px; border:1px solid #bae6fd;\'>" +' +
+    '          "<span style=\'font-size:12px; font-weight:800; color:#0369a1;\'>Text:</span>" +' +
+    '          "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"watermarkText\\\", this.value)\' value=\'" + wmText + "\' placeholder=\'Enter text...\' style=\'padding:2px 6px; border-radius:6px; border:1px solid #7dd3fc; font-size:12px; width:95px; outline:none; background:white; color:#0f172a;\'>" +' +
     '        "</div>" +' +
-    '        "<div style=\'display:flex; align-items:flex-start; gap:5px; background:#e2e8f0; padding:6px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '          "<span style=\'font-size:13px; font-weight:bold; color:#475569; margin-top:2px;\'>Mode:</span>" +' +
-    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"watermarkMode\\\", this.value)\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
-    '             "<option value=\\\"diagonal\\\" " + (wmMode === "diagonal" ? "selected" : "") + ">Watermark Only</option>" +' +
-    '             "<option value=\\\"footer_num\\\" " + (wmMode === "footer_num" ? "selected" : "") + ">Page Numbers Only</option>" +' +
-    '             "<option value=\\\"both\\\" " + (wmMode === "both" ? "selected" : "") + ">Both</option>" +' +
+    '        "<div style=\'display:flex; align-items:center; gap:4px; background:#e0f2fe; padding:5px 9px; border-radius:8px; border:1px solid #bae6fd;\'>" +' +
+    '          "<span style=\'font-size:12px; font-weight:800; color:#0369a1;\'>Mode:</span>" +' +
+    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"watermarkMode\\\", this.value)\' style=\'padding:2px 6px; border-radius:6px; border:1px solid #7dd3fc; font-size:12px; font-weight:700; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '            "<option value=\\\"watermark_only\\\" " + (wmMode === "watermark_only" || wmMode === "diagonal" ? "selected" : "") + ">Custom Watermark Only</option>" +' +
+    '            "<option value=\\\"footer_num\\\" " + (wmMode === "footer_num" ? "selected" : "") + ">Page Numbers at Bottom</option>" +' +
+    '            "<option value=\\\"both\\\" " + (wmMode === "both" ? "selected" : "") + ">Both (Watermark + Numbers)</option>" +' +
+    '          "</select>" +' +
+    '        "</div>" +' +
+    '        "<div style=\'display:flex; align-items:center; gap:4px; background:#e0f2fe; padding:5px 9px; border-radius:8px; border:1px solid #bae6fd;\'>" +' +
+    '          "<span style=\'font-size:12px; font-weight:800; color:#0369a1;\'>Color:</span>" +' +
+    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"watermarkColor\\\", this.value)\' style=\'padding:2px 6px; border-radius:6px; border:1px solid #7dd3fc; font-size:12px; font-weight:700; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '            "<option value=\\\"#dc2626\\\" " + (wmColor === "#dc2626" ? "selected" : "") + ">🔴 Red</option>" +' +
+    '            "<option value=\\\"#2563eb\\\" " + (wmColor === "#2563eb" ? "selected" : "") + ">🔵 Blue</option>" +' +
+    '            "<option value=\\\"#059669\\\" " + (wmColor === "#059669" ? "selected" : "") + ">🟢 Green</option>" +' +
+    '            "<option value=\\\"#7c3aed\\\" " + (wmColor === "#7c3aed" ? "selected" : "") + ">🟣 Purple</option>" +' +
+    '            "<option value=\\\"#0f172a\\\" " + (wmColor === "#0f172a" ? "selected" : "") + ">⚫ Dark Slate</option>" +' +
+    '          "</select>" +' +
+    '        "</div>";' +
+    '      } else {' +
+    '        toggleHtml += "<div style=\'display:flex; align-items:center; gap:4px; background:#e0f2fe; padding:5px 9px; border-radius:8px; border:1px solid #bae6fd;\'>" +' +
+    '          "<span style=\'font-size:12px; font-weight:800; color:#0369a1;\'>Stamp:</span>" +' +
+    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"imagePreset\\\", this.value); renderSteps();\' style=\'padding:2px 6px; border-radius:6px; border:1px solid #7dd3fc; font-size:12px; font-weight:700; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '            "<option value=\\\"stamp_confidential\\\" " + (imgPreset === "stamp_confidential" ? "selected" : "") + ">🛡️ CONFIDENTIAL</option>" +' +
+    '            "<option value=\\\"stamp_approved\\\" " + (imgPreset === "stamp_approved" ? "selected" : "") + ">✅ APPROVED</option>" +' +
+    '            "<option value=\\\"stamp_draft\\\" " + (imgPreset === "stamp_draft" ? "selected" : "") + ">⚠️ DRAFT</option>" +' +
+    '            "<option value=\\\"stamp_sample\\\" " + (imgPreset === "stamp_sample" ? "selected" : "") + ">📋 SAMPLE</option>" +' +
+    '            "<option value=\\\"custom\\\" " + (imgPreset === "custom" ? "selected" : "") + ">📁 Upload Image...</option>" +' +
+    '          "</select>" +' +
+    '          (imgPreset === "custom" ? "<input type=\'file\' accept=\'image/*\' onchange=\'handleStepImgUpload(" + i + ", this.files[0])\' style=\'font-size:11px; width:110px; cursor:pointer;\'>" : "") +' +
+    '        "</div>" +' +
+    '        "<div style=\'display:flex; align-items:center; gap:4px; background:#e0f2fe; padding:5px 9px; border-radius:8px; border:1px solid #bae6fd;\'>" +' +
+    '          "<span style=\'font-size:12px; font-weight:800; color:#0369a1;\'>Pos:</span>" +' +
+    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"imagePosition\\\", this.value)\' style=\'padding:2px 6px; border-radius:6px; border:1px solid #7dd3fc; font-size:12px; font-weight:700; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '            "<option value=\\\"center\\\" " + (imgPos === "center" ? "selected" : "") + ">Center</option>" +' +
+    '            "<option value=\\\"center_large\\\" " + (imgPos === "center_large" ? "selected" : "") + ">Center Large</option>" +' +
+    '            "<option value=\\\"top_right\\\" " + (imgPos === "top_right" ? "selected" : "") + ">Top-Right</option>" +' +
+    '            "<option value=\\\"bottom_right\\\" " + (imgPos === "bottom_right" ? "selected" : "") + ">Bottom-Right</option>" +' +
+    '            "<option value=\\\"diagonal\\\" " + (imgPos === "diagonal" ? "selected" : "") + ">Diagonal</option>" +' +
+    '          "</select>" +' +
+    '        "</div>";' +
+    '      }' +
+    '      toggleHtml += "<div style=\'display:flex; align-items:center; gap:4px; background:#e0f2fe; padding:5px 9px; border-radius:8px; border:1px solid #bae6fd;\'>" +' +
+    '          "<span style=\'font-size:12px; font-weight:800; color:#0369a1;\'>Opacity:</span>" +' +
+    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"watermarkOpacity\\\", this.value)\' style=\'padding:2px 6px; border-radius:6px; border:1px solid #7dd3fc; font-size:12px; font-weight:700; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '            "<option value=\\\"10\\\" " + (wmOpacity === "10" ? "selected" : "") + ">10%</option>" +' +
+    '            "<option value=\\\"20\\\" " + (wmOpacity === "20" ? "selected" : "") + ">20%</option>" +' +
+    '            "<option value=\\\"30\\\" " + (wmOpacity === "30" ? "selected" : "") + ">30%</option>" +' +
+    '            "<option value=\\\"50\\\" " + (wmOpacity === "50" ? "selected" : "") + ">50%</option>" +' +
+    '            "<option value=\\\"75\\\" " + (wmOpacity === "75" ? "selected" : "") + ">75%</option>" +' +
+    '            "<option value=\\\"100\\\" " + (wmOpacity === "100" ? "selected" : "") + ">100%</option>" +' +
+    '          "</select>" +' +
+    '        "</div>" +' +
+    '      "</div>";' +
+    '    } else if (steps[i].id === "remove-watermark") {' +
+    '      let isAuto = steps[i].optAutoClean !== false;' +
+    '      let isImgClean = steps[i].optImageClean !== false;' +
+    '      let imgEraser = steps[i].imageEraserPreset || "none";' +
+    '      let isText = steps[i].optTextClean !== false;' +
+    '      let tgtKw = steps[i].targetWatermarkText || steps[i].rmKeywords || "CONFIDENTIAL, DRAFT";' +
+    '      let fColor = steps[i].eraserColor || "#ffffff";' +
+    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; flex-wrap:wrap; align-items:center; gap:8px;\'>" +' +
+    '        "<label style=\'display:flex; align-items:center; gap:4px; background:#f0fdf4; padding:5px 9px; border-radius:8px; border:1px solid #bbf7d0; cursor:pointer; font-size:12px; font-weight:800; color:#16a34a;\'>" +' +
+    '          "<input type=\'checkbox\' onchange=\'updateStepConfig(" + i + ", \\\"optAutoClean\\\", this.checked)\' " + (isAuto ? "checked" : "") + " style=\'cursor:pointer; accent-color:#16a34a;\'>" +' +
+    '          "✨ Smart Auto-Clean" +' +
+    '        "</label>" +' +
+    '        "<label style=\'display:flex; align-items:center; gap:4px; background:#f0fdf4; padding:5px 9px; border-radius:8px; border:1px solid #bbf7d0; cursor:pointer; font-size:12px; font-weight:800; color:#16a34a;\'>" +' +
+    '          "<input type=\'checkbox\' onchange=\'updateStepConfig(" + i + ", \\\"optImageClean\\\", this.checked)\' " + (isImgClean ? "checked" : "") + " style=\'cursor:pointer; accent-color:#16a34a;\'>" +' +
+    '          "🖼️ Remove Image Watermarks & Stamps" +' +
+    '        "</label>" +' +
+    '        "<div style=\'display:flex; align-items:center; gap:4px; background:#f0fdf4; padding:5px 9px; border-radius:8px; border:1px solid #bbf7d0;\'>" +' +
+    '          "<span style=\'font-size:12px; font-weight:800; color:#16a34a;\'>Erase Image:</span>" +' +
+    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"imageEraserPreset\\\", this.value)\' style=\'padding:2px 6px; border-radius:6px; border:1px solid #86efac; font-size:12px; font-weight:700; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '            "<option value=\\\"none\\\" " + (imgEraser === "none" ? "selected" : "") + ">Layers & Overlays (Auto)</option>" +' +
+    '            "<option value=\\\"center\\\" " + (imgEraser === "center" ? "selected" : "") + ">Center Logo / Stamp</option>" +' +
+    '            "<option value=\\\"top_right\\\" " + (imgEraser === "top_right" ? "selected" : "") + ">Top-Right Header Logo</option>" +' +
+    '            "<option value=\\\"bottom_right\\\" " + (imgEraser === "bottom_right" ? "selected" : "") + ">Bottom-Right Stamp</option>" +' +
+    '            "<option value=\\\"diagonal\\\" " + (imgEraser === "diagonal" ? "selected" : "") + ">Diagonal Watermark Area</option>" +' +
+    '          "</select>" +' +
+    '        "</div>" +' +
+    '        "<div style=\'display:flex; align-items:center; gap:4px; background:#f0fdf4; padding:5px 9px; border-radius:8px; border:1px solid #bbf7d0;\'>" +' +
+    '          "<label style=\'display:flex; align-items:center; gap:3px; cursor:pointer; font-size:12px; font-weight:800; color:#16a34a;\'>" +' +
+    '            "<input type=\'checkbox\' onchange=\'updateStepConfig(" + i + ", \\\"optTextClean\\\", this.checked)\' " + (isText ? "checked" : "") + " style=\'cursor:pointer; accent-color:#16a34a;\'>" +' +
+    '            "🔤 Erase Text by Keyword" +' +
+    '          "</label>" +' +
+    '          "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"targetWatermarkText\\\", this.value)\' value=\'" + tgtKw + "\' placeholder=\'e.g. CONFIDENTIAL, DRAFT\' style=\'padding:2px 6px; border-radius:6px; border:1px solid #86efac; font-size:12px; width:125px; outline:none; background:white; color:#0f172a;\'>" +' +
+    '        "</div>" +' +
+    '        "<div style=\'display:flex; align-items:center; gap:4px; background:#f0fdf4; padding:5px 9px; border-radius:8px; border:1px solid #bbf7d0;\'>" +' +
+    '          "<span style=\'font-size:12px; font-weight:800; color:#16a34a;\'>Fill:</span>" +' +
+    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"eraserColor\\\", this.value)\' style=\'padding:2px 6px; border-radius:6px; border:1px solid #86efac; font-size:12px; font-weight:700; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '            "<option value=\\\"#ffffff\\\" " + (fColor === "#ffffff" ? "selected" : "") + ">Pure White</option>" +' +
+    '            "<option value=\\\"#f8fafc\\\" " + (fColor === "#f8fafc" ? "selected" : "") + ">Light Gray</option>" +' +
+    '          "</select>" +' +
+    '        "</div>" +' +
+    '      "</div>";' +
+'    } else if (steps[i].id === "compress-pdf") {' +
+    '      let cLevel = steps[i].compressLevel || "balanced";' +
+    '      let tLimit = steps[i].targetLimitKb || "custom";' +
+    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; flex-wrap:wrap; align-items:center; gap:8px;\'>" +' +
+    '        "<div style=\'display:flex; align-items:center; gap:6px; background:#fff1f2; padding:5px 10px; border-radius:8px; border:1px solid #fecdd3;\'>" +' +
+    '          "<span style=\'font-size:12px; font-weight:800; color:#e11d48;\'>⚡ Mode:</span>" +' +
+    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"compressLevel\\\", this.value)\' style=\'padding:3px 8px; border-radius:6px; border:1px solid #fda4af; font-size:12px; font-weight:700; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '            "<option value=\\\"balanced\\\" " + (cLevel === "balanced" ? "selected" : "") + ">Balanced (Recommended)</option>" +' +
+    '            "<option value=\\\"max\\\" " + (cLevel === "max" ? "selected" : "") + ">Maximum Compression</option>" +' +
+    '          "</select>" +' +
+    '        "</div>" +' +
+    '        "<div style=\'display:flex; align-items:center; gap:6px; background:#fff1f2; padding:5px 10px; border-radius:8px; border:1px solid #fecdd3;\'>" +' +
+    '          "<span style=\'font-size:12px; font-weight:800; color:#e11d48;\'>🎯 Target Size:</span>" +' +
+    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"targetLimitKb\\\", this.value)\' style=\'padding:3px 8px; border-radius:6px; border:1px solid #fda4af; font-size:12px; font-weight:700; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '            "<option value=\\\"custom\\\" " + (tLimit === "custom" ? "selected" : "") + ">Auto Best Optimization</option>" +' +
+    '            "<option value=\\\"500\\\" " + (tLimit === "500" ? "selected" : "") + ">Target Under 500 KB</option>" +' +
+    '            "<option value=\\\"1024\\\" " + (tLimit === "1024" ? "selected" : "") + ">Target Under 1 MB</option>" +' +
     '          "</select>" +' +
     '        "</div>" +' +
     '      "</div>";' +
@@ -1912,18 +2565,14 @@ app.get('/workflow-builder', (req, res) => {
     '  }' +
     '  area.innerHTML = html;' +
     '}' +
-    'function removeStep(index) { steps.splice(index, 1); renderSteps(); }' +
-    'function clearWorkflow() { steps = []; renderSteps(); }' +
-    'async function loadSavedWorkflows() {' +
-    '  try {' +
-    '    const res = await fetch("/api/workflow/list");' +
-    '    const data = await res.json();' +
-    '    const list = document.getElementById("savedList");' +
-    '    let html = "";' +
-    '    for (const w of data.workflows) { html += "<div class=\'saved-item\'><strong>" + w.name + "</strong> - " + w.steps.length + " steps</div>"; }' +
-    '    list.innerHTML = html;' +
-    '  } catch(e) { console.error(e); }' +
+    'function handleStepImgUpload(stepIdx, file) { ' +
+    '  if (!file) return;' +
+    '  const r = new FileReader();' +
+    '  r.onload = function(e) { steps[stepIdx].watermarkImageBase64 = e.target.result; steps[stepIdx].imagePreset = "custom"; renderSteps(); };' +
+    '  r.readAsDataURL(file);' +
     '}' +
+'function removeStep(index) { steps.splice(index, 1); renderSteps(); }' +
+    'function clearWorkflow() { steps = []; renderSteps(); }' +
     'async function executeWorkflow() {' +
     '  if (selectedFiles.length === 0 || steps.length === 0) { alert("Please select file(s) and add workflow steps."); return; }' +
     '  const passportStepIdx = steps.findIndex(s => s.id === "passport-studio");' +
@@ -2144,7 +2793,7 @@ app.get('/workflow-builder', (req, res) => {
     '       renderSteps(i);' +
     '       await new Promise(r => setTimeout(r, 600));' +
     '    }' +
-    '    const saveRes = await fetch("/api/workflow/create", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: "Temp Workflow", steps: steps.map(s => ({ toolId: s.id, isComplex: !!s.isComplex, mode: s.mode, range: s.range, sortOrder: s.sortOrder, customSequence: s.customSequence, pageOrder: s.pageOrder, rotatePages: s.rotatePages, rotateDegree: s.rotateDegree, watermarkText: s.watermarkText, watermarkMode: s.watermarkMode, compressQuality: s.compressQuality, convertFormat: s.convertFormat, convertQuality: s.convertQuality, reducerMode: s.reducerMode, reducerWidth: s.reducerWidth, reducerHeight: s.reducerHeight, reducerTargetKb: s.reducerTargetKb, sizePreset: s.sizePreset, bgColor: s.bgColor, zoom: s.zoom, copies: s.copies, removeBg: s.removeBg, printSheet: s.printSheet, mergeDirection: s.mergeDirection })) }) });' +
+    '    const saveRes = await fetch("/api/workflow/create", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: "Temp Workflow", steps: steps.map(s => ({ toolId: s.id, isComplex: !!s.isComplex, mode: s.mode, range: s.range, sortOrder: s.sortOrder, customSequence: s.customSequence, pageOrder: s.pageOrder, rotatePages: s.rotatePages, rotateDegree: s.rotateDegree, watermarkText: s.watermarkText, watermarkMode: s.watermarkMode, compressQuality: s.compressQuality, convertFormat: s.convertFormat, convertQuality: s.convertQuality, reducerMode: s.reducerMode, reducerWidth: s.reducerWidth, reducerHeight: s.reducerHeight, reducerTargetKb: s.reducerTargetKb, sizePreset: s.sizePreset, bgColor: s.bgColor, zoom: s.zoom, copies: s.copies, removeBg: s.removeBg, printSheet: s.printSheet, mergeDirection: s.mergeDirection, compressLevel: s.compressLevel, targetLimitKb: s.targetLimitKb, watermarkType: s.watermarkType, watermarkText: s.watermarkText, watermarkMode: s.watermarkMode, watermarkColor: s.watermarkColor, watermarkOpacity: s.watermarkOpacity, imagePreset: s.imagePreset, watermarkImageBase64: s.watermarkImageBase64, imagePosition: s.imagePosition, imgIncludePageNums: s.imgIncludePageNums, optAutoClean: s.optAutoClean, optImageClean: s.optImageClean, imageEraserPreset: s.imageEraserPreset, optTextClean: s.optTextClean, targetWatermarkText: s.targetWatermarkText, eraserColor: s.eraserColor, rmWatermarkMode: s.rmWatermarkMode, rmKeywords: s.rmKeywords })) }) });' +
     '    const saveData = await saveRes.json();' +
     '    if (!saveData.success) { alert("Execution error"); return; }' +
     '    const execRes = await fetch("/api/workflow/execute/" + saveData.workflow.id, { method: "POST", body: formData });' +
@@ -2168,7 +2817,8 @@ app.get('/workflow-builder', (req, res) => {
     '    }' +
     '  } catch(e) { renderSteps(-1); document.getElementById("executionResult").innerHTML = "<p style=\'color:red;\'>Network error during execution: " + e.message + "</p>"; }' +
     '}' +
-    'loadSavedWorkflows();' +
+    
+    
     '</script>' +
     '<!-- Filesque Enterprise Dark Footer -->' +
     '<footer class="bg-[#1e2029] text-slate-300 pt-16 pb-12 px-6 sm:px-12 border-t border-slate-800 font-sans mt-auto">' +
