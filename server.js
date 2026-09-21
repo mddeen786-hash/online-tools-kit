@@ -7,7 +7,7 @@ const crypto = require('crypto');
 const pdfjsLib = require('pdfjs-dist/legacy/build/pdf.js');
 const { createCanvas, loadImage } = require('canvas'); 
 const XLSX = require('xlsx');
-const { PDFDocument, degrees, rgb, PDFName, PDFArray, PDFRawStream } = require('pdf-lib'); 
+const { PDFDocument, degrees, rgb } = require('pdf-lib'); 
 const JSZip = require('jszip'); 
 
 // OCR Module (Tesseract)
@@ -28,33 +28,29 @@ app.use(fileUpload({ createParentPath: true, limits: { fileSize: 100 * 1024 * 10
 const tempDir = path.join(__dirname, 'temp');
 if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
 
-// Strict No-Cache Middleware for real-time updates
-app.use((req, res, next) => {
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
-    next();
-});
-app.use(express.static(path.join(__dirname, 'public'), { etag: false, maxAge: 0 }));
-app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname, 'public')));
 
 const toolRegistry = [
-  { id: 'pdf-to-word',         name: 'PDF to Word',               icon: '📄', file: 'pdf-to-word.html', outputExt: '.doc' },
-  { id: 'pdf-to-excel',        name: 'PDF to Excel',              icon: '📊', file: 'pdf-to-excel.html', outputExt: '.xlsx' },
-  { id: 'merge-pdf',           name: 'Merge PDF',                 icon: '💼', file: 'merge.html', outputExt: '.pdf' },
-  { id: 'pdf-splitter',        name: 'PDF Splitter',              icon: '✂️', file: 'pdf-splitter.html', outputExt: '.pdf' },
-  { id: 'pdf-organizer',       name: 'PDF Organizer',             icon: '📑', file: 'pdf-organizer.html', outputExt: '.pdf' },
-  { id: 'compress-pdf',        name: 'Compress PDF',              icon: '🗜️', file: 'compress-pdf.html', outputExt: '.pdf' },
-  { id: 'pdf-watermark',       name: 'PDF Watermark',             icon: '💧', file: 'pdf-watermark.html', outputExt: '.pdf' },
-  { id: 'remove-watermark',    name: 'Remove Watermark PDF',      icon: '🛡️', file: 'remove-watermark.html', outputExt: '.pdf' },
-  { id: 'pdf-to-image',        name: 'PDF to Image',              icon: '🖼️', file: 'pdf-to-image.html', outputExt: '.zip' },
-  { id: 'compress-image',      name: 'Compress Image',            icon: '🗜️', file: 'compress.html', outputExt: '.jpg' },
-  { id: 'image-converter',     name: 'Image Converter',           icon: '🖼️', file: 'image-converter.html' }, 
-  { id: 'image-to-pdf',        name: 'Image to PDF',              icon: '📷', file: 'image-to-pdf.html', outputExt: '.pdf' },
-  { id: 'image-reducer',       name: 'Image Reducer',             icon: '📉', file: 'image-reducer.html', outputExt: '.jpg' },
-  { id: 'image-to-text',       name: 'Image to Text',             icon: '🔍', file: 'image-to-text.html', outputExt: '.doc' },
-  { id: 'passport-studio',     name: 'Passport Studio',           icon: '🛂', file: 'passport-studio.html', outputExt: '.jpg' },
-  { id: 'merge-image',         name: 'Merge Image',               icon: '🧩', file: 'merge-image.html', outputExt: '.jpg' }
+  { id: 'pdf-to-word',         name: 'PDF to Word',             icon: '📄', file: 'pdf-to-word.html', outputExt: '.doc' },
+  { id: 'pdf-to-excel',        name: 'PDF to Excel',            icon: '📊', file: 'pdf-to-excel.html', outputExt: '.xlsx' },
+  { id: 'merge-pdf',           name: 'Merge PDF',               icon: '💼', file: 'merge.html', outputExt: '.pdf' },
+  { id: 'pdf-splitter',        name: 'PDF Splitter',            icon: '✂️', file: 'pdf-splitter.html', outputExt: '.pdf' },
+  { id: 'pdf-organizer',       name: 'PDF Organizer',           icon: '📑', file: 'pdf-organizer.html', outputExt: '.pdf' },
+  { id: 'pdf-watermark',       name: 'PDF Watermark',           icon: '💧', file: 'pdf-watermark.html', outputExt: '.pdf' },
+  { id: 'pdf-to-image',        name: 'PDF to Image',            icon: '🖼️', file: 'pdf-to-image.html', outputExt: '.zip' },
+  { id: 'compress-image',      name: 'Compress Image',          icon: '🗜️', file: 'compress.html', outputExt: '.jpg' },
+  { id: 'image-converter',     name: 'Image Converter',         icon: '🖼️', file: 'image-converter.html' }, 
+  { id: 'image-to-pdf',        name: 'Image to PDF',            icon: '📷', file: 'image-to-pdf.html', outputExt: '.pdf' },
+  { id: 'image-reducer',       name: 'Image Reducer',           icon: '📉', file: 'image-reducer.html', outputExt: '.jpg' },
+  { id: 'image-to-text',       name: 'Image to Text',           icon: '🔍', file: 'image-to-text.html', outputExt: '.doc' },
+  { id: 'passport-studio',     name: 'Passport Studio',         icon: '🛂', file: 'passport-studio.html', outputExt: '.jpg' },
+  { id: 'merge-image',         name: 'Merge Image',             icon: '🧩', file: 'merge-image.html' },
+  { id: 'invoice-generator',   name: 'Invoice Generator',       icon: '🧾', file: 'invoice-gen.html' },
+  { id: 'barcode-generator',   name: 'Barcode Generator',       icon: '🏷️', file: 'barcode-gen.html' },
+  { id: 'qr-code-studio',      name: 'QR Code Studio',          icon: '📱', file: 'qr-studio.html' },
+  { id: 'digital-signature',   name: 'Digital Signature Studio', icon: '✍️', file: 'sign-maker.html' },
+  { id: 'code-formatter',      name: 'Code Formatter',          icon: '⚡', file: 'code-formatter.html' },
+  { id: 'product-listing',     name: 'Product Listing',         icon: '📦', file: 'product-listing.html' }
 ];
 
 const workflowsDB = new Map();
@@ -447,31 +443,10 @@ function parseComplexPDFTables(items) {
 async function runOCRFallback(inputPath) {
   const rows = [];
   if (!Tesseract) return rows;
-  let worker = null;
   try {
-    let imageToRecognize = inputPath;
-    const ext = path.extname(inputPath).toLowerCase();
-    
-    if (ext === '.pdf') {
-      try {
-        const data = new Uint8Array(fs.readFileSync(inputPath));
-        const pdf = await pdfjsLib.getDocument({ data }).promise;
-        if (pdf.numPages > 0) {
-          const page = await pdf.getPage(1);
-          const viewport = page.getViewport({ scale: 2.0 });
-          const canvas = createCanvas(viewport.width, viewport.height);
-          const ctx = canvas.getContext('2d');
-          await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-          imageToRecognize = canvas.toBuffer('image/jpeg', { quality: 0.9 });
-        }
-      } catch (pdfErr) {
-        console.log('PDF page render for OCR failed:', pdfErr.message);
-        return rows;
-      }
-    }
-
-    worker = await Tesseract.createWorker('eng', 1);
-    const { data } = await worker.recognize(imageToRecognize);
+    const worker = await Tesseract.createWorker('eng', 1);
+    const { data } = await worker.recognize(inputPath);
+    await worker.terminate();
     if (data && data.text) {
       const lines = data.text.split('\n');
       lines.forEach(l => {
@@ -479,13 +454,7 @@ async function runOCRFallback(inputPath) {
         if (cols.length > 0) rows.push(cols);
       });
     }
-  } catch (e) {
-    console.log('OCR Error:', e.message);
-  } finally {
-    if (worker) {
-      try { await worker.terminate(); } catch (_) {}
-    }
-  }
+  } catch (e) { console.log('OCR Error:', e.message); }
   return rows;
 }
 
@@ -723,17 +692,17 @@ async function pdfOrganizerConvert(inputPath, outputPath, config = {}) {
          const normalized = rStr.replace(/to/g, '-').replace(/and/g, ',').replace(/&/g, ',').replace(/[^0-9,-]/g, '');
          const parts = normalized.split(',');
          parts.forEach(part => {
-           if (part.includes('-')) {
-             const [s, e] = part.split('-').map(n => parseInt(n));
-             if (!isNaN(s) && !isNaN(e)) {
-               for (let p = Math.min(s, e); p <= Math.max(s, e); p++) {
-                  if (p >= 1 && p <= totalPages) rotPages.add(p - 1);
-               }
-             }
-           } else {
-             const p = parseInt(part);
-             if (!isNaN(p) && p >= 1 && p <= totalPages) rotPages.add(p - 1);
-           }
+            if (part.includes('-')) {
+              const [s, e] = part.split('-').map(n => parseInt(n));
+              if (!isNaN(s) && !isNaN(e)) {
+                for (let p = Math.min(s, e); p <= Math.max(s, e); p++) {
+                   if (p >= 1 && p <= totalPages) rotPages.add(p - 1);
+                }
+              }
+            } else {
+              const p = parseInt(part);
+              if (!isNaN(p) && p >= 1 && p <= totalPages) rotPages.add(p - 1);
+            }
          });
       }
     }
@@ -760,167 +729,37 @@ async function pdfOrganizerConvert(inputPath, outputPath, config = {}) {
   }
 }
 
-// ========== PDF Watermark Logic (Full Text & Image Watermark Engine) ==========
+// ========== PDF Watermark Logic ==========
 async function pdfWatermarkConvert(inputPath, outputPath, config = {}) {
   try {
     const data = fs.readFileSync(inputPath);
-    const pdfDoc = await PDFDocument.load(data, { ignoreEncryption: true });
+    const pdfDoc = await PDFDocument.load(data);
     const pages = pdfDoc.getPages();
 
-    const wmType = config.watermarkType || 'text';
     const text = config.watermarkText || "CONFIDENTIAL";
-    const mode = config.watermarkMode || "watermark_only";
-
-    function hexToRgb(hex) {
-      let c = (hex || '#dc2626').replace('#', '');
-      if (c.length === 3) c = c.split('').map(x => x + x).join('');
-      const num = parseInt(c, 16);
-      if (isNaN(num)) return rgb(0.86, 0.15, 0.15);
-      return rgb(((num >> 16) & 255) / 255, ((num >> 8) & 255) / 255, (num & 255) / 255);
-    }
-
-    let wmColor = rgb(0.86, 0.15, 0.15);
-    if (config.watermarkColor) {
-      if (config.watermarkColor === 'red' || config.watermarkColor === '#dc2626') wmColor = rgb(0.86, 0.15, 0.15);
-      else if (config.watermarkColor === 'blue' || config.watermarkColor === '#2563eb') wmColor = rgb(0.15, 0.39, 0.92);
-      else if (config.watermarkColor === 'green' || config.watermarkColor === '#059669') wmColor = rgb(0.02, 0.59, 0.41);
-      else if (config.watermarkColor === 'purple' || config.watermarkColor === '#7c3aed') wmColor = rgb(0.49, 0.23, 0.93);
-      else if (config.watermarkColor === 'slate' || config.watermarkColor === '#0f172a') wmColor = rgb(0.06, 0.09, 0.16);
-      else wmColor = hexToRgb(config.watermarkColor);
-    }
-
-    let wmOpacity = 0.30;
-    if (config.watermarkOpacity !== undefined && config.watermarkOpacity !== null && config.watermarkOpacity !== '') {
-      const parsed = parseFloat(config.watermarkOpacity);
-      if (!isNaN(parsed)) {
-        wmOpacity = parsed > 1 ? parsed / 100 : parsed;
-      }
-    }
-
-    // -------------------------------------------------------------
-    // Image Watermark Preparation (Embed Image or Canvas Stamp)
-    // -------------------------------------------------------------
-    let embeddedImg = null;
-    const isImageWm = (wmType === 'image') || !!config.watermarkImageBase64 || (config.imagePreset && config.imagePreset.startsWith('stamp_'));
-    
-    if (isImageWm) {
-      try {
-        let imgBuffer = null;
-        if (config.watermarkImageBase64 && config.watermarkImageBase64.includes('base64,')) {
-          const b64 = config.watermarkImageBase64.split('base64,')[1];
-          imgBuffer = Buffer.from(b64, 'base64');
-        } else {
-          // Generate professional vector-rendered stamp PNG using canvas
-          const preset = config.imagePreset || 'stamp_confidential';
-          let stampText = 'CONFIDENTIAL';
-          let stampColor = '#dc2626';
-          if (preset === 'stamp_approved') { stampText = 'APPROVED ✓'; stampColor = '#059669'; }
-          else if (preset === 'stamp_draft') { stampText = 'DRAFT COPY'; stampColor = '#d97706'; }
-          else if (preset === 'stamp_sample') { stampText = 'SAMPLE ONLY'; stampColor = '#2563eb'; }
-
-          const stampCanvas = createCanvas(420, 140);
-          const sCtx = stampCanvas.getContext('2d');
-          sCtx.strokeStyle = stampColor;
-          sCtx.lineWidth = 8;
-          sCtx.strokeRect(10, 10, 400, 120);
-          sCtx.lineWidth = 2.5;
-          sCtx.strokeRect(18, 18, 384, 104);
-          sCtx.fillStyle = stampColor;
-          sCtx.font = 'bold 42px sans-serif';
-          sCtx.textAlign = 'center';
-          sCtx.textBaseline = 'middle';
-          sCtx.fillText(stampText, 210, 70);
-          imgBuffer = stampCanvas.toBuffer('image/png');
-        }
-
-        if (imgBuffer) {
-          try {
-            embeddedImg = await pdfDoc.embedPng(imgBuffer);
-          } catch(pngErr) {
-            embeddedImg = await pdfDoc.embedJpg(imgBuffer);
-          }
-        }
-      } catch (imgErr) {
-        console.warn('Image watermark embedding notice:', imgErr.message);
-      }
-    }
+    const mode = config.watermarkMode || "diagonal";
 
     pages.forEach((page, index) => {
       const { width, height } = page.getSize();
       
-      // 1. Image Watermark Drawing
-      if (embeddedImg) {
-        const pos = config.imagePosition || 'center';
-        let imgW = 260;
-        let imgH = 90;
-        let imgX = (width - imgW) / 2;
-        let imgY = (height - imgH) / 2;
-
-        if (pos === 'center_large') {
-          imgW = width * 0.70;
-          imgH = imgW * (embeddedImg.height / embeddedImg.width);
-          imgX = (width - imgW) / 2;
-          imgY = (height - imgH) / 2;
-        } else if (pos === 'top_right') {
-          imgW = 160;
-          imgH = imgW * (embeddedImg.height / embeddedImg.width);
-          imgX = width - imgW - 25;
-          imgY = height - imgH - 25;
-        } else if (pos === 'bottom_right') {
-          imgW = 160;
-          imgH = imgW * (embeddedImg.height / embeddedImg.width);
-          imgX = width - imgW - 25;
-          imgY = 25;
-        } else if (pos === 'diagonal') {
-          imgW = 280;
-          imgH = imgW * (embeddedImg.height / embeddedImg.width);
-          imgX = width / 4;
-          imgY = height / 2;
-        }
-
-        page.drawImage(embeddedImg, {
-          x: Math.max(0, imgX),
-          y: Math.max(0, imgY),
-          width: Math.min(width, imgW),
-          height: Math.min(height, imgH),
-          opacity: wmOpacity,
-          rotate: pos === 'diagonal' ? degrees(45) : undefined
+      if (mode === 'diagonal' || mode === 'both') {
+        page.drawText(text, {
+          x: width / 4,
+          y: height / 2,
+          size: 45,
+          color: rgb(0.8, 0.2, 0.2),
+          opacity: 0.25,
+          rotate: degrees(45)
         });
       }
 
-      // 2. Footer Page Numbers (Page 1 of N)
-      if (mode === 'footer_num' || mode === 'both' || config.imgIncludePageNums) {
+      if (mode === 'footer_num' || mode === 'both') {
         page.drawText(`Page ${index + 1} of ${pages.length}`, {
           x: width / 2 - 35,
           y: 20,
           size: 10,
-          color: rgb(0.3, 0.3, 0.3),
-          opacity: 0.8
+          color: rgb(0.3, 0.3, 0.3)
         });
-      }
-
-      // 3. Text Watermark Drawing
-      if (!isImageWm || (wmType === 'text')) {
-        if (mode === 'watermark_only' || mode === 'both' || mode === 'diagonal' || mode === 'horizontal' || !mode) {
-          if (mode === 'horizontal') {
-            page.drawText(text, {
-              x: Math.max(20, width / 2 - (text.length * 12)),
-              y: height / 2,
-              size: 40,
-              color: wmColor,
-              opacity: wmOpacity
-            });
-          } else {
-            page.drawText(text, {
-              x: width / 4,
-              y: height / 2,
-              size: 45,
-              color: wmColor,
-              opacity: wmOpacity,
-              rotate: degrees(45)
-            });
-          }
-        }
       }
     });
 
@@ -933,190 +772,7 @@ async function pdfWatermarkConvert(inputPath, outputPath, config = {}) {
   }
 }
 
-
-// ========== Remove Watermark PDF Logic (Full Text & Image / Stamp Removal Engine) ==========
-async function removeWatermarkConvert(inputPath, outputPath, config = {}) {
-  try {
-    const inputBuf = fs.readFileSync(inputPath);
-    const pdfDoc = await PDFDocument.load(inputBuf, { ignoreEncryption: true });
-    const pageCount = pdfDoc.getPageCount();
-
-    const optAutoClean = config.optAutoClean !== false && config.rmWatermarkMode !== 'keywords';
-    const optImageClean = config.optImageClean !== false;
-    const optTextClean = config.optTextClean !== false && config.rmWatermarkMode !== 'auto';
-
-    const targetKeywordsRaw = config.targetWatermarkText || config.rmKeywords || 'CONFIDENTIAL, DRAFT, SAMPLE, WATERMARK, EVALUATION';
-    const targetKeywords = targetKeywordsRaw.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
-
-    function hexToRgb(hex) {
-      let c = (hex || '#ffffff').replace('#', '');
-      if (c.length === 3) c = c.split('').map(x => x + x).join('');
-      const num = parseInt(c, 16);
-      if (isNaN(num)) return rgb(1, 1, 1);
-      return rgb(((num >> 16) & 255) / 255, ((num >> 8) & 255) / 255, (num & 255) / 255);
-    }
-    const fillColorRgb = hexToRgb(config.eraserColor || '#ffffff');
-
-    // 1. SMART AUTO-CLEAN & IMAGE / STAMP ANNOTATIONS REMOVAL
-    if (optAutoClean || optImageClean) {
-      for (let i = 0; i < pageCount; i++) {
-        const page = pdfDoc.getPage(i);
-        // A. Remove Watermark & Stamp (Image) Annotations
-        const annotsRef = page.node.get(PDFName.of('Annots'));
-        if (annotsRef) {
-          const annots = pdfDoc.context.lookup(annotsRef);
-          if (annots && annots instanceof PDFArray) {
-            const keptAnnots = [];
-            for (let aIdx = 0; aIdx < annots.size(); aIdx++) {
-              const aRef = annots.get(aIdx);
-              const annotDict = pdfDoc.context.lookup(aRef);
-              const subtype = annotDict && annotDict.get ? annotDict.get(PDFName.of('Subtype')) : null;
-              const subStr = subtype ? subtype.toString() : '';
-              if (subStr !== '/Watermark' && subStr !== '/Stamp') {
-                keptAnnots.push(aRef);
-              }
-            }
-            page.node.set(PDFName.of('Annots'), pdfDoc.context.obj(keptAnnots));
-          }
-        }
-
-        // B. Inspect Page Content Streams (Filter overlay graphics & image XObject streams)
-        const contentsRef = page.node.get(PDFName.of('Contents'));
-        if (contentsRef) {
-          const contentsLookup = pdfDoc.context.lookup(contentsRef);
-          if (contentsLookup && contentsLookup instanceof PDFArray) {
-            const streamsCount = contentsLookup.size();
-            const keptStreamRefs = [];
-            for (let sIdx = 0; sIdx < streamsCount; sIdx++) {
-              const sRef = contentsLookup.get(sIdx);
-              const streamObj = pdfDoc.context.lookup(sRef);
-              if (streamObj && streamObj.asUint8Array) {
-                let streamText = '';
-                const rawBytes = streamObj.asUint8Array();
-                try {
-                  const zlib = require('zlib');
-                  streamText = zlib.inflateSync(Buffer.from(rawBytes)).toString('utf8');
-                } catch (e) {
-                  streamText = Buffer.from(rawBytes).toString('latin1');
-                }
-
-                let isWatermarkStream = false;
-                const isAppendedStream = (sIdx === streamsCount - 1 && streamsCount >= 2);
-
-                // Detect graphics state overlays and XObject image draws (/Do)
-                if (streamText.includes('/GS') && streamText.includes('gs') && 
-                   (streamText.includes('Do') || streamText.includes('Tj') || streamText.includes('TJ'))) {
-                  isWatermarkStream = true;
-                }
-
-                const upperText = streamText.toUpperCase();
-                ['WATERMARK', 'CONFIDENTIAL', 'DRAFT', 'SAMPLE', 'EVALUATION', 'STAMP', 'LOGO'].forEach(kw => {
-                  if (upperText.includes(kw)) isWatermarkStream = true;
-                });
-
-                if (isWatermarkStream && isAppendedStream) {
-                  continue;
-                }
-              }
-              keptStreamRefs.push(sRef);
-            }
-
-            if (keptStreamRefs.length > 0 && keptStreamRefs.length < streamsCount) {
-              page.node.set(PDFName.of('Contents'), pdfDoc.context.obj(keptStreamRefs));
-            }
-          }
-        }
-      }
-    }
-
-    // 2. IMAGE WATERMARK POSITION ERASER (Matching HTML visual eraser boxes)
-    if (config.imageEraserPreset && config.imageEraserPreset !== 'none') {
-      for (let i = 0; i < pageCount; i++) {
-        const page = pdfDoc.getPage(i);
-        const { width, height } = page.getSize();
-        let boxX = 0, boxY = 0, boxW = 0, boxH = 0;
-
-        if (config.imageEraserPreset === 'center') {
-          boxW = width * 0.65;
-          boxH = height * 0.35;
-          boxX = (width - boxW) / 2;
-          boxY = (height - boxH) / 2;
-        } else if (config.imageEraserPreset === 'top_right') {
-          boxW = width * 0.32;
-          boxH = height * 0.15;
-          boxX = width - boxW - 15;
-          boxY = height - boxH - 15;
-        } else if (config.imageEraserPreset === 'bottom_right') {
-          boxW = width * 0.32;
-          boxH = height * 0.15;
-          boxX = width - boxW - 15;
-          boxY = 15;
-        } else if (config.imageEraserPreset === 'diagonal') {
-          boxW = width * 0.85;
-          boxH = height * 0.55;
-          boxX = (width - boxW) / 2;
-          boxY = (height - boxH) / 2;
-        }
-
-        if (boxW > 0 && boxH > 0) {
-          page.drawRectangle({
-            x: Math.max(0, boxX),
-            y: Math.max(0, boxY),
-            width: Math.min(width, boxW),
-            height: Math.min(height, boxH),
-            color: fillColorRgb,
-            opacity: 1.0
-          });
-        }
-      }
-    }
-
-    // 3. TEXT KEYWORD ERASER: Locate and erase target text keywords
-    if (optTextClean && targetKeywords.length > 0) {
-      try {
-        const pdfJsDoc = await pdfjsLib.getDocument({ data: new Uint8Array(inputBuf) }).promise;
-        for (let i = 0; i < pageCount; i++) {
-          const page = pdfDoc.getPage(i);
-          const pdfJsPage = await pdfJsDoc.getPage(i + 1);
-          const textContent = await pdfJsPage.getTextContent();
-
-          for (const item of textContent.items) {
-            const itemStr = item.str.trim();
-            if (!itemStr) continue;
-
-            const matches = targetKeywords.some(kw => itemStr.toLowerCase().includes(kw));
-            if (matches) {
-              const tx = item.transform[4];
-              const ty = item.transform[5];
-              const tw = Math.max(item.width || 40, 20);
-              const th = Math.max(item.height || 14, 12);
-
-              page.drawRectangle({
-                x: Math.max(0, tx - 2),
-                y: Math.max(0, ty - 2),
-                width: tw + 4,
-                height: th + 4,
-                color: fillColorRgb,
-                opacity: 1.0
-              });
-            }
-          }
-        }
-      } catch (kwErr) {
-        console.warn('Keyword text cleaner notice:', kwErr.message);
-      }
-    }
-
-    const cleanedBytes = await pdfDoc.save();
-    fs.writeFileSync(outputPath, cleanedBytes);
-    return outputPath;
-  } catch (err) {
-    console.error('Remove Watermark error:', err);
-    fs.copyFileSync(inputPath, outputPath);
-    return outputPath;
-  }
-}
-
+// ========== PDF to Image Logic ==========
 async function pdfToImageConvert(inputPath, outputPath, config = {}) {
   try {
     const data = new Uint8Array(fs.readFileSync(inputPath));
@@ -1162,225 +818,6 @@ async function pdfToImageConvert(inputPath, outputPath, config = {}) {
   }
 }
 
-
-// ========== Compress PDF Logic ==========
-async function compressPdfConvert(inputPath, outputPath, config = {}) {
-  try {
-    const inputBuf = fs.readFileSync(inputPath);
-    const isMax = config.compressLevel === 'max';
-    const targetPreset = config.targetLimitKb || 'custom';
-
-    let targetBytes;
-    if (targetPreset === '500') {
-      targetBytes = 500 * 1024;
-    } else if (targetPreset === '1024') {
-      targetBytes = 1000 * 1024;
-    } else {
-      // Automatic Best Optimization
-      // Balanced: aims for ~60-75% reduction on raw, high visual fidelity
-      // Maximum: aims for ~80-92% reduction on raw, aggressive compression
-      targetBytes = isMax ? Math.round(inputBuf.length * 0.20) : Math.round(inputBuf.length * 0.45);
-    }
-
-    // Analyze PDF
-    const pdfDoc = await PDFDocument.load(inputBuf, { ignoreEncryption: true });
-    const numPages = pdfDoc.getPageCount();
-
-    // Collect image objects and calculate non-image stream bytes
-    const imageObjects = [];
-    let nonImgBytes = 50 * 1024; // base PDF structural overhead
-    for (const [ref, obj] of pdfDoc.context.enumerateIndirectObjects()) {
-      if (obj instanceof PDFRawStream) {
-        const subtype = (obj.dict.get(PDFName.of('Subtype')) || '').toString();
-        if (subtype === '/Image') {
-          // Avoid corrupting transparency masks if present
-          if (!obj.dict.get(PDFName.of('SMask'))) {
-            imageObjects.push(obj);
-          }
-        } else {
-          nonImgBytes += obj.contents.length;
-        }
-      }
-    }
-
-    let out1 = null;
-
-    // Engine 1: Multi-Pass Adaptive Stream Optimizer for embedded images
-    if (sharp && imageObjects.length > 0) {
-      try {
-        const originalContents = imageObjects.map(obj => Buffer.from(obj.contents));
-
-        async function applyStreamPass(currentDim, currentQ) {
-          for (let i = 0; i < imageObjects.length; i++) {
-            const obj = imageObjects[i];
-            try {
-              const comp = await sharp(originalContents[i])
-                .resize({ width: currentDim, height: currentDim, fit: 'inside', withoutEnlargement: true })
-                .jpeg({ quality: currentQ, mozjpeg: true, chromaSubsampling: '4:2:0' })
-                .toBuffer();
-              if (comp.length < originalContents[i].length) {
-                obj.contents = comp;
-                obj.dict.set(PDFName.of('Length'), pdfDoc.context.obj(comp.length));
-                obj.dict.set(PDFName.of('Filter'), PDFName.of('DCTDecode'));
-              }
-            } catch (e) {}
-          }
-          pdfDoc.setTitle(''); pdfDoc.setAuthor(''); pdfDoc.setSubject(''); pdfDoc.setKeywords([]);
-          return await pdfDoc.save({ useObjectStreams: true });
-        }
-
-        let dim, q;
-        const imgBudget = Math.max(15 * 1024, targetBytes - nonImgBytes);
-        const perImg = imgBudget / imageObjects.length;
-
-        if (targetPreset === '500') {
-          if (isMax) { dim = 340; q = 17; }
-          else { dim = 390; q = 20; }
-        } else if (targetPreset === '1024') {
-          if (isMax) { dim = 500; q = 26; }
-          else { dim = 800; q = 42; }
-        } else {
-          // Automatic Custom
-          if (isMax) {
-            if (perImg < 10 * 1024) { dim = 320; q = 16; }
-            else if (perImg < 20 * 1024) { dim = 380; q = 19; }
-            else if (perImg < 40 * 1024) { dim = 480; q = 24; }
-            else { dim = 650; q = 30; }
-          } else {
-            if (perImg < 10 * 1024) { dim = 500; q = 26; }
-            else if (perImg < 25 * 1024) { dim = 650; q = 34; }
-            else if (perImg < 50 * 1024) { dim = 850; q = 44; }
-            else { dim = 1100; q = 55; }
-          }
-        }
-
-        out1 = await applyStreamPass(dim, q);
-
-        // Pass 2 Refinement if strict target preset was chosen (500 or 1024) and exceeded:
-        if (targetPreset !== 'custom' && out1.length > targetBytes) {
-          const factor = Math.max(0.3, (targetBytes - nonImgBytes) / (out1.length - nonImgBytes));
-          dim = Math.max(220, Math.round(dim * Math.sqrt(factor) * 0.90));
-          q = Math.max(12, Math.round(q * factor * 0.90));
-          out1 = await applyStreamPass(dim, q);
-        }
-
-        // Final safety pass for 500 KB preset
-        if (targetPreset === '500' && out1.length > 512 * 1024) {
-          out1 = await applyStreamPass(250, 14);
-        }
-      } catch (e1) {
-        console.warn('Engine 1 error:', e1.message);
-      }
-    }
-
-    // Determine if Engine 1 met the target
-    const engine1Pass = out1 && (out1.length <= targetBytes);
-
-    let out2 = null;
-
-    // Engine 2: Page Flattener & Re-Renderer (for scanned / micro-sliced PDFs or when Engine 1 cannot run)
-    if (!engine1Pass && numPages > 0 && numPages <= 50) {
-      try {
-        const { createCanvas } = require('canvas');
-        const pdfjsDoc = await pdfjsLib.getDocument({ data: new Uint8Array(inputBuf) }).promise;
-
-        async function renderPages(scale, q) {
-          const newDoc = await PDFDocument.create();
-          for (let i = 1; i <= numPages; i++) {
-            const page = await pdfjsDoc.getPage(i);
-            const vp = page.getViewport({ scale });
-            const canvas = createCanvas(vp.width, vp.height);
-            await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
-            const jpg = canvas.toBuffer('image/jpeg', { quality: q });
-            const emb = await newDoc.embedJpg(jpg);
-            const origVp = page.getViewport({ scale: 1.0 });
-            const p = newDoc.addPage([origVp.width, origVp.height]);
-            p.drawImage(emb, { x: 0, y: 0, width: origVp.width, height: origVp.height });
-          }
-          return await newDoc.save({ useObjectStreams: true });
-        }
-
-        const perPageKb = (targetBytes / 1024) / numPages;
-        let scale, q;
-        if (perPageKb < 25) { scale = 0.80; q = 0.30; }
-        else if (perPageKb < 45) { scale = 1.00; q = 0.42; }
-        else if (perPageKb < 85) { scale = 1.20; q = 0.55; }
-        else { scale = 1.40; q = 0.68; }
-
-        out2 = await renderPages(scale, q);
-
-        if (out2.length > targetBytes) {
-          const ratio = targetBytes / out2.length;
-          scale = Math.max(0.65, scale * Math.sqrt(ratio) * 0.92);
-          q = Math.max(0.20, q * ratio * 0.92);
-          out2 = await renderPages(scale, q);
-        }
-      } catch (e2) {
-        console.warn('Engine 2 error:', e2.message);
-      }
-    }
-
-    // Select the best candidate based on active configuration
-    let candidates = [];
-    if (out1 && out1.length < inputBuf.length) candidates.push(out1);
-    if (out2 && out2.length < inputBuf.length) candidates.push(out2);
-
-    let best = null;
-    if (targetPreset === '500') {
-      const under500 = candidates.filter(c => c.length <= 512 * 1024);
-      if (under500.length > 0) {
-        if (isMax) {
-          under500.sort((a, b) => a.length - b.length);
-          best = under500[0];
-        } else {
-          under500.sort((a, b) => b.length - a.length); // best quality under 500 KB
-          best = under500[0];
-        }
-      } else if (candidates.length > 0) {
-        candidates.sort((a, b) => a.length - b.length);
-        best = candidates[0];
-      }
-    } else if (targetPreset === '1024') {
-      const under1024 = candidates.filter(c => c.length <= 1024 * 1024);
-      if (under1024.length > 0) {
-        if (isMax) {
-          under1024.sort((a, b) => a.length - b.length);
-          best = under1024[0];
-        } else {
-          under1024.sort((a, b) => b.length - a.length); // best quality under 1 MB
-          best = under1024[0];
-        }
-      } else if (candidates.length > 0) {
-        candidates.sort((a, b) => a.length - b.length);
-        best = candidates[0];
-      }
-    } else {
-      // Automatic
-      if (isMax) {
-        candidates.sort((a, b) => a.length - b.length);
-        best = candidates[0];
-      } else {
-        const meeting = candidates.filter(c => c.length <= targetBytes);
-        if (meeting.length > 0) {
-          meeting.sort((a, b) => b.length - a.length);
-          best = meeting[0];
-        } else if (candidates.length > 0) {
-          candidates.sort((a, b) => a.length - b.length);
-          best = candidates[0];
-        }
-      }
-    }
-
-    const finalBuf = (best && best.length < inputBuf.length) ? best : inputBuf;
-    fs.writeFileSync(outputPath, finalBuf);
-    return outputPath;
-  } catch (err) {
-    console.error('Compress PDF error:', err);
-    fs.copyFileSync(inputPath, outputPath);
-    return outputPath;
-  }
-}
-
 // ========== Compress Image Logic ==========
 async function compressImageConvert(inputPath, outputPath, config = {}) {
   try {
@@ -1419,80 +856,22 @@ async function compressImageConvert(inputPath, outputPath, config = {}) {
   }
 }
 
-// ========== Image Converter Logic (Full support for BMP, PNG, WEBP, JPG) ==========
+// ========== Image Converter Logic ==========
 async function imageConverterConvert(inputPath, outputPath, config = {}) {
   try {
+    if (!sharp) throw new Error("Sharp module required.");
     const format = (config.convertFormat || 'jpg').toLowerCase();
     const quality = config.convertQuality ? Math.round(parseFloat(config.convertQuality) * 100) : 92;
-    const finalOutputPath = outputPath.replace(/\.[^/.]+$/, `.${format}`);
-
-    if (format === 'bmp') {
-      const img = await loadImage(inputPath);
-      const canvas = createCanvas(img.width, img.height);
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#FFFFFF';
-      ctx.fillRect(0, 0, img.width, img.height);
-      ctx.drawImage(img, 0, 0);
-      
-      const imgData = ctx.getImageData(0, 0, img.width, img.height);
-      const rawData = imgData.data;
-
-      const width = img.width;
-      const height = img.height;
-      const rowSize = Math.floor((3 * width + 3) / 4) * 4;
-      const pixelArraySize = rowSize * height;
-      const fileSize = 54 + pixelArraySize;
-      const buffer = Buffer.alloc(fileSize);
-
-      buffer.write('BM', 0);
-      buffer.writeUInt32LE(fileSize, 2);
-      buffer.writeUInt32LE(0, 6);
-      buffer.writeUInt32LE(54, 10);
-
-      buffer.writeUInt32LE(40, 14);
-      buffer.writeInt32LE(width, 18);
-      buffer.writeInt32LE(-height, 22);
-      buffer.writeUInt16LE(1, 26);
-      buffer.writeUInt16LE(24, 28);
-      buffer.writeUInt32LE(0, 30);
-      buffer.writeUInt32LE(pixelArraySize, 34);
-      buffer.writeUInt32LE(2835, 38);
-      buffer.writeUInt32LE(2835, 42);
-      buffer.writeUInt32LE(0, 46);
-      buffer.writeUInt32LE(0, 50);
-
-      let srcOffset = 0;
-      let dstOffset = 54;
-      for (let y = 0; y < height; y++) {
-          const rowPadding = rowSize - (width * 3);
-          for (let x = 0; x < width; x++) {
-              const r = rawData[srcOffset];
-              const g = rawData[srcOffset + 1];
-              const b = rawData[srcOffset + 2];
-              buffer[dstOffset] = b;
-              buffer[dstOffset + 1] = g;
-              buffer[dstOffset + 2] = r;
-              srcOffset += 4;
-              dstOffset += 3;
-          }
-          for (let p = 0; p < rowPadding; p++) {
-              buffer[dstOffset++] = 0;
-          }
-      }
-
-      fs.writeFileSync(finalOutputPath, buffer);
-      return finalOutputPath;
-    }
-
-    if (!sharp) throw new Error("Sharp module required.");
     let imageProcess = sharp(inputPath);
 
-    if (format === 'jpg' || format === 'jpeg' || format === 'png') {
+    if (format === 'jpg' || format === 'jpeg' || format === 'bmp') {
       imageProcess = imageProcess.flatten({ background: { r: 255, g: 255, b: 255 } });
     }
 
     let ext = format === 'jpeg' ? 'jpeg' : format;
     if (format === 'ico') ext = 'ico';
+
+    const finalOutputPath = outputPath.replace(/\.[^/.]+$/, `.${ext}`);
 
     if (format === 'ico') {
       await imageProcess.resize(256, 256, { fit: 'inside', kernel: sharp.kernel.lanczos3 }).png().toFile(finalOutputPath);
@@ -1562,39 +941,22 @@ async function imageToPdfConvert(input, outputPath, config = {}) {
   }
 }
 
-// ========== Image Reducer Logic (Dynamic format preservation & PNG lossless/lossy balance) ==========
+// ========== Image Reducer Logic ==========
 async function imageReducerConvert(inputPath, outputPath, config = {}) {
   try {
     const mode = config.reducerMode || 'resize';
-    const inputExt = path.extname(inputPath).toLowerCase();
-    const targetExt = ['.png', '.webp', '.bmp', '.jpeg', '.jpg'].includes(inputExt) ? inputExt : '.jpg';
-    const finalOutputPath = outputPath.replace(/\.[^/.]+$/, targetExt === '.jpeg' ? '.jpg' : targetExt);
+    const finalOutputPath = outputPath.replace(/\.[^/.]+$/, ".jpg");
 
     if (sharp) {
-      if (targetExt === '.bmp') {
-        const img = await loadImage(inputPath);
-        const canvas = createCanvas(img.width, img.height);
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(0, 0, img.width, img.height);
-        ctx.drawImage(img, 0, 0);
-        fs.writeFileSync(finalOutputPath, canvas.toBuffer('image/jpeg'));
-        return finalOutputPath;
-      }
-
-      let pipeline = sharp(inputPath);
-      if (targetExt !== '.png') {
-        pipeline = pipeline.flatten({ background: { r: 255, g: 255, b: 255 } });
-      }
+      let pipeline = sharp(inputPath).flatten({ background: { r: 255, g: 255, b: 255 } });
 
       if (mode === 'resize') {
         const w = parseInt(config.reducerWidth) || 800;
         const h = parseInt(config.reducerHeight) || 600;
-        let p = pipeline.resize(w, h, { fit: 'fill', kernel: sharp.kernel.lanczos3 });
-        
-        if (targetExt === '.png') await p.png({ compressionLevel: 9 }).toFile(finalOutputPath);
-        else if (targetExt === '.webp') await p.webp({ quality: 95 }).toFile(finalOutputPath);
-        else await p.jpeg({ quality: 95, mozjpeg: true }).toFile(finalOutputPath);
+        await pipeline
+          .resize(w, h, { fit: 'fill', kernel: sharp.kernel.lanczos3 })
+          .jpeg({ quality: 95, mozjpeg: true })
+          .toFile(finalOutputPath);
       } else {
         const targetKb = parseFloat(config.reducerTargetKb) || 50;
         const targetBytes = targetKb * 1024;
@@ -1608,28 +970,21 @@ async function imageReducerConvert(inputPath, outputPath, config = {}) {
         let outputBuffer;
 
         for (let attempt = 0; attempt < 6; attempt++) {
-            let resizePipeline = sharp(inputPath);
-            if (targetExt !== '.png') resizePipeline = resizePipeline.flatten({ background: { r: 255, g: 255, b: 255 } });
-            
-            let resObj = resizePipeline.resize(
-              Math.max(150, Math.round(currentW * scale)), 
-              Math.max(150, Math.round(currentH * scale)), 
-              { fit: 'inside', kernel: sharp.kernel.lanczos3 }
-            );
+            outputBuffer = await sharp(inputPath)
+                .flatten({ background: { r: 255, g: 255, b: 255 } })
+                .resize(
+                  Math.max(150, Math.round(currentW * scale)), 
+                  Math.max(150, Math.round(currentH * scale)), 
+                  { fit: 'inside', kernel: sharp.kernel.lanczos3 }
+                )
+                .jpeg({ quality: quality, mozjpeg: true })
+                .toBuffer();
 
-            if (targetExt === '.png') {
-                outputBuffer = await resObj.png({ compressionLevel: 9, palette: true, colors: Math.max(16, Math.round(256 * (quality/100))) }).toBuffer();
-            } else if (targetExt === '.webp') {
-                outputBuffer = await resObj.webp({ quality: quality }).toBuffer();
-            } else {
-                outputBuffer = await resObj.jpeg({ quality: quality, mozjpeg: true }).toBuffer();
-            }
-
-            if (outputBuffer.length <= targetBytes || quality <= 20) {
+            if (outputBuffer.length <= targetBytes || quality <= 30) {
                 break;
             }
             quality -= 12;
-            scale -= 0.12;
+            scale -= 0.10;
         }
 
         fs.writeFileSync(finalOutputPath, outputBuffer);
@@ -1819,7 +1174,7 @@ async function imageToTextConvert(inputPath, outputPath, config = {}) {
 const PASSPORT_SIZE_PRESETS = {
   '3.5x4.5': { wIn: 3.5 / 2.54, hIn: 4.5 / 2.54, wMm: 35, hMm: 45, cols: 6, copyOptions: [4, 8, 16, 24, 32] },
   '3.5x3.5': { wIn: 3.5 / 2.54, hIn: 3.5 / 2.54, wMm: 35, hMm: 35, cols: 6, copyOptions: [4, 8, 16, 24, 32] },
-  '2x2':     { wIn: 2,            hIn: 2,            wMm: 51, hMm: 51, cols: 4, copyOptions: [4, 8, 16] }
+  '2x2':     { wIn: 2,           hIn: 2,           wMm: 51, hMm: 51, cols: 4, copyOptions: [4, 8, 16] }
 };
 const PASSPORT_DPI = 300;
 const MM_TO_PT = 2.83465;
@@ -1924,6 +1279,7 @@ async function generatePassportA4Sheet(photoJpegBuffer, sizePreset, copies) {
   const cellHpt = preset.hMm * MM_TO_PT;
   const cols = preset.cols; // 6 columns
 
+  // Exact grid alignment matching the frontend web layout preview
   const totalGridW = cols * cellWpt;
   const availableW = pageWpt - totalGridW;
   const marginSidePt = availableW / (cols + 1);
@@ -1994,71 +1350,6 @@ async function passportStudioConvert(inputPath, outputPath, config = {}) {
   }
 }
 
-// ========== Merge Image Logic (Matching Frontend HTML Exactly) ==========
-async function mergeImageConvert(input, outputPath, config = {}) {
-  try {
-    let inputs = Array.isArray(input) ? input : [input];
-    if (inputs.length === 0) throw new Error("No images provided for merging.");
-
-    const direction = config.mergeDirection || config.direction || 'horizontal';
-    const professionalGap = 16;
-
-    let loadedImages = [];
-    for (let i = 0; i < inputs.length; i++) {
-      const img = await loadImage(inputs[i]);
-      loadedImages.push(img);
-    }
-
-    const totalW = direction === 'vertical' 
-      ? Math.max(...loadedImages.map(img => img.width)) 
-      : loadedImages.reduce((sum, img) => sum + img.width, 0) + (professionalGap * (loadedImages.length - 1));
-      
-    const totalH = direction === 'vertical' 
-      ? loadedImages.reduce((sum, img) => sum + img.height, 0) + (professionalGap * (loadedImages.length - 1)) 
-      : Math.max(...loadedImages.map(img => img.height));
-
-    const canvas = createCanvas(totalW, totalH);
-    const ctx = canvas.getContext('2d');
-
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-    ctx.fillStyle = "#FFFFFF";
-    ctx.fillRect(0, 0, totalW, totalH);
-
-    let offset = 0;
-    loadedImages.forEach((img) => {
-      if (direction === 'vertical') {
-        const drawX = (totalW - img.width) / 2;
-        ctx.drawImage(img, drawX, offset);
-        offset += img.height + professionalGap;
-      } else {
-        const drawY = (totalH - img.height) / 2;
-        ctx.drawImage(img, offset, drawY);
-        offset += img.width + professionalGap;
-      }
-    });
-
-    const finalOutputPath = outputPath.replace(/\.[^/.]+$/, ".jpg");
-    let buffer = canvas.toBuffer('image/jpeg', { quality: 0.88 });
-
-    if (sharp) {
-      let quality = 88;
-      while (buffer.length > 100 * 1024 && quality > 15) {
-        quality -= 8;
-        buffer = await sharp(canvas.toBuffer('image/png'))
-          .jpeg({ quality: quality, mozjpeg: true })
-          .toBuffer();
-      }
-    }
-
-    fs.writeFileSync(finalOutputPath, buffer);
-    return finalOutputPath;
-  } catch (error) {
-    console.error('Merge Image error:', error);
-    throw error;
-  }
-} 
-
 // ========== Main processFile ==========
 async function processFile(toolId, inputPath, outputPath, config = {}) {
   switch (toolId) {
@@ -2075,12 +1366,8 @@ async function processFile(toolId, inputPath, outputPath, config = {}) {
       return await pdfOrganizerConvert(inputPath, outputPath, config);
     case 'pdf-watermark':
       return await pdfWatermarkConvert(inputPath, outputPath, config);
-    case 'remove-watermark':
-      return await removeWatermarkConvert(inputPath, outputPath, config);
     case 'pdf-to-image':
       return await pdfToImageConvert(inputPath, outputPath, config);
-    case 'compress-pdf':
-      return await compressPdfConvert(inputPath, outputPath, config);
     case 'compress-image':
       return await compressImageConvert(inputPath, outputPath, config);
     case 'image-converter':
@@ -2093,8 +1380,6 @@ async function processFile(toolId, inputPath, outputPath, config = {}) {
       return await imageToTextConvert(inputPath, outputPath, config);
     case 'passport-studio':
       return await passportStudioConvert(inputPath, outputPath, config);
-   case 'merge-image':
-      return await mergeImageConvert(inputPath, outputPath, config);
     default:
       fs.copyFileSync(Array.isArray(inputPath) ? inputPath[0] : inputPath, outputPath);
       return outputPath;
@@ -2227,13 +1512,7 @@ app.post('/api/workflow/execute/:id', async (req, res) => {
 });
 
 // ========== Frontend & Workflow Builder UI with Gorgeous Multi-Color Studio Modal & Live Preview ==========
-app.get('/', (req, res) => {
-  const publicIndex = path.join(__dirname, 'public', 'index.html');
-  if (fs.existsSync(publicIndex)) {
-    return res.sendFile(publicIndex);
-  }
-  return res.sendFile(path.join(__dirname, 'index.html'));
-});
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
 app.get('/workflow-builder', (req, res) => {
   const toolsListHTML = toolRegistry.map(tool => {
@@ -2243,54 +1522,44 @@ app.get('/workflow-builder', (req, res) => {
       '</div>';
   }).join('');
 
-  res.send('<!DOCTYPE html><html><head><title>Workflow Builder - Filesque</title><script src="https://cdn.tailwindcss.com"></script><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"><style>' +
+  res.send('<!DOCTYPE html><html><head><title>Workflow Builder - Filesque</title><style>' +
     '*{margin:0;padding:0;box-sizing:border-box}' +
     'body{font-family:"Plus Jakarta Sans",sans-serif;background:#f8fafc;min-height:100vh}' +
-    '.navbar{background:rgba(255,255,255,0.9);backdrop-filter:blur(12px);border-bottom:1px solid #f1f5f9;padding:1.25rem 3rem;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 2px 0 rgba(0,0,0,0.05)}' +
-    '.back-link{color:#0f172a;text-decoration:none;font-weight:800;font-size:15px;background:#f1f5f9;padding:10px 18px;border-radius:12px;border:1px solid #e2e8f0;display:flex;align-items:center;gap:6px;transition:all 0.2s}' +
-    '.back-link:hover{background:#0f172a;color:white;border-color:#0f172a;transform:translateY(-1px);box-shadow:0 4px 12px rgba(15,23,42,0.15)}' +
-    '.container{display:flex;gap:2rem;width:100%;max-width:1600px;margin:0 auto;padding:2rem 3rem}' +
-    '@media(max-width: 1024px){.container{flex-direction:column;padding:1rem}}' +
-    '.panel{background:white;border-radius:1.25rem;box-shadow:0 4px 20px rgba(0,0,0,0.03);padding:1.75rem;border:1px solid #e2e8f0}' +
-    '.tools-panel{flex:0 0 380px;max-height:85vh;overflow-y:auto}.workflow-panel{flex:1}' +
-    '.panel-title{font-size:1.35rem;font-weight:800;margin-bottom:1.25rem;color:#0f172a}' +
-    '.tool-item{display:flex;align-items:center;gap:0.8rem;padding:0.9rem 1.1rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:0.75rem;margin-bottom:0.6rem;cursor:pointer;transition:0.2s}' +
-    '.tool-item:hover{background:#f1f5f9;border-color:#cbd5e1;transform:translateX(4px)}' +
-    '.tool-icon{font-size:1.5rem}.tool-name{font-weight:700;color:#334155;font-size:14px}' +
-    '.workflow-area{min-height:220px;border:2px dashed #cbd5e1;border-radius:1rem;padding:1.25rem;margin-bottom:1.25rem;background:#fafafa}' +
-    '.step{display:flex;flex-wrap:wrap;align-items:center;gap:1rem;padding:1.1rem;background:white;border:1px solid #e2e8f0;border-radius:0.75rem;margin-bottom:0.75rem;transition:all 0.3s;box-shadow:0 2px 6px rgba(0,0,0,0.02)}' +
-    '.step.active-step{background:#e0f2fe;border:2px solid #0284c7;box-shadow:0 4px 12px rgba(2,132,199,0.2);transform:scale(1.01)}' +
-    '.step-number{width:34px;height:34px;background:#dc2626;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px}' +
-    '.remove-btn{background:#fee2e2;color:#dc2626;border:none;border-radius:0.5rem;padding:0.4rem 0.9rem;cursor:pointer;font-weight:800;font-size:13px;transition:0.2s}' +
-    '.remove-btn:hover{background:#dc2626;color:white}' +
-    '.controls{display:flex;gap:1rem;margin-bottom:1.5rem}' +
-    '.btn{padding:0.9rem 1.75rem;background:#dc2626;color:white;border:none;border-radius:0.75rem;cursor:pointer;font-weight:800;font-size:15px;transition:0.2s}' +
-    '.btn:hover{background:#b91c1c;transform:translateY(-1px);box-shadow:0 4px 12px rgba(220,38,38,0.2)}' +
-    '.btn-secondary{background:#64748b}.btn-secondary:hover{background:#475569;box-shadow:0 4px 12px rgba(100,116,139,0.2)}' +
-    '.saved-list{margin-top:1.5rem}.saved-item{padding:0.9rem 1.1rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:0.75rem;margin-bottom:0.5rem;font-size:14px;font-weight:600;color:#334155}' +
-    '.file-upload-section{margin-top:1.5rem;padding:1.25rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:1rem}' +
-    '.file-upload-section input[type="file"]{margin-top:0.75rem;font-size:14px;font-weight:600}' +
+    '.navbar{background:white;border-bottom:1px solid #e2e8f0;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center}' +
+    '.logo{font-size:1.8rem;font-weight:900;color:#0f172a}.logo span{color:#dc2626}' +
+    '.back-link{color:#dc2626;text-decoration:none;font-weight:700}' +
+    '.container{display:flex;gap:2rem;max-width:1400px;margin:2rem auto;padding:0 1rem}' +
+    '.panel{background:white;border-radius:1rem;box-shadow:0 2px 10px rgba(0,0,0,0.05);padding:1.5rem}' +
+    '.tools-panel{flex:1;max-height:80vh;overflow-y:auto}.workflow-panel{flex:2}' +
+    '.panel-title{font-size:1.3rem;font-weight:800;margin-bottom:1rem}' +
+    '.tool-item{display:flex;align-items:center;gap:0.8rem;padding:0.8rem 1rem;background:#f1f5f9;border-radius:0.5rem;margin-bottom:0.5rem;cursor:pointer;transition:0.2s}' +
+    '.tool-item:hover{background:#e2e8f0;transform:translateX(5px)}' +
+    '.tool-icon{font-size:1.4rem}.tool-name{font-weight:600}' +
+    '.workflow-area{min-height:200px;border:2px dashed #cbd5e1;border-radius:0.75rem;padding:1rem;margin-bottom:1rem}' +
+    '.step{display:flex;align-items:center;gap:1rem;padding:0.8rem;background:#f1f5f9;border-radius:0.5rem;margin-bottom:0.5rem}' +
+    '.step-number{width:30px;height:30px;background:#dc2626;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold}' +
+    '.remove-btn{background:#ef4444;color:white;border:none;border-radius:0.25rem;padding:0.3rem 0.7rem;cursor:pointer}' +
+    '.controls{display:flex;gap:0.8rem;margin-bottom:1rem}' +
+    'input[type="text"]{flex:1;padding:0.7rem 1rem;border:1px solid #cbd5e1;border-radius:0.5rem;font-size:1rem}' +
+    '.btn{padding:0.7rem 1.5rem;background:#dc2626;color:white;border:none;border-radius:0.5rem;cursor:pointer;font-weight:700}' +
+    '.btn:hover{background:#b91c1c}.btn-secondary{background:#64748b}.btn-secondary:hover{background:#475569}' +
+    '.saved-list{margin-top:1rem}.saved-item{padding:0.6rem;background:#f8fafc;border-radius:0.4rem;margin-bottom:0.4rem}' +
+    '.file-upload-section{margin-top:1.5rem;padding:1rem;background:#f8fafc;border-radius:0.5rem}' +
+    '.file-upload-section input[type="file"]{margin-top:0.5rem}' +
     '</style></head><body>' +
-    '<div class="navbar">' +
-    '  <div class="cursor-pointer flex items-center space-x-2 group shrink-0" onclick="window.location.href=\'/\'">' +
-    '    <span class="text-4xl sm:text-7xl font-black tracking-tighter text-[#0f172a] flex items-center overflow-hidden">' +
-    '      <span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span><span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span>' +
-    '    </span>' +
-    '    <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping ml-1 hidden sm:inline-block"></span>' +
-    '  </div>' +
-    '  <a href="/" class="back-link"><span>🏠</span> Back to Dashboard</a>' +
-    '</div>' +
+    '<div class="navbar"><div class="logo">Files<span>que</span></div><a href="/" class="back-link">← Back to Home</a></div>' +
     '<div class="container">' +
     '<div class="panel tools-panel"><div class="panel-title">🛠️ Tools (' + toolRegistry.length + ')</div>' + toolsListHTML + '</div>' +
     '<div class="panel workflow-panel"><div class="panel-title">📋 Your Workflow</div>' +
-    '<div class="workflow-area" id="workflowArea"><p style="color:#94a3b8;font-weight:600;font-size:15px;">Click on tools to add steps</p></div>' +
-    '<div class="controls">' +
+    '<div class="workflow-area" id="workflowArea"><p style="color:#94a3b8;">Click on tools to add steps</p></div>' +
+    '<div class="controls"><input type="text" id="wfName" placeholder="Workflow Name">' +
+    '<button class="btn" onclick="saveWorkflow()">💾 Save</button>' +
     '<button class="btn btn-secondary" onclick="clearWorkflow()">🗑️ Clear</button></div>' +
-    '<div class="file-upload-section"><h3 style="font-size:15px;font-weight:800;color:#0f172a;">📁 Test Your Workflow</h3>' +
+    '<div class="file-upload-section"><h3>📁 Test Your Workflow</h3>' +
     '<input type="file" id="wfFile" multiple>' + 
     '<button class="btn" onclick="executeWorkflow()" style="margin-left: 10px;">▶️ Execute Workflow</button>' +
-    '<div id="executionResult" style="margin-top:10px;font-weight:700;font-size:14px;"></div></div>' +
-    
+    '<div id="executionResult" style="margin-top:10px;"></div></div>' +
+    '<div class="saved-list"><h3>Saved Workflows</h3><div id="savedList"></div></div>' +
     '</div></div>' +
     '<div id="modalContainer"></div>' +
     '<script>' +
@@ -2299,48 +1568,40 @@ app.get('/workflow-builder', (req, res) => {
     'document.getElementById("wfFile").addEventListener("change", function(e) { selectedFiles = e.target.files; });' +
     'function updateStepConfig(idx, key, val) { steps[idx][key] = val; }' +
     'function addToWorkflow(id, name, icon) { ' +
-    '  steps.push({ id: id, name: name, icon: icon, watermarkType: "text", watermarkText: "CONFIDENTIAL", watermarkMode: "watermark_only", watermarkColor: "#dc2626", watermarkOpacity: "30", imagePreset: "stamp_confidential", watermarkImageBase64: "", imagePosition: "center", imgIncludePageNums: false, optAutoClean: true, optImageClean: true, imageEraserPreset: "none", optTextClean: true, targetWatermarkText: "CONFIDENTIAL, DRAFT", eraserColor: "#ffffff", compressLevel: "balanced", targetLimitKb: "custom", rmWatermarkMode: "auto", rmKeywords: "CONFIDENTIAL, DRAFT", isComplex: false, mode: "all", range: "", sortOrder: "upload", customSequence: "", pageOrder: "", rotatePages: "", rotateDegree: "90", compressQuality: "0.70", convertFormat: "jpg", convertQuality: "0.92", reducerMode: "resize", reducerWidth: "800", reducerHeight: "600", reducerTargetKb: "50", sizePreset: "3.5x4.5", bgColor: "#f87171", zoom: "100", copies: "32", removeBg: false, mergeDirection: "horizontal" });' +
-'  renderSteps();' +
+    '  steps.push({ id: id, name: name, icon: icon, isComplex: false, mode: "all", range: "", sortOrder: "upload", customSequence: "", pageOrder: "", rotatePages: "", rotateDegree: "90", watermarkText: "CONFIDENTIAL", watermarkMode: "diagonal", compressQuality: "0.70", convertFormat: "jpg", convertQuality: "0.92", reducerMode: "resize", reducerWidth: "800", reducerHeight: "600", reducerTargetKb: "50", sizePreset: "3.5x4.5", bgColor: "#f87171", zoom: "100", copies: "32", removeBg: false });' +
+    '  renderSteps();' +
     '}' +
-    'function renderSteps(activeIdx = -1) {' +
+    'function renderSteps() {' +
     '  const area = document.getElementById("workflowArea");' +
-    '  if (steps.length === 0) { area.innerHTML = "<p style=\'color:#94a3b8;font-weight:600;font-size:15px;\'>Click on tools to add steps</p>"; return; }' +
+    '  if (steps.length === 0) { area.innerHTML = "<p style=\'color:#94a3b8;\'>Click on tools to add steps</p>"; return; }' +
     '  let html = "";' +
     '  for (let i = 0; i < steps.length; i++) {' +
     '    let toggleHtml = "";' +
-    '    let isActive = (i === activeIdx);' +
-    '    let stepClass = isActive ? "step active-step" : "step";' +
-    '    if (isActive) {' +
-    '        toggleHtml += "<div style=\'margin-left:auto; display:flex; align-items:center; gap:6px; background:#0284c7; color:white; padding:6px 12px; border-radius:8px; font-weight:800; font-size:13px;\'>⚡ Processing Step...</div>";' +
-    '    } else if (steps[i].id === "pdf-to-excel") {' +
-    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:8px; border:1px solid #cbd5e1;\'>" +' +
-    '        "<span style=\'font-size:13px; font-weight:bold; color:#475569;\'>Mode:</span>" +' +
-    '        "<select onchange=\'updateStepConfig(" + i + ", \\\"isComplex\\\", this.value === \\\"complex\\\")\' style=\'padding:4px 8px; border-radius:6px; border:1px solid #94a3b8; font-size:13px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '    if (steps[i].id === "pdf-to-excel") {' +
+    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
+    '        "<span style=\'font-size:12px; font-weight:bold; color:#475569;\'>Mode:</span>" +' +
+    '        "<select onchange=\'updateStepConfig(" + i + ", \\\"isComplex\\\", this.value === \\\"complex\\\")\' style=\'padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
     '          "<option value=\\\"simple\\\" " + (!steps[i].isComplex ? "selected" : "") + ">Simple Table</option>" +' +
     '          "<option value=\\\"complex\\\" " + (steps[i].isComplex ? "selected" : "") + ">Complex Table</option>" +' +
     '        "</select>" +' +
-    '      "</div>";' +
-    '    } else if (steps[i].id === "merge-image") {' +
-    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:linear-gradient(135deg, #0d9488, #4f46e5); padding:6px 14px; border-radius:8px; color:white; font-weight:bold; font-size:13px; box-shadow:0 2px 5px rgba(0,0,0,0.1);\'>" + ' +
-    '        "<span>🧩 Studio & Crop Dialog Ready</span>" + ' +
     '      "</div>";' +
     '    } else if (steps[i].id === "pdf-splitter") {' +
     '      let mode = steps[i].mode || "all";' +
     '      let rangeVal = steps[i].range || "";' +
     '      let displayRange = mode === "all" ? "display:none;" : "";' +
-    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:8px; border:1px solid #cbd5e1;\'>" +' +
-    '        "<span style=\'font-size:13px; font-weight:bold; color:#475569;\'>Mode:</span>" +' +
-    '        "<select onchange=\'updateStepConfig(" + i + ", \\\"mode\\\", this.value); renderSteps();\' style=\'padding:4px 8px; border-radius:6px; border:1px solid #94a3b8; font-size:13px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
+    '        "<span style=\'font-size:12px; font-weight:bold; color:#475569;\'>Mode:</span>" +' +
+    '        "<select onchange=\'updateStepConfig(" + i + ", \\\"mode\\\", this.value); renderSteps();\' style=\'padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
     '          "<option value=\\\"all\\\" " + (mode === "all" ? "selected" : "") + ">Split All (ZIP)</option>" +' +
     '          "<option value=\\\"range\\\" " + (mode === "range" ? "selected" : "") + ">Custom Range</option>" +' +
     '        "</select>" +' +
-    '        "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"range\\\", this.value)\' value=\'" + rangeVal + "\' placeholder=\'e.g. 1-3, 5\' style=\'padding:4px 8px; border-radius:6px; border:1px solid #94a3b8; font-size:13px; width:110px; outline:none; " + displayRange + "\'>" + ' +
+    '        "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"range\\\", this.value)\' value=\'" + rangeVal + "\' placeholder=\'e.g. 1-3, 5\' style=\'padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; width:100px; outline:none; " + displayRange + "\'>" + ' +
     '      "</div>";' +
     '    } else if (steps[i].id === "merge-pdf" || steps[i].id === "image-to-pdf") {' +
     '      let sOrder = steps[i].sortOrder || "upload";' +
-    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:8px; border:1px solid #cbd5e1;\'>" +' +
-    '        "<span style=\'font-size:13px; font-weight:bold; color:#475569;\'>Combine Order:</span>" +' +
-    '        "<select onchange=\'updateStepConfig(" + i + ", \\\"sortOrder\\\", this.value)\' style=\'padding:4px 8px; border-radius:6px; border:1px solid #94a3b8; font-size:13px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
+    '        "<span style=\'font-size:12px; font-weight:bold; color:#475569;\'>Combine Order:</span>" +' +
+    '        "<select onchange=\'updateStepConfig(" + i + ", \\\"sortOrder\\\", this.value)\' style=\'padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
     '          "<option value=\\\"upload\\\" " + (sOrder === "upload" ? "selected" : "") + ">As Uploaded</option>" +' +
     '          "<option value=\\\"az\\\" " + (sOrder === "az" ? "selected" : "") + ">Alphabetical (A-Z)</option>" +' +
     '          "<option value=\\\"za\\\" " + (sOrder === "za" ? "selected" : "") + ">Alphabetical (Z-A)</option>" +' +
@@ -2352,19 +1613,19 @@ app.get('/workflow-builder', (req, res) => {
     '      let rDeg = steps[i].rotateDegree || "90";' +
     '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px;\'>" +' +
     '        "<div style=\'display:flex; align-items:flex-start; gap:5px; background:#e2e8f0; padding:6px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '          "<span style=\'font-size:13px; font-weight:bold; color:#475569; margin-top:2px;\'>Page Order:</span>" +' +
+    '          "<span style=\'font-size:11px; font-weight:bold; color:#475569; margin-top:2px;\'>Page Order:</span>" +' +
     '          "<div style=\'display:flex; flex-direction:column; gap:2px;\'>" +' +
-    '            "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"pageOrder\\\", this.value)\' value=\'" + pOrder + "\' placeholder=\'e.g. 1, 3, 2, 5-7\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; width:130px; outline:none;\'>" +' +
-    '            "<span style=\'font-size:10px; color:#64748b; line-height:1;\'>e.g., 1, 3, 2, 5-7</span>" +' +
+    '            "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"pageOrder\\\", this.value)\' value=\'" + pOrder + "\' placeholder=\'e.g. 1, 3, 2, 5-7\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; width:120px; outline:none;\' title=\'Leave blank to keep all pages original order\'>" +' +
+    '            "<span style=\'font-size:9px; color:#64748b; line-height:1;\'>e.g., 1, 3, 2, 5-7</span>" +' +
     '          "</div>" +' +
     '        "</div>" +' +
     '        "<div style=\'display:flex; align-items:flex-start; gap:5px; background:#e2e8f0; padding:6px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '          "<span style=\'font-size:13px; font-weight:bold; color:#475569; margin-top:2px;\'>Rotate:</span>" +' +
+    '          "<span style=\'font-size:11px; font-weight:bold; color:#475569; margin-top:2px;\'>Rotate:</span>" +' +
     '          "<div style=\'display:flex; flex-direction:column; gap:2px;\'>" +' +
-    '            "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"rotatePages\\\", this.value)\' value=\'" + rPages + "\' placeholder=\'e.g. 2, 4 or all\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; width:120px; outline:none;\'>" +' +
-    '            "<span style=\'font-size:10px; color:#64748b; line-height:1;\'>e.g. 2, 4 or all</span>" +' +
+    '            "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"rotatePages\\\", this.value)\' value=\'" + rPages + "\' placeholder=\'e.g. 2, 4 or all\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; width:110px; outline:none;\'>" +' +
+    '            "<span style=\'font-size:9px; color:#64748b; line-height:1;\'>e.g. 2, 4 or all</span>" +' +
     '          "</div>" +' +
-    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"rotateDegree\\\", this.value)\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"rotateDegree\\\", this.value)\' style=\'padding:1px 4px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
     '             "<option value=\\\"90\\\" " + (rDeg === "90" ? "selected" : "") + ">90°</option>" +' +
     '             "<option value=\\\"180\\\" " + (rDeg === "180" ? "selected" : "") + ">180°</option>" +' +
     '             "<option value=\\\"270\\\" " + (rDeg === "270" ? "selected" : "") + ">270°</option>" +' +
@@ -2372,145 +1633,30 @@ app.get('/workflow-builder', (req, res) => {
     '        "</div>" +' +
     '      "</div>";' +
     '    } else if (steps[i].id === "pdf-watermark") {' +
-    '      let wmType = steps[i].watermarkType || "text";' +
-    '      let wmText = steps[i].watermarkText !== undefined ? steps[i].watermarkText : "CONFIDENTIAL";' +
-    '      let wmMode = steps[i].watermarkMode || "watermark_only";' +
-    '      let wmColor = steps[i].watermarkColor || "#dc2626";' +
-    '      let wmOpacity = steps[i].watermarkOpacity || "30";' +
-    '      let imgPreset = steps[i].imagePreset || "stamp_confidential";' +
-    '      let imgPos = steps[i].imagePosition || "center";' +
-    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; flex-wrap:wrap; align-items:center; gap:8px;\'>" +' +
-    '        "<div style=\'display:flex; align-items:center; gap:4px; background:#e0f2fe; padding:5px 9px; border-radius:8px; border:1px solid #bae6fd;\'>" +' +
-    '          "<span style=\'font-size:12px; font-weight:800; color:#0369a1;\'>Type:</span>" +' +
-    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"watermarkType\\\", this.value); renderSteps();\' style=\'padding:2px 6px; border-radius:6px; border:1px solid #7dd3fc; font-size:12px; font-weight:700; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
-    '            "<option value=\\\"text\\\" " + (wmType === "text" ? "selected" : "") + ">✍️ Text Watermark</option>" +' +
-    '            "<option value=\\\"image\\\" " + (wmType === "image" ? "selected" : "") + ">🖼️ Image Watermark</option>" +' +
-    '          "</select>" +' +
-    '        "</div>";' +
-    '      if (wmType === "text") {' +
-    '        toggleHtml += "<div style=\'display:flex; align-items:center; gap:4px; background:#e0f2fe; padding:5px 9px; border-radius:8px; border:1px solid #bae6fd;\'>" +' +
-    '          "<span style=\'font-size:12px; font-weight:800; color:#0369a1;\'>Text:</span>" +' +
-    '          "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"watermarkText\\\", this.value)\' value=\'" + wmText + "\' placeholder=\'Enter text...\' style=\'padding:2px 6px; border-radius:6px; border:1px solid #7dd3fc; font-size:12px; width:95px; outline:none; background:white; color:#0f172a;\'>" +' +
+    '      let wmText = steps[i].watermarkText || "CONFIDENTIAL";' +
+    '      let wmMode = steps[i].watermarkMode || "diagonal";' +
+    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px;\'>" +' +
+    '        "<div style=\'display:flex; align-items:flex-start; gap:5px; background:#e2e8f0; padding:6px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
+    '          "<span style=\'font-size:11px; font-weight:bold; color:#475569; margin-top:2px;\'>Text:</span>" +' +
+    '          "<div style=\'display:flex; flex-direction:column; gap:2px;\'>" +' +
+    '            "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"watermarkText\\\", this.value)\' value=\'" + wmText + "\' placeholder=\'e.g. CONFIDENTIAL\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; width:110px; outline:none;\'>" +' +
+    '            "<span style=\'font-size:9px; color:#64748b; line-height:1;\'>e.g. DRAFT</span>" +' +
+    '          "</div>" +' +
     '        "</div>" +' +
-    '        "<div style=\'display:flex; align-items:center; gap:4px; background:#e0f2fe; padding:5px 9px; border-radius:8px; border:1px solid #bae6fd;\'>" +' +
-    '          "<span style=\'font-size:12px; font-weight:800; color:#0369a1;\'>Mode:</span>" +' +
-    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"watermarkMode\\\", this.value)\' style=\'padding:2px 6px; border-radius:6px; border:1px solid #7dd3fc; font-size:12px; font-weight:700; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
-    '            "<option value=\\\"watermark_only\\\" " + (wmMode === "watermark_only" || wmMode === "diagonal" ? "selected" : "") + ">Custom Watermark Only</option>" +' +
-    '            "<option value=\\\"footer_num\\\" " + (wmMode === "footer_num" ? "selected" : "") + ">Page Numbers at Bottom</option>" +' +
-    '            "<option value=\\\"both\\\" " + (wmMode === "both" ? "selected" : "") + ">Both (Watermark + Numbers)</option>" +' +
-    '          "</select>" +' +
-    '        "</div>" +' +
-    '        "<div style=\'display:flex; align-items:center; gap:4px; background:#e0f2fe; padding:5px 9px; border-radius:8px; border:1px solid #bae6fd;\'>" +' +
-    '          "<span style=\'font-size:12px; font-weight:800; color:#0369a1;\'>Color:</span>" +' +
-    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"watermarkColor\\\", this.value)\' style=\'padding:2px 6px; border-radius:6px; border:1px solid #7dd3fc; font-size:12px; font-weight:700; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
-    '            "<option value=\\\"#dc2626\\\" " + (wmColor === "#dc2626" ? "selected" : "") + ">🔴 Red</option>" +' +
-    '            "<option value=\\\"#2563eb\\\" " + (wmColor === "#2563eb" ? "selected" : "") + ">🔵 Blue</option>" +' +
-    '            "<option value=\\\"#059669\\\" " + (wmColor === "#059669" ? "selected" : "") + ">🟢 Green</option>" +' +
-    '            "<option value=\\\"#7c3aed\\\" " + (wmColor === "#7c3aed" ? "selected" : "") + ">🟣 Purple</option>" +' +
-    '            "<option value=\\\"#0f172a\\\" " + (wmColor === "#0f172a" ? "selected" : "") + ">⚫ Dark Slate</option>" +' +
-    '          "</select>" +' +
-    '        "</div>";' +
-    '      } else {' +
-    '        toggleHtml += "<div style=\'display:flex; align-items:center; gap:4px; background:#e0f2fe; padding:5px 9px; border-radius:8px; border:1px solid #bae6fd;\'>" +' +
-    '          "<span style=\'font-size:12px; font-weight:800; color:#0369a1;\'>Stamp:</span>" +' +
-    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"imagePreset\\\", this.value); renderSteps();\' style=\'padding:2px 6px; border-radius:6px; border:1px solid #7dd3fc; font-size:12px; font-weight:700; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
-    '            "<option value=\\\"stamp_confidential\\\" " + (imgPreset === "stamp_confidential" ? "selected" : "") + ">🛡️ CONFIDENTIAL</option>" +' +
-    '            "<option value=\\\"stamp_approved\\\" " + (imgPreset === "stamp_approved" ? "selected" : "") + ">✅ APPROVED</option>" +' +
-    '            "<option value=\\\"stamp_draft\\\" " + (imgPreset === "stamp_draft" ? "selected" : "") + ">⚠️ DRAFT</option>" +' +
-    '            "<option value=\\\"stamp_sample\\\" " + (imgPreset === "stamp_sample" ? "selected" : "") + ">📋 SAMPLE</option>" +' +
-    '            "<option value=\\\"custom\\\" " + (imgPreset === "custom" ? "selected" : "") + ">📁 Upload Image...</option>" +' +
-    '          "</select>" +' +
-    '          (imgPreset === "custom" ? "<input type=\'file\' accept=\'image/*\' onchange=\'handleStepImgUpload(" + i + ", this.files[0])\' style=\'font-size:11px; width:110px; cursor:pointer;\'>" : "") +' +
-    '        "</div>" +' +
-    '        "<div style=\'display:flex; align-items:center; gap:4px; background:#e0f2fe; padding:5px 9px; border-radius:8px; border:1px solid #bae6fd;\'>" +' +
-    '          "<span style=\'font-size:12px; font-weight:800; color:#0369a1;\'>Pos:</span>" +' +
-    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"imagePosition\\\", this.value)\' style=\'padding:2px 6px; border-radius:6px; border:1px solid #7dd3fc; font-size:12px; font-weight:700; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
-    '            "<option value=\\\"center\\\" " + (imgPos === "center" ? "selected" : "") + ">Center</option>" +' +
-    '            "<option value=\\\"center_large\\\" " + (imgPos === "center_large" ? "selected" : "") + ">Center Large</option>" +' +
-    '            "<option value=\\\"top_right\\\" " + (imgPos === "top_right" ? "selected" : "") + ">Top-Right</option>" +' +
-    '            "<option value=\\\"bottom_right\\\" " + (imgPos === "bottom_right" ? "selected" : "") + ">Bottom-Right</option>" +' +
-    '            "<option value=\\\"diagonal\\\" " + (imgPos === "diagonal" ? "selected" : "") + ">Diagonal</option>" +' +
-    '          "</select>" +' +
-    '        "</div>";' +
-    '      }' +
-    '      toggleHtml += "<div style=\'display:flex; align-items:center; gap:4px; background:#e0f2fe; padding:5px 9px; border-radius:8px; border:1px solid #bae6fd;\'>" +' +
-    '          "<span style=\'font-size:12px; font-weight:800; color:#0369a1;\'>Opacity:</span>" +' +
-    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"watermarkOpacity\\\", this.value)\' style=\'padding:2px 6px; border-radius:6px; border:1px solid #7dd3fc; font-size:12px; font-weight:700; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
-    '            "<option value=\\\"10\\\" " + (wmOpacity === "10" ? "selected" : "") + ">10%</option>" +' +
-    '            "<option value=\\\"20\\\" " + (wmOpacity === "20" ? "selected" : "") + ">20%</option>" +' +
-    '            "<option value=\\\"30\\\" " + (wmOpacity === "30" ? "selected" : "") + ">30%</option>" +' +
-    '            "<option value=\\\"50\\\" " + (wmOpacity === "50" ? "selected" : "") + ">50%</option>" +' +
-    '            "<option value=\\\"75\\\" " + (wmOpacity === "75" ? "selected" : "") + ">75%</option>" +' +
-    '            "<option value=\\\"100\\\" " + (wmOpacity === "100" ? "selected" : "") + ">100%</option>" +' +
-    '          "</select>" +' +
-    '        "</div>" +' +
-    '      "</div>";' +
-    '    } else if (steps[i].id === "remove-watermark") {' +
-    '      let isAuto = steps[i].optAutoClean !== false;' +
-    '      let isImgClean = steps[i].optImageClean !== false;' +
-    '      let imgEraser = steps[i].imageEraserPreset || "none";' +
-    '      let isText = steps[i].optTextClean !== false;' +
-    '      let tgtKw = steps[i].targetWatermarkText || steps[i].rmKeywords || "CONFIDENTIAL, DRAFT";' +
-    '      let fColor = steps[i].eraserColor || "#ffffff";' +
-    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; flex-wrap:wrap; align-items:center; gap:8px;\'>" +' +
-    '        "<label style=\'display:flex; align-items:center; gap:4px; background:#f0fdf4; padding:5px 9px; border-radius:8px; border:1px solid #bbf7d0; cursor:pointer; font-size:12px; font-weight:800; color:#16a34a;\'>" +' +
-    '          "<input type=\'checkbox\' onchange=\'updateStepConfig(" + i + ", \\\"optAutoClean\\\", this.checked)\' " + (isAuto ? "checked" : "") + " style=\'cursor:pointer; accent-color:#16a34a;\'>" +' +
-    '          "✨ Smart Auto-Clean" +' +
-    '        "</label>" +' +
-    '        "<label style=\'display:flex; align-items:center; gap:4px; background:#f0fdf4; padding:5px 9px; border-radius:8px; border:1px solid #bbf7d0; cursor:pointer; font-size:12px; font-weight:800; color:#16a34a;\'>" +' +
-    '          "<input type=\'checkbox\' onchange=\'updateStepConfig(" + i + ", \\\"optImageClean\\\", this.checked)\' " + (isImgClean ? "checked" : "") + " style=\'cursor:pointer; accent-color:#16a34a;\'>" +' +
-    '          "🖼️ Remove Image Watermarks & Stamps" +' +
-    '        "</label>" +' +
-    '        "<div style=\'display:flex; align-items:center; gap:4px; background:#f0fdf4; padding:5px 9px; border-radius:8px; border:1px solid #bbf7d0;\'>" +' +
-    '          "<span style=\'font-size:12px; font-weight:800; color:#16a34a;\'>Erase Image:</span>" +' +
-    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"imageEraserPreset\\\", this.value)\' style=\'padding:2px 6px; border-radius:6px; border:1px solid #86efac; font-size:12px; font-weight:700; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
-    '            "<option value=\\\"none\\\" " + (imgEraser === "none" ? "selected" : "") + ">Layers & Overlays (Auto)</option>" +' +
-    '            "<option value=\\\"center\\\" " + (imgEraser === "center" ? "selected" : "") + ">Center Logo / Stamp</option>" +' +
-    '            "<option value=\\\"top_right\\\" " + (imgEraser === "top_right" ? "selected" : "") + ">Top-Right Header Logo</option>" +' +
-    '            "<option value=\\\"bottom_right\\\" " + (imgEraser === "bottom_right" ? "selected" : "") + ">Bottom-Right Stamp</option>" +' +
-    '            "<option value=\\\"diagonal\\\" " + (imgEraser === "diagonal" ? "selected" : "") + ">Diagonal Watermark Area</option>" +' +
-    '          "</select>" +' +
-    '        "</div>" +' +
-    '        "<div style=\'display:flex; align-items:center; gap:4px; background:#f0fdf4; padding:5px 9px; border-radius:8px; border:1px solid #bbf7d0;\'>" +' +
-    '          "<label style=\'display:flex; align-items:center; gap:3px; cursor:pointer; font-size:12px; font-weight:800; color:#16a34a;\'>" +' +
-    '            "<input type=\'checkbox\' onchange=\'updateStepConfig(" + i + ", \\\"optTextClean\\\", this.checked)\' " + (isText ? "checked" : "") + " style=\'cursor:pointer; accent-color:#16a34a;\'>" +' +
-    '            "🔤 Erase Text by Keyword" +' +
-    '          "</label>" +' +
-    '          "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"targetWatermarkText\\\", this.value)\' value=\'" + tgtKw + "\' placeholder=\'e.g. CONFIDENTIAL, DRAFT\' style=\'padding:2px 6px; border-radius:6px; border:1px solid #86efac; font-size:12px; width:125px; outline:none; background:white; color:#0f172a;\'>" +' +
-    '        "</div>" +' +
-    '        "<div style=\'display:flex; align-items:center; gap:4px; background:#f0fdf4; padding:5px 9px; border-radius:8px; border:1px solid #bbf7d0;\'>" +' +
-    '          "<span style=\'font-size:12px; font-weight:800; color:#16a34a;\'>Fill:</span>" +' +
-    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"eraserColor\\\", this.value)\' style=\'padding:2px 6px; border-radius:6px; border:1px solid #86efac; font-size:12px; font-weight:700; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
-    '            "<option value=\\\"#ffffff\\\" " + (fColor === "#ffffff" ? "selected" : "") + ">Pure White</option>" +' +
-    '            "<option value=\\\"#f8fafc\\\" " + (fColor === "#f8fafc" ? "selected" : "") + ">Light Gray</option>" +' +
-    '          "</select>" +' +
-    '        "</div>" +' +
-    '      "</div>";' +
-'    } else if (steps[i].id === "compress-pdf") {' +
-    '      let cLevel = steps[i].compressLevel || "balanced";' +
-    '      let tLimit = steps[i].targetLimitKb || "custom";' +
-    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; flex-wrap:wrap; align-items:center; gap:8px;\'>" +' +
-    '        "<div style=\'display:flex; align-items:center; gap:6px; background:#fff1f2; padding:5px 10px; border-radius:8px; border:1px solid #fecdd3;\'>" +' +
-    '          "<span style=\'font-size:12px; font-weight:800; color:#e11d48;\'>⚡ Mode:</span>" +' +
-    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"compressLevel\\\", this.value)\' style=\'padding:3px 8px; border-radius:6px; border:1px solid #fda4af; font-size:12px; font-weight:700; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
-    '            "<option value=\\\"balanced\\\" " + (cLevel === "balanced" ? "selected" : "") + ">Balanced (Recommended)</option>" +' +
-    '            "<option value=\\\"max\\\" " + (cLevel === "max" ? "selected" : "") + ">Maximum Compression</option>" +' +
-    '          "</select>" +' +
-    '        "</div>" +' +
-    '        "<div style=\'display:flex; align-items:center; gap:6px; background:#fff1f2; padding:5px 10px; border-radius:8px; border:1px solid #fecdd3;\'>" +' +
-    '          "<span style=\'font-size:12px; font-weight:800; color:#e11d48;\'>🎯 Target Size:</span>" +' +
-    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"targetLimitKb\\\", this.value)\' style=\'padding:3px 8px; border-radius:6px; border:1px solid #fda4af; font-size:12px; font-weight:700; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
-    '            "<option value=\\\"custom\\\" " + (tLimit === "custom" ? "selected" : "") + ">Auto Best Optimization</option>" +' +
-    '            "<option value=\\\"500\\\" " + (tLimit === "500" ? "selected" : "") + ">Target Under 500 KB</option>" +' +
-    '            "<option value=\\\"1024\\\" " + (tLimit === "1024" ? "selected" : "") + ">Target Under 1 MB</option>" +' +
+    '        "<div style=\'display:flex; align-items:flex-start; gap:5px; background:#e2e8f0; padding:6px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
+    '          "<span style=\'font-size:11px; font-weight:bold; color:#475569; margin-top:2px;\'>Mode:</span>" +' +
+    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"watermarkMode\\\", this.value)\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '             "<option value=\\\"diagonal\\\" " + (wmMode === "diagonal" ? "selected" : "") + ">Watermark Only</option>" +' +
+    '             "<option value=\\\"footer_num\\\" " + (wmMode === "footer_num" ? "selected" : "") + ">Page Numbers Only</option>" +' +
+    '             "<option value=\\\"both\\\" " + (wmMode === "both" ? "selected" : "") + ">Both</option>" +' +
     '          "</select>" +' +
     '        "</div>" +' +
     '      "</div>";' +
     '    } else if (steps[i].id === "compress-image") {' +
     '      let qual = steps[i].compressQuality || "0.70";' +
-    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:8px; border:1px solid #cbd5e1;\'>" +' +
-    '        "<span style=\'font-size:13px; font-weight:bold; color:#475569;\'>Quality:</span>" +' +
-    '        "<select onchange=\'updateStepConfig(" + i + ", \\\"compressQuality\\\", this.value)\' style=\'padding:4px 8px; border-radius:6px; border:1px solid #94a3b8; font-size:13px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
+    '        "<span style=\'font-size:12px; font-weight:bold; color:#475569;\'>Quality:</span>" +' +
+    '        "<select onchange=\'updateStepConfig(" + i + ", \\\"compressQuality\\\", this.value)\' style=\'padding:4px 8px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
     '          "<option value=\\\"0.90\\\" " + (qual === "0.90" ? "selected" : "") + ">High (Less Compression)</option>" +' +
     '          "<option value=\\\"0.70\\\" " + (qual === "0.70" ? "selected" : "") + ">Medium (Default)</option>" +' +
     '          "<option value=\\\"0.50\\\" " + (qual === "0.50" ? "selected" : "") + ">Low (Max Compression)</option>" +' +
@@ -2521,8 +1667,8 @@ app.get('/workflow-builder', (req, res) => {
     '      let qual = steps[i].convertQuality || "0.92";' +
     '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px;\'>" +' +
     '        "<div style=\'display:flex; align-items:center; gap:5px; background:#e2e8f0; padding:6px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '          "<span style=\'font-size:13px; font-weight:bold; color:#475569;\'>Format:</span>" +' +
-    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"convertFormat\\\", this.value)\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '          "<span style=\'font-size:11px; font-weight:bold; color:#475569;\'>Format:</span>" +' +
+    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"convertFormat\\\", this.value)\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
     '            "<option value=\\\"jpg\\\" " + (fmt === "jpg" ? "selected" : "") + ">JPG</option>" +' +
     '            "<option value=\\\"jpeg\\\" " + (fmt === "jpeg" ? "selected" : "") + ">JPEG</option>" +' +
     '            "<option value=\\\"png\\\" " + (fmt === "png" ? "selected" : "") + ">PNG</option>" +' +
@@ -2532,8 +1678,8 @@ app.get('/workflow-builder', (req, res) => {
     '          "</select>" +' +
     '        "</div>" +' +
     '        "<div style=\'display:flex; align-items:center; gap:5px; background:#e2e8f0; padding:6px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '          "<span style=\'font-size:13px; font-weight:bold; color:#475569;\'>Quality:</span>" +' +
-    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"convertQuality\\\", this.value)\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '          "<span style=\'font-size:11px; font-weight:bold; color:#475569;\'>Quality:</span>" +' +
+    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"convertQuality\\\", this.value)\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
     '            "<option value=\\\"1.00\\\" " + (qual === "1.00" ? "selected" : "") + ">100% (Max)</option>" +' +
     '            "<option value=\\\"0.92\\\" " + (qual === "0.92" ? "selected" : "") + ">92% (High)</option>" +' +
     '            "<option value=\\\"0.70\\\" " + (qual === "0.70" ? "selected" : "") + ">70% (Medium)</option>" +' +
@@ -2550,29 +1696,47 @@ app.get('/workflow-builder', (req, res) => {
     '      let showTarget = rMode === "target" ? "inline-block" : "none";' +
     '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px;\'>" +' +
     '        "<div style=\'display:flex; align-items:center; gap:5px; background:#e2e8f0; padding:6px; border-radius:6px; border:1px solid #cbd5e1;\'>" +' +
-    '          "<span style=\'font-size:13px; font-weight:bold; color:#475569;\'>Mode:</span>" +' +
-    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"reducerMode\\\", this.value); renderSteps();\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '          "<span style=\'font-size:11px; font-weight:bold; color:#475569;\'>Mode:</span>" +' +
+    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"reducerMode\\\", this.value); renderSteps();\' style=\'padding:2px 6px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
     '            "<option value=\\\"resize\\\" " + (rMode === "resize" ? "selected" : "") + ">Resize (W x H)</option>" +' +
     '            "<option value=\\\"target\\\" " + (rMode === "target" ? "selected" : "") + ">Target KB</option>" +' +
     '          "</select>" +' +
-    '          "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"reducerWidth\\\", this.value)\' value=\'" + rW + "\' placeholder=\'W\' style=\'display:" + showResize + "; padding:2px 4px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; width:50px; outline:none;\'>" +' +
-    '          "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"reducerHeight\\\", this.value)\' value=\'" + rH + "\' placeholder=\'H\' style=\'display:" + showResize + "; padding:2px 4px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; width:50px; outline:none;\'>" +' +
-    '          "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"reducerTargetKb\\\", this.value)\' value=\'" + rKb + "\' placeholder=\'KB\' style=\'display:" + showTarget + "; padding:2px 4px; border-radius:4px; border:1px solid #94a3b8; font-size:12px; width:65px; outline:none;\'>" +' +
+    '          "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"reducerWidth\\\", this.value)\' value=\'" + rW + "\' placeholder=\'W\' style=\'display:" + showResize + "; padding:2px 4px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; width:45px; outline:none;\'>" +' +
+    '          "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"reducerHeight\\\", this.value)\' value=\'" + rH + "\' placeholder=\'H\' style=\'display:" + showResize + "; padding:2px 4px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; width:45px; outline:none;\'>" +' +
+    '          "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"reducerTargetKb\\\", this.value)\' value=\'" + rKb + "\' placeholder=\'KB\' style=\'display:" + showTarget + "; padding:2px 4px; border-radius:4px; border:1px solid #94a3b8; font-size:11px; width:60px; outline:none;\'>" +' +
     '        "</div>" +' +
     '      "</div>";' +
+    '    } else if (steps[i].id === "passport-studio") {' +
+    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:linear-gradient(135deg, #4f46e5, #e11d48); padding:6px 14px; border-radius:8px; color:white; font-weight:bold; font-size:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1);\'>" + ' +
+    '        "<span>✨ Auto Studio Dialog Ready</span>" + ' +
+    '      "</div>";' +
     '    }' +
-    '    html += "<div class=\'" + stepClass + "\'><div class=\'step-number\'>" + (i+1) + "</div><span style=\'font-size:1.35rem;\'>" + steps[i].icon + "</span><strong style=\'font-size:1.2rem;\'>" + steps[i].name + "</strong>" + (toggleHtml ? toggleHtml : "<div style=\'margin-left:auto;\'></div>") + (!isActive ? "<button class=\'remove-btn\' style=\'margin-left:10px;\' onclick=\'removeStep(" + i + ")\'>✕</button>" : "") + "</div>";' +
+    '    html += "<div class=\'step\'><div class=\'step-number\'>" + (i+1) + "</div><span style=\'font-size:1.2rem;\'>" + steps[i].icon + "</span><strong style=\'font-size:1.1rem;\'>" + steps[i].name + "</strong>" + (toggleHtml ? toggleHtml : "<div style=\'margin-left:auto;\'></div>") + "<button class=\'remove-btn\' style=\'margin-left:10px;\' onclick=\'removeStep(" + i + ")\'>✕</button></div>";' +
     '  }' +
     '  area.innerHTML = html;' +
     '}' +
-    'function handleStepImgUpload(stepIdx, file) { ' +
-    '  if (!file) return;' +
-    '  const r = new FileReader();' +
-    '  r.onload = function(e) { steps[stepIdx].watermarkImageBase64 = e.target.result; steps[stepIdx].imagePreset = "custom"; renderSteps(); };' +
-    '  r.readAsDataURL(file);' +
-    '}' +
-'function removeStep(index) { steps.splice(index, 1); renderSteps(); }' +
+    'function removeStep(index) { steps.splice(index, 1); renderSteps(); }' +
     'function clearWorkflow() { steps = []; renderSteps(); }' +
+    'async function saveWorkflow() {' +
+    '  const name = document.getElementById("wfName").value.trim() || "My Workflow";' +
+    '  if (steps.length === 0) { alert("Please add at least one tool"); return; }' +
+    '  const payload = { name: name, steps: steps.map(s => ({ toolId: s.id, isComplex: !!s.isComplex, mode: s.mode, range: s.range, sortOrder: s.sortOrder, customSequence: s.customSequence, pageOrder: s.pageOrder, rotatePages: s.rotatePages, rotateDegree: s.rotateDegree, watermarkText: s.watermarkText, watermarkMode: s.watermarkMode, compressQuality: s.compressQuality, convertFormat: s.convertFormat, convertQuality: s.convertQuality, reducerMode: s.reducerMode, reducerWidth: s.reducerWidth, reducerHeight: s.reducerHeight, reducerTargetKb: s.reducerTargetKb, sizePreset: s.sizePreset, bgColor: s.bgColor, zoom: s.zoom, copies: s.copies, removeBg: s.removeBg, printSheet: s.printSheet })) };' +
+    '  try {' +
+    '    const res = await fetch("/api/workflow/create", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });' +
+    '    const data = await res.json();' +
+    '    if (data.success) { alert("✅ Workflow saved!"); loadSavedWorkflows(); } else { alert("Error: " + data.error); }' +
+    '  } catch(e) { alert("Network error: " + e.message); }' +
+    '}' +
+    'async function loadSavedWorkflows() {' +
+    '  try {' +
+    '    const res = await fetch("/api/workflow/list");' +
+    '    const data = await res.json();' +
+    '    const list = document.getElementById("savedList");' +
+    '    let html = "";' +
+    '    for (const w of data.workflows) { html += "<div class=\'saved-item\'><strong>" + w.name + "</strong> - " + w.steps.length + " steps</div>"; }' +
+    '    list.innerHTML = html;' +
+    '  } catch(e) { console.error(e); }' +
+    '}' +
     'async function executeWorkflow() {' +
     '  if (selectedFiles.length === 0 || steps.length === 0) { alert("Please select file(s) and add workflow steps."); return; }' +
     '  const passportStepIdx = steps.findIndex(s => s.id === "passport-studio");' +
@@ -2580,195 +1744,21 @@ app.get('/workflow-builder', (req, res) => {
     '    openProfessionalStudioModal(selectedFiles[0], passportStepIdx);' +
     '    return;' +
     '  }' +
-    '  const mergeImgStepIdx = steps.findIndex(s => s.id === "merge-image");' +
-    '  if (mergeImgStepIdx !== -1) {' +
-    '    openMergeImageStudioModal(selectedFiles, mergeImgStepIdx);' +
-    '    return;' +
-    '  }' +
-    '  sendWorkflowExecution();' +
-    '}' +
-    'function openMergeImageStudioModal(files, stepIdx) {' +
-    '  let modalHtml = \'<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.8);backdrop-filter:blur(8px);display:flex;justify-content:center;align-items:center;z-index:9999;font-family:\\\'Plus Jakarta Sans\\\',sans-serif;"><div style="background:white;padding:2.5rem;border-radius:1.75rem;width:980px;max-width:96%;box-shadow:0 25px 60px rgba(0,0,0,0.4);max-height:92vh;overflow-y:auto;border:1px solid #e2e8f0;"><div style="display:flex;align-items:center;margin-bottom:1.5rem;"><div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#0d9488,#4f46e5);display:flex;align-items:center;justify-content:center;color:white;font-size:24px;box-shadow:0 10px 20px rgba(13,148,136,0.3);margin-right:1rem;">🧩</div><div><h2 style="font-size:24px;font-weight:900;color:#0f172a;margin:0;letter-spacing:-0.5px;">Merge Image Studio Pro</h2><p style="font-size:12px;color:#64748b;font-weight:600;margin:2px 0 0 0;">Interactive Studio: Reorder, Rotate 90°, Crop & Split Bucket Extraction</p></div></div><hr style="border:0;border-top:1px solid #e2e8f0;margin-bottom:1.5rem;"><div style="margin-bottom:1.5rem;"><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Merge Direction / Flow</label><select id="studioMergeDir" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="horizontal">Horizontal (Side by Side)</option><option value="vertical" selected>Vertical (Top to Bottom)</option></select></div><div style="margin-bottom:1.5rem;"><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Uploaded Images Workspace</label><div id="studioFilesContainer" style="display:flex;flex-direction:column;gap:1rem;background:#f8fafc;padding:1rem;border-radius:12px;border:1px solid #e2e8f0;max-height:350px;overflow-y:auto;touch-action:none;"></div></div><div style="display:flex;justify-content:flex-end;gap:12px;padding-top:1rem;border-top:1px solid #e2e8f0;"><button onclick="closeModal()" style="padding:12px 24px;background:#f1f5f9;color:#334155;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;transition:0.2s;">Cancel</button><button id="applyMergeBtn" style="padding:12px 28px;background:linear-gradient(135deg,#0d9488,#4f46e5);color:white;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;box-shadow:0 10px 20px rgba(13,148,136,0.3);transition:0.2s;">✨ Apply & Execute Workflow</button></div></div></div>\';' +
-    '  document.getElementById("modalContainer").innerHTML = modalHtml;' +
-    '  document.getElementById("applyMergeBtn").onclick = function() { applyMergeStudioAndExecute(stepIdx); };' +
-    '  window.studioItems = [];' +
-    '  let loadedCount = 0;' +
-    '  for (let i = 0; i < files.length; i++) {' +
-    '    const reader = new FileReader();' +
-    '    reader.onload = function(e) {' +
-    '      const img = new Image();' +
-    '      img.onload = function() {' +
-    '        window.studioItems.push({ id: Math.random().toString(36).substring(2, 9), file: files[i], url: e.target.result, rotation: 0, imgObj: img });' +
-    '        loadedCount++;' +
-    '        if (loadedCount === files.length) { renderStudioFilesList(); }' +
-    '      };' +
-    '      img.src = e.target.result;' +
-    '    };' +
-    '    reader.readAsDataURL(files[i]);' +
-    '  }' +
-    '}' +
-    'function renderStudioFilesList() {' +
-    '  const container = document.getElementById("studioFilesContainer");' +
-    '  if (!container) return;' +
-    '  if (window.studioItems.length === 0) { container.innerHTML = "<p style=\'font-size:12px;color:#64748b;\'>No images remaining.</p>"; return; }' +
-    '  let html = "";' +
-    '  for (let i = 0; i < window.studioItems.length; i++) {' +
-    '    const item = window.studioItems[i];' +
-    '    html += \'<div style="background:white;padding:12px 16px;border-radius:12px;border:1px solid #cbd5e1;display:flex;align-items:center;justify-content:space-between;gap:1rem;"><div style="display:flex;align-items:center;gap:12px;"><img src="\' + item.url + \'" style="width:50px;height:50px;object-fit:contain;border-radius:8px;border:1px solid #e2e8f0;"><div style="display:flex;flex-direction:column;"><strong style="font-size:13px;color:#0f172a;">Image #\' + (i+1) + \'</strong><span style="font-size:11px;color:#64748b;">Size: \' + item.imgObj.width + \' × \' + item.imgObj.height + \'px</span></div></div><div style="display:flex;align-items:center;gap:6px;"><button type="button" onclick="moveStudioItem(\' + i + \', -1)" \' + (i === 0 ? \'disabled style="opacity:0.3;cursor:not-allowed;padding:6px 10px;background:#f1f5f9;border-radius:6px;font-size:12px;font-weight:bold;"\' : \'style="padding:6px 10px;background:#f1f5f9;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer;"\') + \'>⬆️ Up</button><button type="button" onclick="moveStudioItem(\' + i + \', 1)" \' + (i === window.studioItems.length - 1 ? \'disabled style="opacity:0.3;cursor:not-allowed;padding:6px 10px;background:#f1f5f9;border-radius:6px;font-size:12px;font-weight:bold;"\' : \'style="padding:6px 10px;background:#f1f5f9;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer;"\') + \'>⬇️ Down</button><button type="button" onclick="rotateStudioItem(\' + i + \')" style="padding:6px 10px;background:#fef3c7;color:#b45309;border:none;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;">🔄 Rotate</button><button type="button" onclick="openStudioCropModal(\' + i + \')" style="padding:6px 10px;background:#ccfbf1;color:#0f766e;border:none;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;">✂️ Crop</button><button type="button" onclick="openStudioSplitModal(\' + i + \')" style="padding:6px 10px;background:#e0e7ff;color:#3730a3;border:none;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;">🔪 Split</button><button type="button" onclick="deleteStudioItem(\' + i + \')" style="padding:6px 10px;background:#fee2e2;color:#dc2626;border:none;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;">🗑️ Delete</button></div></div>\';' +
-    '  }' +
-    '  container.innerHTML = html;' +
-    '}' +
-    'function moveStudioItem(idx, direction) {' +
-    '  const target = idx + direction;' +
-    '  if (target < 0 || target >= window.studioItems.length) return;' +
-    '  const temp = window.studioItems[idx];' +
-    '  window.studioItems[idx] = window.studioItems[target];' +
-    '  window.studioItems[target] = temp;' +
-    '  renderStudioFilesList();' +
-    '}' +
-    'function deleteStudioItem(idx) {' +
-    '  window.studioItems.splice(idx, 1);' +
-    '  renderStudioFilesList();' +
-    '}' +
-    'function rotateStudioItem(idx) {' +
-    '  const item = window.studioItems[idx];' +
-    '  item.rotation = (item.rotation + 90) % 360;' +
-    '  const canvas = document.createElement("canvas");' +
-    '  const ctx = canvas.getContext("2d");' +
-    '  const img = item.imgObj;' +
-    '  if (item.rotation === 90 || item.rotation === 270) { canvas.width = img.height; canvas.height = img.width; }' +
-    '  else { canvas.width = img.width; canvas.height = img.height; }' +
-    '  ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0,0,canvas.width,canvas.height);' +
-    '  ctx.translate(canvas.width/2, canvas.height/2);' +
-    '  ctx.rotate((item.rotation * Math.PI) / 180);' +
-    '  ctx.drawImage(img, -img.width/2, -img.height/2);' +
-    '  item.url = canvas.toDataURL("image/jpeg", 0.95);' +
-    '  item.rotation = 0;' +
-    '  const newImg = new Image();' +
-    '  newImg.onload = function() { item.imgObj = newImg; renderStudioFilesList(); };' +
-    '  newImg.src = item.url;' +
-    '}' +
-    'function openStudioCropModal(targetIdx) {' +
-    '  const item = window.studioItems[targetIdx];' +
-    '  const cropHtml = \'<div id="subStudioModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.85);z-index:10000;display:flex;justify-content:center;align-items:center;"><div style="background:white;padding:2rem;border-radius:1.5rem;width:700px;max-width:95%;box-shadow:0 25px 50px rgba(0,0,0,0.5);text-align:center;"><h3 style="font-size:18px;font-weight:900;color:#0f172a;margin-bottom:1rem;">Crop Image</h3><div style="background:#f1f5f9;padding:1rem;border-radius:12px;display:flex;justify-content:center;max-height:50vh;overflow:hidden;margin-bottom:1rem;"><canvas id="subCropCanvas" style="max-width:100%;max-height:45vh;object-fit:contain;cursor:crosshair;touch-action:none;"></canvas></div><div style="display:flex;justify-content:flex-end;gap:10px;"><button onclick="document.getElementById(\\\'subStudioModal\\\").remove()" style="padding:10px 20px;background:#f1f5f9;color:#334155;border:none;border-radius:8px;font-weight:800;cursor:pointer;">Cancel</button><button id="saveCropBtn" style="padding:10px 24px;background:#0d9488;color:white;border:none;border-radius:8px;font-weight:800;cursor:pointer;">Save Crop</button></div></div></div>\';' +
-    '  const div = document.createElement("div"); div.innerHTML = cropHtml; document.body.appendChild(div);' +
-    '  document.getElementById("saveCropBtn").onclick = function() { saveStudioCrop(targetIdx); };' +
-    '  const canvas = document.getElementById("subCropCanvas");' +
-    '  const ctx = canvas.getContext("2d");' +
-    '  const img = item.imgObj;' +
-    '  canvas.width = img.width; canvas.height = img.height;' +
-    '  ctx.drawImage(img, 0, 0);' +
-    '  window.subCropBox = { x: img.width*0.1, y: img.height*0.1, w: img.width*0.8, h: img.height*0.8 };' +
-    '  let isSubDragging = false, startX = 0, startY = 0;' +
-    '  function redrawSubCrop() {' +
-    '    ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0);' +
-    '    ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(0,0,canvas.width,canvas.height);' +
-    '    ctx.save(); ctx.beginPath(); ctx.rect(window.subCropBox.x, window.subCropBox.y, window.subCropBox.w, window.subCropBox.h); ctx.clip(); ctx.drawImage(img,0,0); ctx.restore();' +
-    '    ctx.strokeStyle = "#0d9488"; ctx.lineWidth = 3; ctx.strokeRect(window.subCropBox.x, window.subCropBox.y, window.subCropBox.w, window.subCropBox.h);' +
-    '  }' +
-    '  redrawSubCrop();' +
-    '  const getClientPos = (e) => { const rect = canvas.getBoundingClientRect(); const scaleX = canvas.width / rect.width; const scaleY = canvas.height / rect.height; const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY; return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY }; };' +
-    '  const handleStart = function(e) { const pos = getClientPos(e); startX = pos.x; startY = pos.y; isSubDragging = true; };' +
-    '  const handleMove = function(e) { if (!isSubDragging) return; const pos = getClientPos(e); window.subCropBox.w = Math.max(30, Math.min(canvas.width - window.subCropBox.x, pos.x - startX + window.subCropBox.w)); window.subCropBox.h = Math.max(30, Math.min(canvas.height - window.subCropBox.y, pos.y - startY + window.subCropBox.h)); redrawSubCrop(); if(e.touches) e.preventDefault(); };' +
-    '  canvas.onmousedown = handleStart; canvas.ontouchstart = handleStart;' +
-    '  canvas.onmousemove = handleMove; canvas.ontouchmove = handleMove;' +
-    '  window.onmouseup = function() { isSubDragging = false; };' +
-    '  window.ontouchend = function() { isSubDragging = false; };' +
-    '}' +
-    'function saveStudioCrop(targetIdx) {' +
-    '  const canvas = document.getElementById("subCropCanvas");' +
-    '  const box = window.subCropBox;' +
-    '  const outCanvas = document.createElement("canvas");' +
-    '  outCanvas.width = box.w; outCanvas.height = box.h;' +
-    '  const outCtx = outCanvas.getContext("2d");' +
-    '  outCtx.fillStyle = "#FFFFFF"; outCtx.fillRect(0,0,box.w,box.h);' +
-    '  outCtx.drawImage(canvas, box.x, box.y, box.w, box.h, 0, 0, box.w, box.h);' +
-    '  const item = window.studioItems[targetIdx];' +
-    '  item.url = outCanvas.toDataURL("image/jpeg", 0.95);' +
-    '  const newImg = new Image();' +
-    '  newImg.onload = function() { item.imgObj = newImg; renderStudioFilesList(); document.getElementById("subStudioModal").remove(); };' +
-    '  newImg.src = item.url;' +
-    '}' +
-    'function openStudioSplitModal(targetIdx) {' +
-    '  const item = window.studioItems[targetIdx];' +
-    '  const splitHtml = \'<div id="subSplitModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.85);z-index:10000;display:flex;justify-content:center;align-items:center;"><div style="background:white;padding:2rem;border-radius:1.5rem;width:750px;max-width:95%;box-shadow:0 25px 50px rgba(0,0,0,0.5);text-align:center;"><h3 style="font-size:18px;font-weight:900;color:#0f172a;margin-bottom:0.5rem;">Split Image</h3><p style="font-size:12px;color:#64748b;margin-bottom:1rem;">Drag box on image and click "Add Part" to add parts to merge list.</p><div style="background:#f1f5f9;padding:1rem;border-radius:12px;display:flex;justify-content:center;max-height:45vh;overflow:hidden;margin-bottom:1rem;"><canvas id="subSplitCanvas" style="max-width:100%;max-height:40vh;object-fit:contain;cursor:crosshair;touch-action:none;"></canvas></div><div style="margin-bottom:1.0rem;display:flex;gap:8px;overflow-x:auto;padding:6px;background:#f8fafc;border-radius:8px;min-height:50px;align-items:center;" id="subSplitBucket"></div><div style="display:flex;justify-content:space-between;align-items:center;"><button onclick="addSubSplitPart()" style="padding:10px 18px;background:#4f46e5;color:white;border:none;border-radius:8px;font-weight:800;cursor:pointer;">➕ Add Part to Bucket</button><div style="display:flex;gap:10px;"><button onclick="document.getElementById(\\\'subSplitModal\\\").remove()" style="padding:10px 20px;background:#f1f5f9;color:#334155;border:none;border-radius:8px;font-weight:800;cursor:pointer;">Cancel</button><button id="saveSplitBtn" style="padding:10px 24px;background:#0d9488;color:white;border:none;border-radius:8px;font-weight:800;cursor:pointer;">Done & Replace</button></div></div></div></div>\';' +
-    '  const div = document.createElement("div"); div.innerHTML = splitHtml; document.body.appendChild(div);' +
-    '  document.getElementById("saveSplitBtn").onclick = function() { saveStudioSplit(targetIdx); };' +
-    '  const canvas = document.getElementById("subSplitCanvas");' +
-    '  const ctx = canvas.getContext("2d");' +
-    '  const img = item.imgObj;' +
-    '  canvas.width = img.width; canvas.height = img.height;' +
-    '  ctx.drawImage(img, 0, 0);' +
-    '  window.subSplitBox = { x: img.width*0.1, y: img.height*0.1, w: img.width*0.4, h: img.height*0.4 };' +
-    '  window.subSplitBucketList = [];' +
-    '  let isSubSplitting = false, startX = 0, startY = 0;' +
-    '  function redrawSubSplit() {' +
-    '    ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0);' +
-    '    ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(0,0,canvas.width,canvas.height);' +
-    '    ctx.save(); ctx.beginPath(); ctx.rect(window.subSplitBox.x, window.subSplitBox.y, window.subSplitBox.w, window.subSplitBox.h); ctx.clip(); ctx.drawImage(img,0,0); ctx.restore();' +
-    '    ctx.strokeStyle = "#4f46e5"; ctx.lineWidth = 3; ctx.strokeRect(window.subSplitBox.x, window.subSplitBox.y, window.subSplitBox.w, window.subSplitBox.h);' +
-    '  }' +
-    '  redrawSubSplit();' +
-    '  const getClientPos = (e) => { const rect = canvas.getBoundingClientRect(); const scaleX = canvas.width / rect.width; const scaleY = canvas.height / rect.height; const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY; return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY }; };' +
-    '  const handleStart = function(e) { const pos = getClientPos(e); startX = pos.x; startY = pos.y; isSubSplitting = true; };' +
-    '  const handleMove = function(e) { if (!isSubSplitting) return; const pos = getClientPos(e); window.subSplitBox.w = Math.max(30, Math.min(canvas.width - window.subSplitBox.x, pos.x - startX + window.subSplitBox.w)); window.subSplitBox.h = Math.max(30, Math.min(canvas.height - window.subSplitBox.y, pos.y - startY + window.subSplitBox.h)); redrawSubSplit(); if(e.touches) e.preventDefault(); };' +
-    '  canvas.onmousedown = handleStart; canvas.ontouchstart = handleStart;' +
-    '  canvas.onmousemove = handleMove; canvas.ontouchmove = handleMove;' +
-    '  window.onmouseup = function() { isSubSplitting = false; };' +
-    '  window.ontouchend = function() { isSubSplitting = false; };' +
-    '}' +
-    'function addSubSplitPart() {' +
-    '  const canvas = document.getElementById("subSplitCanvas");' +
-    '  const box = window.subSplitBox;' +
-    '  const outCanvas = document.createElement("canvas");' +
-    '  outCanvas.width = box.w; outCanvas.height = box.h;' +
-    '  const outCtx = outCanvas.getContext("2d");' +
-    '  outCtx.fillStyle = "#FFFFFF"; outCtx.fillRect(0,0,box.w,box.h);' +
-    '  outCtx.drawImage(canvas, box.x, box.y, box.w, box.h, 0, 0, box.w, box.h);' +
-    '  const url = outCanvas.toDataURL("image/jpeg", 0.95);' +
-    '  window.subSplitBucketList.push(url);' +
-    '  const bucket = document.getElementById("subSplitBucket");' +
-    '  bucket.innerHTML += \'<img src="\' + url + \'" style="height:40px;width:40px;object-fit:contain;border:1px solid #cbd5e1;border-radius:6px;background:white;">\';' +
-    '}' +
-    'function saveStudioSplit(targetIdx) {' +
-    '  if (window.subSplitBucketList.length === 0) { document.getElementById("subSplitModal").remove(); return; }' +
-    '  let loaded = 0;' +
-    '  const newItems = [];' +
-    '  window.subSplitBucketList.forEach((url, i) => {' +
-    '    const img = new Image();' +
-    '    img.onload = function() {' +
-    '      newItems.push({ id: Math.random().toString(36).substring(2, 9), file: window.studioItems[targetIdx].file, url: url, rotation: 0, imgObj: img });' +
-    '      loaded++;' +
-    '      if (loaded === window.subSplitBucketList.length) {' +
-    '        window.studioItems.splice(targetIdx, 1, ...newItems);' +
-    '        renderStudioFilesList();' +
-    '        document.getElementById("subSplitModal").remove();' +
-    '      }' +
-    '    };' +
-    '    img.src = url;' +
-    '  });' +
-    '}' +
-    'function applyMergeStudioAndExecute(stepIdx) {' +
-    '  steps[stepIdx].mergeDirection = document.getElementById("studioMergeDir").value;' +
-    '  if (window.studioItems && window.studioItems.length > 0) {' +
-    '    selectedFiles = window.studioItems.map(it => it.file);' +
-    '  }' +
-    '  closeModal();' +
     '  sendWorkflowExecution();' +
     '}' +
     'function openProfessionalStudioModal(file, stepIdx) {' +
     '  const reader = new FileReader();' +
     '  reader.onload = function(e) {' +
     '    const imgSrc = e.target.result;' +
-    '    const modalHtml = \'<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.8);backdrop-filter:blur(8px);display:flex;justify-content:center;align-items:center;z-index:9999;font-family:\\\'Plus Jakarta Sans\\\',sans-serif;"><div style="background:white;padding:2.5rem;border-radius:1.75rem;width:820px;max-width:96%;box-shadow:0 25px 60px rgba(0,0,0,0.4);max-height:92vh;overflow-y:auto;border:1px solid #e2e8f0;"><div style="display:flex;align-items:center;margin-bottom:1.5rem;"><div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#4f46e5,#e11d48);display:flex;align-items:center;justify-content:center;color:white;font-size:24px;box-shadow:0 10px 20px rgba(79,70,229,0.3);margin-right:1rem;">🛂</div><div><h2 style="font-size:24px;font-weight:900;color:#0f172a;margin:0;letter-spacing:-0.5px;">Passport Photo Studio Pro</h2><p style="font-size:12px;color:#64748b;font-weight:600;margin:2px 0 0 0;">Professional Studio: Cloud AI Background Removal & HD Print Layout</p></div></div><hr style="border:0;border-top:1px solid #e2e8f0;margin-bottom:1.5rem;"><div style="display:grid;grid-template-columns:1.2fr 1fr;gap:2rem;margin-bottom:2rem;"><div style="display:flex;flex-direction:column;gap:1.2rem;"><div><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">1. Background Color Palette</label><select id="studioBg" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="#ffffff">Pure White (#FFFFFF)</option><option value="#a5cbf7">Light Blue (#A5CBF7)</option><option value="#3b82f6">Royal Blue (#3B82F6)</option><option value="#f87171" selected>Soft Red (#F87171)</option></select></div><div><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">2. Passport Size Preset</label><select id="studioSize" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="3.5x4.5">Standard Indian Passport (3.5 x 4.5 cm)</option><option value="2x2">US Visa Layout (2 x 2 inch)</option><option value="3.5x3.5">Indian PAN Card Size (3.5 x 3.5 cm)</option></select></div><div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><label style="font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;">3. Zoom & Face Position</label><span id="zoomValBadge" style="font-size:11px;font-weight:800;color:#4f46e5;background:#e0e7ff;padding:2px 8px;border-radius:6px;">100%</span></div><input type="range" id="studioZoom" min="50" max="250" value="100" style="width:100%;height:6px;background:#cbd5e1;border-radius:4px;accent-color:#4f46e5;cursor:pointer;"></div><div><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">4. Copies & Grid Layout</label><select id="studioCopies" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="4">4 Photos Grid</option><option value="8">8 Photos Grid</option><option value="16">16 Photos Grid</option><option value="32" selected>32 Photos Grid (Full A4 Sheet)</option></select></div><div style="background:#e0e7ff;border:1px solid #c7d2fe;padding:12px 14px;border-radius:12px;display:flex;align-items:center;gap:10px;"><input type="checkbox" id="studioRemoveBg" style="width:18px;height:18px;accent-color:#4f46e5;cursor:pointer;"><label for="studioRemoveBg" style="font-size:12px;font-weight:800;color:#3730a3;cursor:pointer;">Remove Background Pro (Cloud AI Engine)</label></div></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f1f5f9;padding:1.5rem;border-radius:16px;border:1px solid #e2e8f0;position:relative;"><span style="font-size:11px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Live Studio Preview</span><div id="modalPreviewBox" style="width:160px;height:200px;background:#f87171;box-shadow:0 20px 30px rgba(0,0,0,0.15);border:2px solid white;overflow:hidden;position:relative;border-radius:8px;transition:background 0.3s;display:flex;align-items:center;justify-content:center;"><img src="\' + imgSrc + \'" id="modalPreviewImg" style="width:100%;height:100%;object-fit:contain;transform:scale(1);transform-origin:center;transition:transform 0.1s;touch-action:none;" /></div><p style="font-size:11px;color:#64748b;font-weight:600;margin-top:12px;text-align:center;">Interactive preview updates instantly</p></div></div><div style="display:flex;justify-content:flex-end;gap:12px;padding-top:1rem;border-top:1px solid #e2e8f0;"><button onclick="closeModal()" style="padding:12px 24px;background:#f1f5f9;color:#334155;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;transition:0.2s;">Cancel</button><button onclick="applyStudioAndExecute(\' + stepIdx + \')" style="padding:12px 28px;background:linear-gradient(135deg,#4f46e5,#e11d48);color:white;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;box-shadow:0 10px 20px rgba(79,70,229,0.3);transition:0.2s;">✨ Apply & Execute Workflow</button></div></div></div>\';' +
+    '    const modalHtml = \'<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.8);backdrop-filter:blur(8px);display:flex;justify-content:center;align-items:center;z-index:9999;font-family:\\\'Plus Jakarta Sans\\\',sans-serif;"><div style="background:white;padding:2.5rem;border-radius:1.75rem;width:820px;max-width:96%;box-shadow:0 25px 60px rgba(0,0,0,0.4);max-height:92vh;overflow-y:auto;border:1px solid #e2e8f0;"><div style="display:flex;align-items:center;margin-bottom:1.5rem;"><div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#4f46e5,#e11d48);display:flex;align-items:center;justify-content:center;color:white;font-size:24px;box-shadow:0 10px 20px rgba(79,70,229,0.3);margin-right:1rem;">🛂</div><div><h2 style="font-size:24px;font-weight:900;color:#0f172a;margin:0;letter-spacing:-0.5px;">Passport Photo Studio Pro</h2><p style="font-size:12px;color:#64748b;font-weight:600;margin:2px 0 0 0;">Professional Studio: Cloud AI Background Removal & HD Print Layout</p></div></div><hr style="border:0;border-top:1px solid #e2e8f0;margin-bottom:1.5rem;"><div style="display:grid;grid-template-columns:1.2fr 1fr;gap:2rem;margin-bottom:2rem;"><div style="display:flex;flex-direction:column;gap:1.2rem;"><div><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">1. Background Color Palette</label><select id="studioBg" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="#ffffff">Pure White (#FFFFFF)</option><option value="#a5cbf7">Light Blue (#A5CBF7)</option><option value="#3b82f6">Royal Blue (#3B82F6)</option><option value="#f87171" selected>Soft Red (#F87171)</option></select></div><div><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">2. Passport Size Preset</label><select id="studioSize" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="3.5x4.5">Standard Indian Passport (3.5 x 4.5 cm)</option><option value="2x2">US Visa Layout (2 x 2 inch)</option><option value="3.5x3.5">Indian PAN Card Size (3.5 x 3.5 cm)</option></select></div><div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><label style="font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;">3. Zoom & Face Position</label><span id="zoomValBadge" style="font-size:11px;font-weight:800;color:#4f46e5;background:#e0e7ff;padding:2px 8px;border-radius:6px;">100%</span></div><input type="range" id="studioZoom" min="50" max="250" value="100" style="width:100%;height:6px;background:#cbd5e1;border-radius:4px;accent-color:#4f46e5;cursor:pointer;"></div><div><label style="display:block;font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">4. Copies & Grid Layout</label><select id="studioCopies" style="width:100%;padding:12px 14px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:12px;outline:none;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;"><option value="4">4 Photos Grid</option><option value="8">8 Photos Grid</option><option value="16">16 Photos Grid</option><option value="32" selected>32 Photos Grid (Full A4 Sheet)</option></select></div><div style="background:#e0e7ff;border:1px solid #c7d2fe;padding:12px 14px;border-radius:12px;display:flex;align-items:center;gap:10px;"><input type="checkbox" id="studioRemoveBg" style="width:18px;height:18px;accent-color:#4f46e5;cursor:pointer;"><label for="studioRemoveBg" style="font-size:12px;font-weight:800;color:#3730a3;cursor:pointer;">Remove Background Pro (Cloud AI Engine)</label></div></div><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f1f5f9;padding:1.5rem;border-radius:16px;border:1px solid #e2e8f0;position:relative;"><span style="font-size:11px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Live Studio Preview</span><div id="modalPreviewBox" style="width:160px;height:200px;background:#f87171;box-shadow:0 20px 30px rgba(0,0,0,0.15);border:2px solid white;overflow:hidden;position:relative;border-radius:8px;transition:background 0.3s;display:flex;align-items:center;justify-content:center;"><img src="\' + imgSrc + \'" id="modalPreviewImg" style="width:100%;height:100%;object-fit:contain;transform:scale(1);transform-origin:center;transition:transform 0.1s;" /></div><p style="font-size:11px;color:#64748b;font-weight:600;margin-top:12px;text-align:center;">Interactive preview updates instantly</p></div></div><div style="display:flex;justify-content:flex-end;gap:12px;padding-top:1rem;border-top:1px solid #e2e8f0;"><button onclick="closeModal()" style="padding:12px 24px;background:#f1f5f9;color:#334155;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;transition:0.2s;">Cancel</button><button onclick="applyStudioAndExecute(\' + stepIdx + \')" style="padding:12px 28px;background:linear-gradient(135deg,#4f46e5,#e11d48);color:white;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;box-shadow:0 10px 20px rgba(79,70,229,0.3);transition:0.2s;">✨ Apply & Execute Workflow</button></div></div></div>\';' +
     '    document.getElementById("modalContainer").innerHTML = modalHtml;' +
     '    document.getElementById("studioZoom").addEventListener("input", function(e) {' +
-    '        const val = e.target.value;' +
-    '        document.getElementById("zoomValBadge").textContent = val + "%";' +
-    '        document.getElementById("modalPreviewImg").style.transform = "scale(" + (val / 100) + ")";' +
+    '       const val = e.target.value;' +
+    '       document.getElementById("zoomValBadge").textContent = val + "%";' +
+    '       document.getElementById("modalPreviewImg").style.transform = "scale(" + (val / 100) + ")";' +
     '    });' +
     '    document.getElementById("studioBg").addEventListener("change", function(e) {' +
-    '        document.getElementById("modalPreviewBox").style.backgroundColor = e.target.value;' +
+    '       document.getElementById("modalPreviewBox").style.backgroundColor = e.target.value;' +
     '    });' +
     '  };' +
     '  reader.readAsDataURL(file);' +
@@ -2785,19 +1775,17 @@ app.get('/workflow-builder', (req, res) => {
     '  sendWorkflowExecution();' +
     '}' +
     'async function sendWorkflowExecution() {' +
+    '  const name = document.getElementById("wfName").value.trim() || "My Workflow";' +
+    '  let saveRes;' +
+    '  try { saveRes = await fetch("/api/workflow/create", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name, steps: steps.map(s => ({ toolId: s.id, isComplex: !!s.isComplex, mode: s.mode, range: s.range, sortOrder: s.sortOrder, customSequence: s.customSequence, pageOrder: s.pageOrder, rotatePages: s.rotatePages, rotateDegree: s.rotateDegree, watermarkText: s.watermarkText, watermarkMode: s.watermarkMode, compressQuality: s.compressQuality, convertFormat: s.convertFormat, convertQuality: s.convertQuality, reducerMode: s.reducerMode, reducerWidth: s.reducerWidth, reducerHeight: s.reducerHeight, reducerTargetKb: s.reducerTargetKb, sizePreset: s.sizePreset, bgColor: s.bgColor, zoom: s.zoom, copies: s.copies, removeBg: s.removeBg, printSheet: s.printSheet })) }) }); }' +
+    '  catch(e) { alert("Save failed: " + e.message); return; }' +
+    '  const saveData = await saveRes.json();' +
+    '  if (!saveData.success) { alert("Save error: " + saveData.error); return; }' +
     '  const formData = new FormData();' +
     '  for (let i = 0; i < selectedFiles.length; i++) { formData.append("file", selectedFiles[i]); }' +
     '  try {' +
     '    document.getElementById("executionResult").innerHTML = "<p style=\'color:blue;\'>⏳ Processing workflow steps...</p>";' +
-    '    for (let i = 0; i < steps.length; i++) {' +
-    '       renderSteps(i);' +
-    '       await new Promise(r => setTimeout(r, 600));' +
-    '    }' +
-    '    const saveRes = await fetch("/api/workflow/create", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: "Temp Workflow", steps: steps.map(s => ({ toolId: s.id, isComplex: !!s.isComplex, mode: s.mode, range: s.range, sortOrder: s.sortOrder, customSequence: s.customSequence, pageOrder: s.pageOrder, rotatePages: s.rotatePages, rotateDegree: s.rotateDegree, watermarkText: s.watermarkText, watermarkMode: s.watermarkMode, compressQuality: s.compressQuality, convertFormat: s.convertFormat, convertQuality: s.convertQuality, reducerMode: s.reducerMode, reducerWidth: s.reducerWidth, reducerHeight: s.reducerHeight, reducerTargetKb: s.reducerTargetKb, sizePreset: s.sizePreset, bgColor: s.bgColor, zoom: s.zoom, copies: s.copies, removeBg: s.removeBg, printSheet: s.printSheet, mergeDirection: s.mergeDirection, compressLevel: s.compressLevel, targetLimitKb: s.targetLimitKb, watermarkType: s.watermarkType, watermarkText: s.watermarkText, watermarkMode: s.watermarkMode, watermarkColor: s.watermarkColor, watermarkOpacity: s.watermarkOpacity, imagePreset: s.imagePreset, watermarkImageBase64: s.watermarkImageBase64, imagePosition: s.imagePosition, imgIncludePageNums: s.imgIncludePageNums, optAutoClean: s.optAutoClean, optImageClean: s.optImageClean, imageEraserPreset: s.imageEraserPreset, optTextClean: s.optTextClean, targetWatermarkText: s.targetWatermarkText, eraserColor: s.eraserColor, rmWatermarkMode: s.rmWatermarkMode, rmKeywords: s.rmKeywords })) }) });' +
-    '    const saveData = await saveRes.json();' +
-    '    if (!saveData.success) { alert("Execution error"); return; }' +
     '    const execRes = await fetch("/api/workflow/execute/" + saveData.workflow.id, { method: "POST", body: formData });' +
-    '    renderSteps(-1);' +
     '    if (execRes.ok) {' +
     '      const blob = await execRes.blob();' +
     '      let fname = "workflow_output";' +
@@ -2815,188 +1803,12 @@ app.get('/workflow-builder', (req, res) => {
     '      const errorData = await execRes.json().catch(() => ({ error: "Execution failed" }));' +
     '      document.getElementById("executionResult").innerHTML = "<p style=\'color:red;\'>❌ " + (errorData.error || "Execution failed") + "</p>";' +
     '    }' +
-    '  } catch(e) { renderSteps(-1); document.getElementById("executionResult").innerHTML = "<p style=\'color:red;\'>Network error during execution: " + e.message + "</p>"; }' +
+    '  } catch(e) { document.getElementById("executionResult").innerHTML = "<p style=\'color:red;\'>Network error during execution: " + e.message + "</p>"; }' +
     '}' +
-    
-    
+    'loadSavedWorkflows();' +
     '</script>' +
-    '<!-- Filesque Enterprise Dark Footer -->' +
-    '<footer class="bg-[#1e2029] text-slate-300 pt-16 pb-12 px-6 sm:px-12 border-t border-slate-800 font-sans mt-auto">' +
-    '    <div class="max-w-7xl mx-auto">' +
-    '        <!-- Main Links Grid -->' +
-    '        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 mb-12">' +
-    '            ' +
-    '            <!-- Column 1: PRODUCT -->' +
-    '            <div>' +
-    '                <h4 class="text-white font-extrabold text-xs uppercase tracking-widest mb-4">Product</h4>' +
-    '                <ul class="space-y-2.5 text-xs font-semibold text-slate-400">' +
-    '                    <li><a href="index.html" class="hover:text-white transition-colors">Home</a></li>' +
-    '                    <li><a href="features.html" class="hover:text-white transition-colors">Features</a></li>' +
-    '                    <li><a href="tools.html" class="hover:text-white transition-colors">Tools</a></li>' +
-    '                    <li><a href="faq.html" class="hover:text-white transition-colors">FAQ</a></li>' +
-    '                </ul>' +
-    '            </div>' +
-    '' +
-    '            <!-- Column 2: RESOURCES -->' +
-    '            <div>' +
-    '                <h4 class="text-white font-extrabold text-xs uppercase tracking-widest mb-4">Resources</h4>' +
-    '                <ul class="space-y-2.5 text-xs font-semibold text-slate-400">' +
-    '                    <li><a href="index.html#pdf-section" class="hover:text-white transition-colors">PDF Tools</a></li>' +
-    '                    <li><a href="index.html#image-section" class="hover:text-white transition-colors">Image Tools</a></li>' +
-    '                    <li><a href="index.html#business-section" class="hover:text-white transition-colors">Business Tools</a></li>' +
-    '                    <li><a href="/workflow-builder" class="hover:text-white transition-colors flex items-center gap-1.5"><span class="text-amber-400">⚡</span> <span>WorkFlow</span></a></li>' +
-    '                </ul>' +
-    '            </div>' +
-    '' +
-    '            <!-- Column 3: SOLUTIONS -->' +
-    '            <div>' +
-    '                <h4 class="text-white font-extrabold text-xs uppercase tracking-widest mb-4">Solutions</h4>' +
-    '                <ul class="space-y-2.5 text-xs font-semibold text-slate-400">' +
-    '                    <li><a href="freelancer.html" class="hover:text-white transition-colors">Freelancer</a></li>' +
-    '                    <li><a href="business.html" class="hover:text-white transition-colors">Business</a></li>' +
-    '                    <li><a href="education.html" class="hover:text-white transition-colors">Education</a></li>' +
-    '                </ul>' +
-    '            </div>' +
-    '' +
-    '            <!-- Column 4: LEGAL -->' +
-    '            <div>' +
-    '                <h4 class="text-white font-extrabold text-xs uppercase tracking-widest mb-4">Legal</h4>' +
-    '                <ul class="space-y-2.5 text-xs font-semibold text-slate-400">' +
-    '                    <li><a href="security.html" class="hover:text-white transition-colors">Security</a></li>' +
-    '                    <li><a href="privacy.html" class="hover:text-white transition-colors">Privacy Policy</a></li>' +
-    '                    <li><a href="terms.html" class="hover:text-white transition-colors">Terms &amp; Conditions</a></li>' +
-    '                    <li><a href="cookies.html" class="hover:text-white transition-colors">Cookies</a></li>' +
-    '                </ul>' +
-    '            </div>' +
-    '' +
-    '            <!-- Column 5: COMPANY -->' +
-    '            <div>' +
-    '                <h4 class="text-white font-extrabold text-xs uppercase tracking-widest mb-4">Company</h4>' +
-    '                <ul class="space-y-2.5 text-xs font-semibold text-slate-400">' +
-    '                    <li><a href="about.html" class="hover:text-white transition-colors">About Us</a></li>' +
-    '                    <li><a href="contact.html" class="hover:text-white transition-colors">Contact Us</a></li>' +
-    '                </ul>' +
-    '            </div>' +
-    '' +
-    '            <!-- Column 6: APP STORE BADGES -->' +
-    '            <div class="col-span-2 md:col-span-1 lg:col-span-1 space-y-2.5">' +
-    '                <!-- Google Play Badge -->' +
-    '                <a href="#" onclick="alert(\'FilesQue mobile & desktop native apps are releasing soon in 2026!\'); return false;" class="flex items-center space-x-3 bg-black/40 hover:bg-black/70 border border-slate-700/80 rounded-xl px-3.5 py-2 transition-all group">' +
-    '                    <svg class="w-5 h-5 fill-current text-white shrink-0" viewBox="0 0 24 24"><path d="M3.609 1.814L13.792 12 3.61 22.186a1.996 1.996 0 0 1-.61-.92L3 2.735a2.002 2.002 0 0 1 .609-.921zm11.233 11.236l2.195 2.195-12.01 6.84 9.815-9.035zm0-2.1l-9.815-9.035 12.01 6.84-2.195 2.195zm1.455 1.05l3.878-2.21a1.2 1.2 0 0 1 0 2.083l-3.878 2.21 1.05-1.041-1.05-1.042z"/></svg>' +
-    '                    <div class="text-left leading-tight">' +
-    '                        <div class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">GET IT ON</div>' +
-    '                        <div class="text-xs font-black text-white">Google Play</div>' +
-    '                    </div>' +
-    '                </a>' +
-    '' +
-    '                <!-- App Store Badge -->' +
-    '                <a href="#" onclick="alert(\'FilesQue iOS app releasing soon in 2026!\'); return false;" class="flex items-center space-x-3 bg-black/40 hover:bg-black/70 border border-slate-700/80 rounded-xl px-3.5 py-2 transition-all group">' +
-    '                    <svg class="w-5 h-5 fill-current text-white shrink-0" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 1.01-2.85-.9.04-1.99.6-2.61 1.33-.55.63-.99 1.66-.86 2.67 1 .08 2.04-.51 2.46-1.15z"/></svg>' +
-    '                    <div class="text-left leading-tight">' +
-    '                        <div class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Download on the</div>' +
-    '                        <div class="text-xs font-black text-white">App Store</div>' +
-    '                    </div>' +
-    '                </a>' +
-    '' +
-    '                <!-- Mac App Store Badge -->' +
-    '                <a href="#" onclick="alert(\'FilesQue macOS native version releasing soon in 2026!\'); return false;" class="flex items-center space-x-3 bg-black/40 hover:bg-black/70 border border-slate-700/80 rounded-xl px-3.5 py-2 transition-all group">' +
-    '                    <svg class="w-5 h-5 fill-current text-white shrink-0" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 1.01-2.85-.9.04-1.99.6-2.61 1.33-.55.63-.99 1.66-.86 2.67 1 .08 2.04-.51 2.46-1.15z"/></svg>' +
-    '                    <div class="text-left leading-tight">' +
-    '                        <div class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Download on the</div>' +
-    '                        <div class="text-xs font-black text-white">Mac App Store</div>' +
-    '                    </div>' +
-    '                </a>' +
-    '' +
-    '                <!-- Microsoft Store Badge -->' +
-    '                <a href="#" onclick="alert(\'FilesQue Windows Desktop release coming in 2026!\'); return false;" class="flex items-center space-x-3 bg-black/40 hover:bg-black/70 border border-slate-700/80 rounded-xl px-3.5 py-2 transition-all group">' +
-    '                    <svg class="w-5 h-5 fill-current text-white shrink-0" viewBox="0 0 24 24"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>' +
-    '                    <div class="text-left leading-tight">' +
-    '                        <div class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">GET IT FROM</div>' +
-    '                        <div class="text-xs font-black text-white">Microsoft Store</div>' +
-    '                    </div>' +
-    '                </a>' +
-    '            </div>' +
-    '        </div>' +
-    '' +
-    '        <!-- Horizontal Divider -->' +
-    '        <div class="border-t border-slate-800/80 pt-8 flex flex-col md:flex-row items-center justify-between gap-6">' +
-    '            ' +
-    '            <!-- Language Selector Dropdown -->' +
-    '            <div class="relative inline-block text-left">' +
-    '                <div class="flex items-center space-x-2 bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-slate-700 rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all cursor-pointer">' +
-    '                    <span>🌐</span>' +
-    '                    <select id="footer-lang-select" onchange="alert(\'Language preference set to \' + this.options[this.selectedIndex].text)" class="bg-transparent border-none text-slate-200 text-xs font-bold focus:outline-none cursor-pointer">' +
-    '                        <option value="en" class="bg-slate-900 text-slate-200" selected>English</option>' +
-    '                        <option value="es" class="bg-slate-900 text-slate-200">Español</option>' +
-    '                        <option value="fr" class="bg-slate-900 text-slate-200">Français</option>' +
-    '                        <option value="de" class="bg-slate-900 text-slate-200">Deutsch</option>' +
-    '                        <option value="hi" class="bg-slate-900 text-slate-200">हिन्दी (Hindi)</option>' +
-    '                        <option value="pt" class="bg-slate-900 text-slate-200">Português</option>' +
-    '                        <option value="ar" class="bg-slate-900 text-slate-200">العربية</option>' +
-    '                        <option value="zh" class="bg-slate-900 text-slate-200">中文 (Chinese)</option>' +
-    '                    </select>' +
-    '                </div>' +
-    '            </div>' +
-    '' +
-    '            <!-- Social Media Icons -->' +
-    '            <div class="flex items-center space-x-5 text-slate-400">' +
-    '                <!-- X (Twitter) -->' +
-    '                <a href="https://x.com" target="_blank" rel="noopener" class="hover:text-white transition-colors" title="Follow on X">' +
-    '                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>' +
-    '                </a>' +
-    '                <!-- Facebook -->' +
-    '                <a href="https://facebook.com" target="_blank" rel="noopener" class="hover:text-white transition-colors" title="Facebook">' +
-    '                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>' +
-    '                </a>' +
-    '                <!-- LinkedIn -->' +
-    '                <a href="https://linkedin.com" target="_blank" rel="noopener" class="hover:text-white transition-colors" title="LinkedIn">' +
-    '                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>' +
-    '                </a>' +
-    '                <!-- Instagram -->' +
-    '                <a href="https://instagram.com" target="_blank" rel="noopener" class="hover:text-white transition-colors" title="Instagram">' +
-    '                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>' +
-    '                </a>' +
-    '                <!-- TikTok -->' +
-    '                <a href="https://tiktok.com" target="_blank" rel="noopener" class="hover:text-white transition-colors" title="TikTok">' +
-    '                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-1.01-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.24 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>' +
-    '                </a>' +
-    '                <!-- Reddit -->' +
-    '                <a href="https://reddit.com" target="_blank" rel="noopener" class="hover:text-white transition-colors" title="Reddit">' +
-    '                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.56 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.197-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg>' +
-    '                </a>' +
-    '            </div>' +
-    '' +
-    '            <!-- Copyright Notice -->' +
-    '            <div class="text-xs text-slate-500 font-medium">' +
-    '                &copy; FilesQue 2026 &reg; - Your Files Editor' +
-    '            </div>' +
-    '        </div>' +
-    '    </div>' +
-    '</footer>' +
-    '' +
     '</body></html>');
 });
-
-// --- Self-Ping / Cron-job Feature to Keep Render Server Alive ---
-const http = require('http');
-const https = require('https');
-
-// Yahan apna Render wala live URL dalein
-const RENDER_URL = process.env.RENDER_EXTERNAL_URL || 'https://filesques.onrender.com';
-
-function keepServerAlive() {
-  const client = RENDER_URL.startsWith('https') ? https : http;
-
-  setInterval(() => {
-    client.get(RENDER_URL, (res) => {
-      console.log(`[Keep-Alive Ping]: Status Code ${res.statusCode} at ${new Date().toISOString()}`);
-    }).on('error', (err) => {
-      console.error(`[Keep-Alive Ping Error]: ${err.message}`);
-    });
-  }, 15 * 60 * 1000); // Har 5 minute (5 * 60 * 1000 ms) mein server ko ping karega
-}
-
-keepServerAlive();
 
 app.listen(PORT, () => {
   console.log('========================================');

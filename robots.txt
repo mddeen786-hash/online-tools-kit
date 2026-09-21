@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+Disallow: /temp/
+
+Sitemap: https://filesques.onrender.com/sitemap.xml

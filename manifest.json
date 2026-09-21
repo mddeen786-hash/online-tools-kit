@@ -1,0 +1,16 @@
+{
+  "name": "Filesque - Free PDF & Image Tools",
+  "short_name": "Filesque",
+  "description": "Free online PDF tools, image converter, and business utilities.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#dc2626",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ]
+}

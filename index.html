@@ -3,34 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Filesque — Enterprise Document Intelligence & Business Automation Suite</title>
-    <meta name="description" content="Filesque is your all-in-one SaaS platform for secure PDF conversions, image utilities, GST tax invoicing, and business automation tools.">
+
+    <!-- ═══ PRIMARY SEO ═══ -->
+    <title>Filesque – Free PDF Tools &amp; Image Converter Online</title>
+    <meta name="description" content="Free online PDF tools: convert, merge, compress, split PDFs. Plus image converter, resize, OCR, QR codes &amp; invoice generator. No signup required.">
+    <meta name="keywords" content="free pdf tools, pdf converter online, merge pdf, compress pdf, pdf to word, pdf to jpg, image converter, resize image online">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="author" content="Filesque">
+    <link rel="canonical" href="https://filesques.onrender.com/">
+
+    <!-- ═══ OPEN GRAPH (Facebook, LinkedIn, WhatsApp) ═══ -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://filesques.onrender.com/">
+    <meta property="og:title" content="Filesque – Free PDF Tools &amp; Image Converter Online">
+    <meta property="og:description" content="Convert, merge, compress &amp; split PDFs for free. Image converter, OCR, QR code generator &amp; more. Fast, secure, no signup needed.">
+    <meta property="og:site_name" content="Filesque">
+    <meta property="og:locale" content="en_US">
+
+    <!-- ═══ TWITTER / X CARD ═══ -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Filesque – Free PDF &amp; Image Tools Online">
+    <meta name="twitter:description" content="23 free online tools: PDF converter, image resizer, OCR, QR codes, invoice generator &amp; more. No signup required.">
+
+    <!-- ═══ PWA MANIFEST ═══ -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#dc2626">
+
+    <!-- ═══ TAILWIND + FONT (render-blocking, keep first) ═══ -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- ═══ STYLES ═══ -->
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; background-color: #f8fafc; }
-        .hero-glow {
-            background: radial-gradient(circle at 50% 0%, rgba(220, 38, 38, 0.05) 0%, transparent 60%);
-        }
-        .tool-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        .hero-glow { background: radial-gradient(circle at 50% 0%, rgba(220, 38, 38, 0.05) 0%, transparent 60%); }
+        .tool-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes dotBlink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.2; transform: scale(0.85); } }
+        .animate-blink { animation: dotBlink 1.2s ease-in-out infinite !important; }
     </style>
 
-<style>
-    @keyframes dotBlink {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.2; transform: scale(0.85); }
+    <!-- ═══ JSON-LD STRUCTURED DATA ═══ -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://filesques.onrender.com/#website",
+          "url": "https://filesques.onrender.com/",
+          "name": "Filesque",
+          "description": "Free online PDF tools, image converter, and business utilities.",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://filesques.onrender.com/?s={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "WebPage",
+          "@id": "https://filesques.onrender.com/#webpage",
+          "url": "https://filesques.onrender.com/",
+          "name": "Filesque – Free PDF Tools & Image Converter Online",
+          "description": "Free online PDF tools: convert, merge, compress, split PDFs. Plus image converter, resize, OCR, QR codes & invoice generator.",
+          "isPartOf": { "@id": "https://filesques.onrender.com/#website" },
+          "breadcrumb": {
+            "@type": "BreadcrumbList",
+            "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "Home", "item": "https://filesques.onrender.com/" }]
+          }
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "Filesque",
+          "url": "https://filesques.onrender.com/",
+          "applicationCategory": "UtilitiesApplication",
+          "operatingSystem": "Web Browser",
+          "description": "Free online PDF tools, image converter, OCR, QR code generator and business utilities.",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+          "featureList": [
+            "PDF to Word Converter",
+            "PDF to Excel Converter",
+            "Merge PDF Online",
+            "Compress PDF",
+            "PDF Splitter",
+            "PDF Watermark",
+            "Image Converter",
+            "Image Compressor",
+            "Image to PDF",
+            "OCR Image to Text",
+            "QR Code Generator",
+            "Invoice Generator",
+            "Barcode Generator",
+            "Digital Signature"
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Is Filesque free to use?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Yes, all tools on Filesque are completely free to use. No signup, no login, and no credit card required." }
+            },
+            {
+              "@type": "Question",
+              "name": "How do I convert a PDF to Word online for free?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Click on 'PDF to Word' tool, upload your PDF file, and download the editable Word document. The conversion happens instantly in your browser." }
+            },
+            {
+              "@type": "Question",
+              "name": "How do I merge multiple PDF files into one?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Use the 'Merge PDF' tool, upload two or more PDF files, arrange them in the desired order, then click Merge to download the combined PDF." }
+            },
+            {
+              "@type": "Question",
+              "name": "Is my uploaded file kept private and secure?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Yes. Files are processed securely and deleted automatically from the server after processing. We do not store or share your files." }
+            },
+            {
+              "@type": "Question",
+              "name": "Can I compress a PDF without losing quality?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Yes. The Compress PDF tool reduces file size while preserving readable quality, making it ideal for email attachments and sharing." }
+            },
+            {
+              "@type": "Question",
+              "name": "What image formats does the image converter support?",
+              "acceptedAnswer": { "@type": "Answer", "text": "The Image Converter supports JPG, JPEG, PNG, WEBP, BMP, and ICO formats. Simply upload your image and choose your desired output format." }
+            }
+          ]
+        }
+      ]
     }
-    .animate-blink {
-        animation: dotBlink 1.2s ease-in-out infinite !important;
-    }
-</style>
+    </script>
 </head>
+<a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[999] focus:bg-red-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:font-bold">Skip to main content</a>
 <body class="text-slate-900 min-h-screen flex flex-col antialiased selection:bg-red-600 selection:text-white hero-glow">
 
 <!-- Top Navigation Bar -->
-<nav class="w-full bg-white/90 backdrop-blur-md border-b border-slate-100 px-6 sm:px-12 py-4 flex justify-between items-center fixed top-0 left-0 z-50 shadow-xs">
+<nav aria-label="Main navigation" class="w-full bg-white/90 backdrop-blur-md border-b border-slate-100 px-6 sm:px-12 py-4 flex justify-between items-center fixed top-0 left-0 z-50 shadow-sm">
     
             <!-- Creative Animated Brand Name -->
     <div class="cursor-pointer flex items-center space-x-2 group shrink-0" onclick="window.location.href='index.html'">
@@ -165,9 +274,12 @@
 
 <!-- Hero Section -->
 <header class="pt-36 pb-16 px-6 text-center max-w-[1600px] mx-auto w-full">
-    <h1 class="text-2xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-4">
-        Unified Document Intelligence & <span class="bg-gradient-to-r from-red-600 to-rose-500 bg-clip-text text-transparent">Business Automation</span>
-    </h1>
+    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 leading-tight tracking-tight mb-6">Free PDF Tools &amp; <span class="text-red-600">Image Converter</span> Online</h1>
+    <!-- SEO Intro -->
+    <p class="text-lg text-slate-600 max-w-2xl mx-auto mb-4 leading-relaxed">
+        Convert, merge, compress, and split PDFs — plus resize images, extract text with OCR, generate QR codes, and create invoices. 
+        All <strong>23 free online tools</strong>, no signup required.
+    </p>
     
     <p class="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto mb-6 font-medium leading-relaxed">
         Access 23 lightning-fast enterprise utilities designed for seamless PDF workflows, image processing, and corporate invoicing.
@@ -196,7 +308,7 @@
             <div class="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center text-xl shadow-xs">📄</div>
             <div>
                 <h2 class="text-xl font-black text-slate-900">PDF Core Tools</h2>
-                <p class="text-xs font-bold text-slate-400">Convert, merge, split, and edit documents seamlessly</p>
+                <p class="text-xs font-bold text-slate-400">Convert, Merge, Split &amp; Edit PDF Files Online</p>
             </div>
             <span class="text-xs font-extrabold bg-red-50 text-red-600 px-3 py-1 rounded-full ml-auto border border-red-100">9 Utilities</span>
         </div>
@@ -283,7 +395,7 @@
             <div class="w-10 h-10 bg-teal-50 rounded-xl flex items-center justify-center text-xl shadow-xs">🖼️</div>
             <div>
                 <h2 class="text-xl font-black text-slate-900">Image Utilities</h2>
-                <p class="text-xs font-bold text-slate-400">Compress, convert, OCR, resize, and merge images instantly</p>
+                <p class="text-xs font-bold text-slate-400">Compress, Convert, Resize &amp; OCR Images Online</p>
             </div>
             <span class="text-xs font-extrabold bg-teal-50 text-teal-600 px-3 py-1 rounded-full ml-auto border border-teal-100">8 Utilities</span>
         </div>
@@ -362,7 +474,7 @@
             <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center text-xl shadow-xs">💼</div>
             <div>
                 <h2 class="text-xl font-black text-slate-900">Business Suite</h2>
-                <p class="text-xs font-bold text-slate-400">Invoices, barcodes, QR codes, signatures, and code formatting</p>
+                <p class="text-xs font-bold text-slate-400">Invoices, Barcodes, QR Codes &amp; Business Tools Online</p>
             </div>
             <span class="text-xs font-extrabold bg-purple-50 text-purple-600 px-3 py-1 rounded-full ml-auto border border-purple-100">6 Utilities</span>
         </div>
@@ -422,6 +534,97 @@
 </main>
 
 <!-- Filesque Enterprise Dark Footer -->
+
+<!-- ═══ FAQ Section (SEO) ═══ -->
+<section id="faq" class="py-16 px-6 bg-white border-t border-slate-100" aria-label="Frequently Asked Questions">
+    <div class="max-w-4xl mx-auto">
+        <h2 class="text-3xl font-black text-slate-900 text-center mb-2">Frequently Asked Questions</h2>
+        <p class="text-slate-500 text-center mb-10">Quick answers about our free online PDF and image tools.</p>
+        <div class="space-y-4" itemscope itemtype="https://schema.org/FAQPage">
+
+            <details class="bg-slate-50 rounded-2xl p-5 group" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex justify-between items-center text-base" itemprop="name">
+                    Is Filesque completely free to use?
+                    <span class="text-red-500 text-xl group-open:rotate-45 transition-transform duration-200">+</span>
+                </summary>
+                <div class="mt-3 text-slate-600 text-sm leading-relaxed" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                    <span itemprop="text">Yes, every tool on Filesque is 100% free. No account registration, no login, and no payment required. Simply visit the tool and start working.</span>
+                </div>
+            </details>
+
+            <details class="bg-slate-50 rounded-2xl p-5 group" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex justify-between items-center text-base" itemprop="name">
+                    How do I convert a PDF to Word online?
+                    <span class="text-red-500 text-xl group-open:rotate-45 transition-transform duration-200">+</span>
+                </summary>
+                <div class="mt-3 text-slate-600 text-sm leading-relaxed" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                    <span itemprop="text">Open the <a href="pdf-to-word.html" class="text-red-600 font-semibold hover:underline">PDF to Word</a> tool, upload your PDF, and click Convert. Your editable Word document downloads automatically within seconds.</span>
+                </div>
+            </details>
+
+            <details class="bg-slate-50 rounded-2xl p-5 group" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex justify-between items-center text-base" itemprop="name">
+                    How can I merge multiple PDF files into one?
+                    <span class="text-red-500 text-xl group-open:rotate-45 transition-transform duration-200">+</span>
+                </summary>
+                <div class="mt-3 text-slate-600 text-sm leading-relaxed" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                    <span itemprop="text">Use the <a href="merge.html" class="text-red-600 font-semibold hover:underline">Merge PDF</a> tool. Upload two or more PDFs, drag to reorder if needed, then click Merge. Your combined PDF downloads instantly.</span>
+                </div>
+            </details>
+
+            <details class="bg-slate-50 rounded-2xl p-5 group" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex justify-between items-center text-base" itemprop="name">
+                    Are my uploaded files safe and private?
+                    <span class="text-red-500 text-xl group-open:rotate-45 transition-transform duration-200">+</span>
+                </summary>
+                <div class="mt-3 text-slate-600 text-sm leading-relaxed" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                    <span itemprop="text">Yes. All files are processed securely and automatically deleted from the server after your download. We never store, read, or share your documents.</span>
+                </div>
+            </details>
+
+            <details class="bg-slate-50 rounded-2xl p-5 group" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex justify-between items-center text-base" itemprop="name">
+                    Can I compress a PDF without losing quality?
+                    <span class="text-red-500 text-xl group-open:rotate-45 transition-transform duration-200">+</span>
+                </summary>
+                <div class="mt-3 text-slate-600 text-sm leading-relaxed" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                    <span itemprop="text">Yes. The <a href="compress-pdf.html" class="text-red-600 font-semibold hover:underline">Compress PDF</a> tool reduces file size while keeping text and images readable — perfect for email attachments and document sharing.</span>
+                </div>
+            </details>
+
+            <details class="bg-slate-50 rounded-2xl p-5 group" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex justify-between items-center text-base" itemprop="name">
+                    What image formats does the Image Converter support?
+                    <span class="text-red-500 text-xl group-open:rotate-45 transition-transform duration-200">+</span>
+                </summary>
+                <div class="mt-3 text-slate-600 text-sm leading-relaxed" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                    <span itemprop="text">The <a href="image-converter.html" class="text-teal-600 font-semibold hover:underline">Image Converter</a> supports JPG, JPEG, PNG, WEBP, BMP, and ICO formats. Upload your image, choose the output format, and download instantly.</span>
+                </div>
+            </details>
+
+            <details class="bg-slate-50 rounded-2xl p-5 group" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex justify-between items-center text-base" itemprop="name">
+                    Does the PDF to Image tool convert every page?
+                    <span class="text-red-500 text-xl group-open:rotate-45 transition-transform duration-200">+</span>
+                </summary>
+                <div class="mt-3 text-slate-600 text-sm leading-relaxed" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                    <span itemprop="text">Yes. The <a href="pdf-to-image.html" class="text-red-600 font-semibold hover:underline">PDF to Image</a> tool converts all pages of your PDF into high-resolution JPG images and packages them in a ZIP file for easy download.</span>
+                </div>
+            </details>
+
+            <details class="bg-slate-50 rounded-2xl p-5 group" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                <summary class="font-bold text-slate-800 cursor-pointer list-none flex justify-between items-center text-base" itemprop="name">
+                    Do these tools work on mobile phones?
+                    <span class="text-red-500 text-xl group-open:rotate-45 transition-transform duration-200">+</span>
+                </summary>
+                <div class="mt-3 text-slate-600 text-sm leading-relaxed" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                    <span itemprop="text">Yes. All Filesque tools are fully mobile-friendly and work on Android phones, iPhones, tablets, and desktop browsers without needing any app installation.</span>
+                </div>
+            </details>
+
+        </div>
+    </div>
+</section>
 <footer class="bg-[#1e2029] text-slate-300 pt-16 pb-12 px-6 sm:px-12 border-t border-slate-800 font-sans mt-auto">
     <div class="max-w-[1600px] mx-auto w-full">
         <!-- Main Links Grid -->
