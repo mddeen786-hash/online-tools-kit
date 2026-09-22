@@ -53,51 +53,40 @@
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
     <style>
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 5mm 8mm;
+                margin: 6mm 8mm;
             }
-            .no-print { display: none !important; }
+            .no-print, header, nav, footer, aside, #invoice-paper, .navbar {
+                display: none !important;
+            }
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
             body { 
-                background: white !important; 
+                background: #ffffff !important; 
                 padding: 0 !important; 
                 margin: 0 !important; 
-                width: 210mm; 
+                width: 100% !important;
+                font-family: Arial, Helvetica, sans-serif !important;
             }
-            #invoice-paper { 
-                box-shadow: none !important; 
-                border: none !important; 
-                width: 100% !important; 
-                max-width: 100% !important; 
-                margin: 0 !important; 
-                padding: 2mm !important;
-            }
-            .print-grid-2 {
-                display: grid !important;
-                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-                gap: 1.5rem !important;
-            }
-            .print-right {
-                text-align: right !important;
-            }
-            .print-right input {
-                text-align: right !important;
-            }
-            input, select { border: none !important; background: transparent !important; padding: 0 !important; }
-            
-            /* Repeat Table Header on every printed page */
-            thead { display: table-header-group !important; }
-            tr { page-break-inside: avoid !important; break-inside: avoid !important; }
-            
-            .unbreakable-footer {
-                page-break-inside: avoid !important;
-                break-inside: avoid !important;
+            #print-excel-layout {
+                display: block !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #ffffff !important;
+                font-family: Arial, Helvetica, sans-serif !important;
             }
         }
     </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
         @keyframes dotBlink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.2; transform: scale(0.85); } }
@@ -107,14 +96,14 @@
 <body class="bg-slate-100 min-h-screen flex flex-col items-center antialiased">
 
 <!-- Top Navigation Bar (Hidden during print) -->
-<!-- Top Navigation Bar -->
-<nav class="w-full bg-white/90 backdrop-blur-md border-b border-slate-100 px-6 sm:px-12 py-4 flex justify-between items-center fixed top-0 left-0 z-50 shadow-sm">
+<nav class="no-print w-full bg-white/90 backdrop-blur-md border-b border-slate-100 px-6 sm:px-12 py-4 flex justify-between items-center fixed top-0 left-0 z-50 shadow-sm">
 
     <!-- Creative Animated Brand Name -->
     <div class="cursor-pointer flex items-center space-x-2 group shrink-0" onclick="window.location.href='index.html'">
         <span class="text-4xl sm:text-7xl font-black tracking-tighter text-[#0f172a] flex items-center overflow-hidden">
             <span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span><span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span>
         </span>
+
         <span class="w-3.5 h-3.5 rounded-full bg-[#fca5a5] ml-1 hidden sm:inline-block shrink-0 animate-blink shadow-sm"></span>
     </div>
 
@@ -193,10 +182,7 @@
 </nav>
 
 <!-- Mobile Navigation Drawer -->
-<!-- Mobile Navigation Drawer -->
-<!-- Mobile Navigation Drawer -->
-<!-- Mobile Navigation Drawer -->
-<div id="mobile-menu" class="fixed inset-x-0 top-[73px] bg-white border-b border-slate-200 shadow-xl lg:hidden hidden z-40 max-h-[85vh] overflow-y-auto p-6 space-y-6">
+<div id="mobile-menu" class="no-print fixed inset-x-0 top-[73px] bg-white border-b border-slate-200 shadow-xl lg:hidden hidden z-40 max-h-[85vh] overflow-y-auto p-6 space-y-6">
     <a href="index.html" class="block text-sm font-bold uppercase text-slate-800 hover:text-red-600">Home</a>
     <div class="space-y-2">
         <div class="text-xs font-bold text-red-600 uppercase tracking-wider">PDF Core Tools (9)</div>
@@ -246,7 +232,7 @@
             <button onclick="downloadExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl shadow transition-all text-xs uppercase cursor-pointer flex items-center space-x-1.5">
                 <span>📥 Download Excel</span>
             </button>
-            <button onclick="window.print()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-2.5 rounded-xl shadow-md transition-all text-xs uppercase flex items-center space-x-2 cursor-pointer">
+            <button onclick="triggerPdfPrint()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-2.5 rounded-xl shadow-md transition-all text-xs uppercase flex items-center space-x-2 cursor-pointer">
                 <span>🖨️ Download / Print PDF</span>
             </button>
         </div>
@@ -255,13 +241,21 @@
     <!-- Corporate Tax Invoice Sheet -->
     <div id="invoice-paper" class="bg-white p-5 rounded-2xl shadow-xl border border-gray-200">
         
-        <!-- Centered TAX INVOICE Header -->
-        <div class="text-center pb-2 mb-3 border-b border-gray-100">
-            <h1 class="text-2xl font-black text-red-600 tracking-tight">TAX INVOICE</h1>
+        <div class="pb-2 mb-3 border-b border-gray-100 print-tax-title" style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;">
+            <div></div>
+            <h1 class="text-2xl font-black text-red-600 tracking-tight text-center">TAX INVOICE</h1>
+            <div class="no-print flex items-center justify-end space-x-2 text-xs font-bold text-slate-700">
+                <span>Currency:</span>
+                <select id="currency-select" onchange="calcTotals()" class="bg-slate-50 border border-gray-200 rounded p-1 font-bold outline-none">
+                    <option value="INR" selected>INR (₹)</option>
+                    <option value="USD">USD ($)</option>
+                    <option value="EUR">EUR (€)</option>
+                    <option value="GBP">GBP (£)</option>
+                </select>
+            </div>
         </div>
 
-        <!-- Top Header: Business Details & Invoice Metadata -->
-        <div class="grid grid-cols-1 md:grid-cols-2 print-grid-2 gap-4 border-b border-gray-200 pb-3 mb-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 print-grid-2 print-vendor-meta gap-4 border-b border-gray-200 pb-3 mb-3">
             <div class="space-y-1">
                 <input type="text" id="bus-name" value="" oninput="updateSignCompany(this.value)" autocomplete="off" placeholder="YOUR BUSINESS NAME" class="text-lg font-black text-slate-900 border-b border-dashed border-gray-300 focus:border-red-500 outline-none w-full">
                 <div class="text-xs font-bold text-slate-600 flex items-center space-x-2">
@@ -300,17 +294,16 @@
             </div>
         </div>
 
-        <!-- Bill To & Ship To Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 print-grid-2 gap-4 bg-slate-50 p-3 rounded-xl border border-gray-200 mb-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 print-grid-2 print-customer-box gap-4 bg-slate-50 p-3 rounded-xl border border-gray-200 mb-3">
             <div>
-                <span class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-1">Billed To (Customer):</span>
+                <span class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-1 box-title">Billed To (Customer):</span>
                 <input type="text" id="bill-name" placeholder="Client / Company Name" value="" autocomplete="off" class="text-xs font-extrabold text-slate-900 border-b border-dashed border-gray-300 w-full block outline-none mb-0.5">
                 <input type="text" id="bill-addr" placeholder="Billing Address / City" value="" autocomplete="off" class="text-xs text-slate-600 border-b border-dashed border-gray-200 w-full block outline-none mb-0.5">
                 <input type="text" id="bill-gst" placeholder="Client GSTIN" value="" autocomplete="off" class="text-xs font-semibold text-slate-700 border-b border-dashed border-gray-200 w-full block outline-none uppercase">
             </div>
 
             <div>
-                <span class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-1">Shipped To (Delivery Address):</span>
+                <span class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-1 box-title">Shipped To (Delivery Address):</span>
                 <input type="text" id="ship-name" placeholder="Receiver Name / Location" value="" autocomplete="off" class="text-xs font-extrabold text-slate-900 border-b border-dashed border-gray-300 w-full block outline-none mb-0.5">
                 <input type="text" id="ship-addr" placeholder="Shipping Address" value="" autocomplete="off" class="text-xs text-slate-600 border-b border-dashed border-gray-200 w-full block outline-none mb-0.5">
                 <input type="text" id="ship-supply" placeholder="Place of Supply" value="" autocomplete="off" class="text-xs font-semibold text-slate-700 border-b border-dashed border-gray-200 w-full block outline-none">
@@ -318,14 +311,14 @@
         </div>
 
         <!-- Line Items Table -->
-        <table class="w-full text-left mb-3 border-collapse">
+        <table class="w-full text-left mb-3 border-collapse overflow-hidden rounded-xl border border-slate-200 print-table">
             <thead>
                 <tr class="bg-slate-900 text-white text-[11px] font-black uppercase tracking-wider">
-                    <th class="py-2 px-3 rounded-l-lg">Item Description / HSN</th>
+                    <th class="py-2 px-3">Item Description / HSN</th>
                     <th class="py-2 px-2 text-center w-16">Qty</th>
-                    <th class="py-2 px-2 text-right w-24">Price (₹)</th>
+                    <th class="py-2 px-2 text-right w-24">Price (<span class="curr-symbol">₹</span>)</th>
                     <th class="py-2 px-2 text-right w-20">GST %</th>
-                    <th class="py-2 px-3 text-right w-28 rounded-r-lg">Total (₹)</th>
+                    <th class="py-2 px-3 text-right w-28">Total (<span class="curr-symbol">₹</span>)</th>
                     <th class="w-6 no-print"></th>
                 </tr>
             </thead>
@@ -355,12 +348,10 @@
             <span>+ Add Line Item</span>
         </button>
 
-        <!-- Summary, Totals & Footer Locked Together -->
         <div class="unbreakable-footer">
-            <div class="grid grid-cols-1 md:grid-cols-2 print-grid-2 gap-6 border-t border-gray-200 pt-3">
-                <!-- Bank Details -->
-                <div class="space-y-1.5 text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-gray-200">
-                    <span class="font-black text-slate-800 uppercase tracking-wider block mb-1">Bank Account Details:</span>
+            <div class="grid grid-cols-1 md:grid-cols-2 print-grid-2 print-footer-grid gap-6 border-t border-gray-200 pt-3">
+                <div class="space-y-1.5 text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-gray-200 print-bank-box">
+                    <span class="font-black text-slate-800 uppercase tracking-wider block mb-1 bank-title">Bank Account Details:</span>
                     
                     <div class="flex items-center space-x-2">
                         <span class="w-24 text-slate-400">Bank Name:</span>
@@ -414,40 +405,38 @@
                     </div>
                 </div>
 
-                <!-- Calculated Totals -->
-                <div class="space-y-1 text-xs font-bold text-slate-700">
+                <div class="space-y-1 text-xs font-bold text-slate-700 print-totals-box">
                     <div class="flex justify-between py-1">
                         <span>Taxable Subtotal:</span>
-                        <span id="sub-total">₹1000.00</span>
+                        <span id="sub-total"><span class="curr-symbol">₹</span>1000.00</span>
                     </div>
                     <div class="flex justify-between py-1">
                         <span>CGST (9%):</span>
-                        <span id="cgst-total">₹90.00</span>
+                        <span id="cgst-total"><span class="curr-symbol">₹</span>90.00</span>
                     </div>
                     <div class="flex justify-between py-1">
                         <span>SGST (9%):</span>
-                        <span id="sgst-total">₹90.00</span>
+                        <span id="sgst-total"><span class="curr-symbol">₹</span>90.00</span>
                     </div>
-                    <div class="flex justify-between border-t border-gray-200 pt-2 text-base font-black text-slate-900">
+                    <div class="flex justify-between border-t border-gray-200 pt-2 text-base font-black text-slate-900 grand-total-row">
                         <span>Grand Total:</span>
-                        <span id="grand-total" class="text-red-600">₹1180.00</span>
+                        <span id="grand-total" class="text-red-600"><span class="curr-symbol">₹</span>1180.00</span>
                     </div>
                     <div class="text-[10px] font-normal text-slate-500 pt-0.5 italic" id="amount-in-words">
-                        Amount in words: One Thousand One Hundred and Eighty Rupees Only
+                        Amount in words: One Thousand One Hundred and Eighty Only
                     </div>
                 </div>
             </div>
 
-            <!-- Corporate Footer / Signatory -->
-            <div class="mt-5 pt-3 border-t border-gray-200 flex justify-between items-end">
+            <div class="mt-5 pt-3 border-t border-gray-200 flex justify-between items-end print-terms-box">
                 <div class="text-[10px] text-slate-500 space-y-0.5">
-                    <p class="font-bold">Terms & Conditions:</p>
+                    <p class="font-bold terms-heading">Terms & Conditions:</p>
                     <p>1. Goods once sold will not be taken back.</p>
                     <p>2. Subject to State Jurisdiction.</p>
                 </div>
                 <div class="text-center space-y-3">
                     <div class="text-xs font-bold text-slate-800" id="sign-company">For YOUR BUSINESS NAME</div>
-                    <div class="text-[10px] text-slate-400">(Authorized Signatory)</div>
+                    <div class="text-[10px] text-slate-400 auth-sign-label">(Authorized Signatory)</div>
                 </div>
             </div>
         </div>
@@ -455,8 +444,19 @@
     </div>
 </div>
 
+
+    <!-- Exact Corporate Print Container (Hidden on screen, matches Excel layout for PDF / Print) -->
+    <div id="print-excel-layout" class="hidden"></div>
+
 <script>
     document.getElementById('inv-date').valueAsDate = new Date();
+
+    const currencySymbols = {
+        'INR': '₹',
+        'USD': '$',
+        'EUR': '€',
+        'GBP': '£'
+    };
 
     function showToast(msg) {
         const toast = document.createElement('div');
@@ -489,7 +489,7 @@
 
     function numberToWords(num) {
         if (isNaN(num)) return '';
-        if (num === 0) return 'Zero Rupees Only';
+        if (num === 0) return 'Zero Only';
         
         const a = ['','One ','Two ','Three ','Four ', 'Five ','Six ','Seven ','Eight ','Nine ','Ten ','Eleven ','Twelve ','Thirteen ','Fourteen ','Fifteen ','Sixteen ','Seventeen ','Eighteen ','Nineteen '];
         const b = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
@@ -513,15 +513,19 @@
         }
 
         const rupees = Math.floor(num);
-        const paise = Math.round((num - rupees) * 100);
-        let res = inWords(rupees).trim() + ' Rupees';
-        if (paise > 0) {
-            res += ' and ' + inWords(paise).trim() + ' Paise';
+        const decimals = Math.round((num - rupees) * 100);
+        let res = inWords(rupees).trim();
+        if (decimals > 0) {
+            res += ' and ' + inWords(decimals).trim() + ' Cents';
         }
         return res + ' Only';
     }
 
     function calcTotals() {
+        const selectedCurr = document.getElementById('currency-select').value;
+        const symbol = currencySymbols[selectedCurr] || '₹';
+        document.querySelectorAll('.curr-symbol').forEach(el => el.textContent = symbol);
+
         let subtotal = 0;
         let totalTaxAmount = 0;
 
@@ -542,10 +546,10 @@
         const halfTax = totalTaxAmount / 2;
         const grandTotal = subtotal + totalTaxAmount;
 
-        document.getElementById('sub-total').textContent = '₹' + subtotal.toFixed(2);
-        document.getElementById('cgst-total').textContent = '₹' + halfTax.toFixed(2);
-        document.getElementById('sgst-total').textContent = '₹' + halfTax.toFixed(2);
-        document.getElementById('grand-total').textContent = '₹' + grandTotal.toFixed(2);
+        document.getElementById('sub-total').innerHTML = `<span class="curr-symbol">${symbol}</span>` + subtotal.toFixed(2);
+        document.getElementById('cgst-total').innerHTML = `<span class="curr-symbol">${symbol}</span>` + halfTax.toFixed(2);
+        document.getElementById('sgst-total').innerHTML = `<span class="curr-symbol">${symbol}</span>` + halfTax.toFixed(2);
+        document.getElementById('grand-total').innerHTML = `<span class="curr-symbol">${symbol}</span>` + grandTotal.toFixed(2);
         document.getElementById('amount-in-words').textContent = 'Amount in words: ' + numberToWords(grandTotal);
     }
 
@@ -582,87 +586,668 @@
         }
     }
 
-    function downloadExcel() {
-        const busNameVal = document.getElementById('bus-name').value.trim() || 'YOUR BUSINESS NAME';
-        const bankName = document.getElementById('bank-select').value === 'Other' ? document.getElementById('manual-bank-name').value : document.getElementById('bank-select').value;
+    function preparePrintView() {
+    const getVal = (id, fallback) => {
+        const el = document.getElementById(id);
+        if (!el) return fallback || '';
+        const v = (el.value || '').trim();
+        if (v.length > 0) return v;
+        return (el.placeholder || fallback || '').trim();
+    };
 
-        const aoa = [
-            ["", "", "TAX INVOICE", "", ""],
-            ["Business Name:", document.getElementById('bus-name').value, "", "Invoice No:", document.getElementById('inv-no').value],
-            ["Proprietor:", document.getElementById('bus-prop').value, "", "Invoice Date:", document.getElementById('inv-date').value],
-            ["GSTIN:", document.getElementById('bus-gst').value, "", "State Code:", document.getElementById('inv-state').value],
-            ["Email:", document.getElementById('bus-email').value, "", "", ""],
-            ["Mobile:", document.getElementById('bus-mobile').value, "", "", ""],
-            ["", "", "", "", ""],
-            ["", "", "", "", ""],
-            ["", "", "", "", ""],
-            ["", "", "", "", ""],
-            ["", "", "", "", ""],
-            ["Billed To:", document.getElementById('bill-name').value, "", "Shipped To:", document.getElementById('ship-name').value],
-            ["Billing Address:", document.getElementById('bill-addr').value, "", "Shipping Address:", document.getElementById('ship-addr').value],
-            ["Client GSTIN:", document.getElementById('bill-gst').value, "", "Place of Supply:", document.getElementById('ship-supply').value],
-            ["", "", "", "", ""],
-            ["", "", "", "", ""],
-            ["", "", "", "", ""],
-            ["Item Description & HSN", "Quantity", "Price (₹)", "GST %", "Total (₹)"]
-        ];
+    const busName = getVal('bus-name', 'YOUR BUSINESS NAME');
+    const busProp = getVal('bus-prop', 'Proprietor Name');
+    const busGst = getVal('bus-gst', 'GSTIN Number');
+    const busEmail = getVal('bus-email', 'business@email.com');
+    const busMobile = getVal('bus-mobile', '+91 0000000000');
 
-        document.querySelectorAll('.item-row').forEach(row => {
-            const desc = row.querySelector('.item-desc').value;
-            const hsn = row.querySelector('.item-hsn').value;
-            const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
-            const price = parseFloat(row.querySelector('.item-price').value) || 0;
-            const tax = row.querySelector('.item-tax').value + "%";
-            const total = parseFloat(row.querySelector('.item-total').textContent) || 0;
-            aoa.push([`${desc} (${hsn})`, qty, price, tax, total]);
-        });
+    const invNo = getVal('inv-no', 'INV-001');
+    const invDate = (document.getElementById('inv-date') && document.getElementById('inv-date').value) || new Date().toISOString().split('T')[0];
+    const invState = getVal('inv-state', 'State Code');
 
-        aoa.push(
-            ["", "", "", "", ""],
-            ["", "", "", "", ""],
-            ["", "", "", "", ""]
-        );
+    const selectedCurr = (document.getElementById('currency-select') && document.getElementById('currency-select').value) || 'INR';
+    const currSym = (typeof currencySymbols !== 'undefined' && currencySymbols[selectedCurr]) ? currencySymbols[selectedCurr] : '₹';
+    const currDisplay = selectedCurr + ' (' + currSym + ')';
 
-        aoa.push(
-            ["Bank Name:", bankName, "", "Taxable Subtotal:", parseFloat(document.getElementById('sub-total').textContent.replace('₹','')) || 0],
-            ["A/C Number:", document.getElementById('bank-acc').value, "", "CGST (9%):", parseFloat(document.getElementById('cgst-total').textContent.replace('₹','')) || 0],
-            ["IFSC Code:", document.getElementById('bank-ifsc').value, "", "SGST (9%):", parseFloat(document.getElementById('sgst-total').textContent.replace('₹','')) || 0],
-            ["Branch:", document.getElementById('bank-branch').value, "", "Grand Total:", parseFloat(document.getElementById('grand-total').textContent.replace('₹','')) || 0],
-            ["", "", "", "", ""],
-            ["", "", "", "", ""],
-            ["", "", "", "", ""],
-            ["", "", "", "", ""],
-            ["", "", "", "", ""],
-            ["", "", "", "", ""],
-            ["", "", "", "", ""],
-            ["", "", "", "", ""],
-            ["Terms & Conditions:", "", "", "", `For ${busNameVal}`],
-            ["1. Goods once sold will not be taken back.", "", "", "", ""],
-            ["2. Subject to State Jurisdiction.", "", "", "", "(Authorized Signatory)"]
-        );
+    const billName = getVal('bill-name', 'Client / Company Name');
+    const billAddr = getVal('bill-addr', 'Billing Address / City');
+    const billGst = getVal('bill-gst', 'Client GSTIN');
 
-        const ws = XLSX.utils.aoa_to_sheet(aoa);
+    const shipName = getVal('ship-name', 'Receiver Name / Location');
+    const shipAddr = getVal('ship-addr', 'Shipping Address');
+    const shipSupply = getVal('ship-supply', 'Place of Supply');
+
+    // Extract table items using exact same .item-row class as downloadExcel
+    const items = [];
+    document.querySelectorAll('.item-row').forEach(row => {
+        const descInput = row.querySelector('.item-desc');
+        const desc = descInput ? (descInput.value.trim() || descInput.placeholder || 'Product Description') : 'Product Description';
         
-        if(!ws['C1']) ws['C1'] = { t: 's', v: 'TAX INVOICE' };
-        ws['C1'].s = { 
-            font: { bold: true, sz: 14, color: { rgb: "C00000" } }, 
-            alignment: { horizontal: "center", vertical: "center" } 
+        const hsnInput = row.querySelector('.item-hsn');
+        const hsn = hsnInput ? (hsnInput.value.trim() || hsnInput.placeholder || '') : '';
+        
+        const qtyInput = row.querySelector('.item-qty');
+        const qty = qtyInput ? (parseFloat(qtyInput.value) || 1) : 1;
+        
+        const priceInput = row.querySelector('.item-price');
+        const priceNum = priceInput ? (parseFloat(priceInput.value) || 0) : 0;
+        const price = priceNum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        
+        const taxSelect = row.querySelector('.item-tax');
+        const tax = (taxSelect ? taxSelect.value : '18') + '%';
+        
+        const totalEl = row.querySelector('.item-total');
+        const totalRaw = totalEl ? totalEl.textContent.replace(/[^0-9.]/g, '') : '';
+        const totalNum = parseFloat(totalRaw) || (qty * priceNum);
+        const total = totalNum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        const fullDesc = (hsn && hsn !== 'HSN/SAC Code') ? (hsn.toLowerCase().startsWith('hsn') ? `${desc} (${hsn})` : `${desc} (HSN: ${hsn})`) : desc;
+
+        items.push({
+            desc: fullDesc,
+            qty: qty,
+            price: price,
+            tax: tax,
+            total: total
+        });
+    });
+
+    if (items.length === 0) {
+        items.push({
+            desc: 'Product Description (HSN: 000000)',
+            qty: 1,
+            price: '1,000.00',
+            tax: '18%',
+            total: '1,180.00'
+        });
+    }
+
+    // Bank Details
+    const bankSelectEl = document.getElementById('bank-select');
+    let bankName = bankSelectEl ? bankSelectEl.value : '';
+    if (bankName === 'Other') {
+        bankName = getVal('manual-bank-name', 'Custom Bank Name');
+    } else if (!bankName) {
+        bankName = 'Select Bank';
+    }
+
+    const bankAcc = getVal('bank-acc', 'Account Number');
+    const bankIfsc = getVal('bank-ifsc', 'IFSC Code');
+    const bankBranch = getVal('bank-branch', 'Branch Name');
+
+    // Totals matching exact IDs from HTML
+    const subTotalEl = document.getElementById('sub-total');
+    const subTotalNum = subTotalEl ? (parseFloat(subTotalEl.textContent.replace(/[^0-9.]/g, '')) || 0) : 0;
+    const subTotalFmt = subTotalNum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    const cgstEl = document.getElementById('cgst-total');
+    const cgstNum = cgstEl ? (parseFloat(cgstEl.textContent.replace(/[^0-9.]/g, '')) || 0) : 0;
+    const cgstFmt = cgstNum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    const sgstEl = document.getElementById('sgst-total');
+    const sgstNum = sgstEl ? (parseFloat(sgstEl.textContent.replace(/[^0-9.]/g, '')) || 0) : 0;
+    const sgstFmt = sgstNum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    const grandTotalEl = document.getElementById('grand-total');
+    const grandTotalNum = grandTotalEl ? (parseFloat(grandTotalEl.textContent.replace(/[^0-9.]/g, '')) || 0) : 0;
+    const grandTotalFmt = grandTotalNum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    const amountWordsEl = document.getElementById('amount-in-words');
+    let amountInWords = (amountWordsEl ? amountWordsEl.textContent.replace(/Amount in words:\s*/i, '').trim() : '') || 'One Thousand One Hundred and Eighty Only';
+
+    const printContainer = document.getElementById('print-excel-layout');
+    if (!printContainer) return;
+
+    printContainer.innerHTML = `
+        <div style="border: 2px solid #000000; width: 100%; margin: 0 auto; background: #ffffff; font-family: Arial, Helvetica, sans-serif !important; box-sizing: border-box;">
+            <!-- Title -->
+            <div style="text-align: center; padding: 7px 0; border-bottom: 1.5px solid #000000;">
+                <h1 style="color: #990000; font-size: 16px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase; margin: 0; font-family: Arial, Helvetica, sans-serif;">TAX INVOICE</h1>
+            </div>
+
+            <!-- Header: Business & Metadata -->
+            <div style="display: flex; justify-content: space-between; padding: 8px 12px 10px 12px; border-bottom: 1.5px solid #000000;">
+                <div style="width: 58%;">
+                    <div style="font-size: 14px; font-weight: bold; text-transform: uppercase; color: #000000; margin-bottom: 3px;">${busName}</div>
+                    <div style="font-size: 10.5px; line-height: 1.5; color: #1e293b;">Owner: ${busProp}</div>
+                    <div style="font-size: 10.5px; font-weight: bold; color: #000000; line-height: 1.5;">GSTIN: ${busGst}</div>
+                    <div style="font-size: 10.5px; line-height: 1.5; color: #1e293b;">Email: ${busEmail}</div>
+                    <div style="font-size: 10.5px; line-height: 1.5; color: #1e293b;">Mobile: ${busMobile}</div>
+                </div>
+                <div style="width: 38%;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr><td style="font-size: 10.5px; color: #1e293b; text-align: left; padding: 2px 0;">Invoice No:</td><td style="font-size: 10.5px; color: #000000; font-weight: bold; text-align: right; padding: 2px 0;">${invNo}</td></tr>
+                        <tr><td style="font-size: 10.5px; color: #1e293b; text-align: left; padding: 2px 0;">Invoice Date:</td><td style="font-size: 10.5px; color: #000000; font-weight: bold; text-align: right; padding: 2px 0;">${invDate}</td></tr>
+                        <tr><td style="font-size: 10.5px; color: #1e293b; text-align: left; padding: 2px 0;">State Code:</td><td style="font-size: 10.5px; color: #000000; font-weight: bold; text-align: right; padding: 2px 0;">${invState}</td></tr>
+                        <tr><td style="font-size: 10.5px; color: #1e293b; text-align: left; padding: 2px 0;">Currency:</td><td style="font-size: 10.5px; color: #000000; font-weight: bold; text-align: right; padding: 2px 0;">${currDisplay}</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Billed To & Shipped To -->
+            <div style="display: flex; justify-content: space-between; padding: 8px 12px;">
+                <table style="width: 46%; border-collapse: collapse; border: 1px solid #000000;">
+                    <thead>
+                        <tr><th style="background: #f1f5f9; font-size: 10px; font-weight: bold; text-transform: uppercase; text-align: left; padding: 4px 8px; border: 1px solid #000000; color: #000000;">BILLED TO (CUSTOMER)</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td style="font-size: 10.5px; padding: 4px 8px; border: 1px solid #000000; line-height: 1.35; font-weight: bold;">${billName}</td></tr>
+                        <tr><td style="font-size: 10.5px; padding: 4px 8px; border: 1px solid #000000; line-height: 1.35; color: #334155;">${billAddr}</td></tr>
+                        <tr><td style="font-size: 10.5px; padding: 4px 8px; border: 1px solid #000000; line-height: 1.35; font-weight: bold;">GSTIN: ${billGst}</td></tr>
+                    </tbody>
+                </table>
+
+                <table style="width: 46%; border-collapse: collapse; border: 1px solid #000000;">
+                    <thead>
+                        <tr><th style="background: #f1f5f9; font-size: 10px; font-weight: bold; text-transform: uppercase; text-align: left; padding: 4px 8px; border: 1px solid #000000; color: #000000;">SHIPPED TO (DELIVERY ADDRESS)</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td style="font-size: 10.5px; padding: 4px 8px; border: 1px solid #000000; line-height: 1.35; font-weight: bold;">${shipName}</td></tr>
+                        <tr><td style="font-size: 10.5px; padding: 4px 8px; border: 1px solid #000000; line-height: 1.35; color: #334155;">${shipAddr}</td></tr>
+                        <tr><td style="font-size: 10.5px; padding: 4px 8px; border: 1px solid #000000; line-height: 1.35; color: #334155;">${shipSupply}</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Items Table -->
+            <div style="padding: 2px 12px 8px 12px;">
+                <table style="width: 100%; border-collapse: collapse; border: 1px solid #000000;">
+                    <thead>
+                        <tr style="background: #0b1a30; color: #ffffff;">
+                            <th style="width: 44%; text-align: left; font-size: 10px; font-weight: bold; text-transform: uppercase; padding: 5px 8px; border: 1px solid #000000; letter-spacing: 0.5px;">ITEM DESCRIPTION / HSN</th>
+                            <th style="width: 10%; text-align: center; font-size: 10px; font-weight: bold; text-transform: uppercase; padding: 5px 8px; border: 1px solid #000000; letter-spacing: 0.5px;">QTY</th>
+                            <th style="width: 15%; text-align: right; font-size: 10px; font-weight: bold; text-transform: uppercase; padding: 5px 8px; border: 1px solid #000000; letter-spacing: 0.5px;">PRICE (${currSym})</th>
+                            <th style="width: 12%; text-align: center; font-size: 10px; font-weight: bold; text-transform: uppercase; padding: 5px 8px; border: 1px solid #000000; letter-spacing: 0.5px;">GST %</th>
+                            <th style="width: 19%; text-align: right; font-size: 10px; font-weight: bold; text-transform: uppercase; padding: 5px 8px; border: 1px solid #000000; letter-spacing: 0.5px;">TOTAL (${currSym})</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${items.map(it => `
+                        <tr style="page-break-inside: avoid;">
+                            <td style="text-align: left; font-size: 10.5px; padding: 5px 8px; border: 1px solid #000000; color: #000000;">${it.desc}</td>
+                            <td style="text-align: center; font-size: 10.5px; padding: 5px 8px; border: 1px solid #000000; color: #000000;">${it.qty}</td>
+                            <td style="text-align: right; font-size: 10.5px; padding: 5px 8px; border: 1px solid #000000; color: #000000;">${it.price}</td>
+                            <td style="text-align: center; font-size: 10.5px; padding: 5px 8px; border: 1px solid #000000; color: #000000;">${it.tax}</td>
+                            <td style="text-align: right; font-size: 10.5px; padding: 5px 8px; border: 1px solid #000000; color: #000000; font-weight: bold;">${it.total}</td>
+                        </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Bank Details & Totals -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; padding: 2px 12px 8px 12px; page-break-inside: avoid;">
+                <div style="width: 46%;">
+                    <table style="width: 100%; border-collapse: collapse; border: 1px solid #000000;">
+                        <thead>
+                            <tr><th style="background: #f1f5f9; font-size: 10px; font-weight: bold; text-transform: uppercase; text-align: left; padding: 4px 8px; border: 1px solid #000000; color: #000000;">BANK ACCOUNT DETAILS</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td style="font-size: 10.5px; padding: 3.5px 8px; border: 1px solid #000000; color: #000000;">Bank Name: ${bankName}</td></tr>
+                            <tr><td style="font-size: 10.5px; padding: 3.5px 8px; border: 1px solid #000000; color: #000000;">A/C Number: ${bankAcc}</td></tr>
+                            <tr><td style="font-size: 10.5px; padding: 3.5px 8px; border: 1px solid #000000; color: #000000;">IFSC Code${bankIfsc && bankIfsc !== 'IFSC Code' ? ': ' + bankIfsc : (bankIfsc ? ': ' + bankIfsc : '')}</td></tr>
+                            <tr><td style="font-size: 10.5px; padding: 3.5px 8px; border: 1px solid #000000; color: #000000;">Branch Name${bankBranch && bankBranch !== 'Branch Name' ? ': ' + bankBranch : (bankBranch ? ': ' + bankBranch : '')}</td></tr>
+                        </tbody>
+                    </table>
+                    <div style="margin-top: 6px; font-size: 10px; font-weight: bold; font-style: italic; color: #000000; line-height: 1.4;">Amount in words: ${amountInWords}</div>
+                </div>
+
+                <div style="width: 36%;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr><td style="font-size: 10.5px; padding: 3px 0; color: #000000; text-align: left;">Taxable Subtotal:</td><td style="font-size: 10.5px; padding: 3px 0; color: #000000; font-weight: bold; text-align: right;">${subTotalFmt}</td></tr>
+                        <tr><td style="font-size: 10.5px; padding: 3px 0; color: #000000; text-align: left;">CGST (9%):</td><td style="font-size: 10.5px; padding: 3px 0; color: #000000; font-weight: bold; text-align: right;">${cgstFmt}</td></tr>
+                        <tr><td style="font-size: 10.5px; padding: 3px 0; color: #000000; text-align: left;">SGST (9%):</td><td style="font-size: 10.5px; padding: 3px 0; color: #000000; font-weight: bold; text-align: right;">${sgstFmt}</td></tr>
+                        <tr>
+                            <td style="font-size: 11px; font-weight: bold; color: #000000; border-top: 1.5px solid #000000; border-bottom: 3px double #000000; padding: 4px 0;">Grand Total:</td>
+                            <td style="font-size: 13px; font-weight: bold; color: #990000; text-align: right; border-top: 1.5px solid #000000; border-bottom: 3px double #000000; padding: 4px 0;">${grandTotalFmt}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Terms & Signature -->
+            <div style="border-top: 1.5px solid #000000; padding: 8px 12px 6px 12px; display: flex; justify-content: space-between; align-items: flex-end; page-break-inside: avoid;">
+                <div style="width: 55%;">
+                    <div style="font-size: 10.5px; font-weight: bold; color: #000000; margin-bottom: 3px;">Terms & Conditions:</div>
+                    <div style="font-size: 9.5px; color: #334155; line-height: 1.4;">1. Goods once sold will not be taken back.</div>
+                    <div style="font-size: 9.5px; color: #334155; line-height: 1.4; margin-top: 12px;">2. Subject to State Jurisdiction.</div>
+                </div>
+                <div style="width: 40%; text-align: right;">
+                    <div style="font-size: 10.5px; font-weight: bold; color: #000000; margin-bottom: 36px;">For ${busName}</div>
+                    <div style="border-top: 1px solid #475569; width: 170px; margin-left: auto; padding-top: 3px; text-align: center; font-size: 9.5px; color: #475569;">(Authorized Signatory)</div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function triggerPdfPrint() {
+    preparePrintView();
+    window.print();
+}
+
+window.addEventListener('beforeprint', preparePrintView);
+preparePrintView(); // Pre-populate print layout
+
+async function downloadExcel() {
+        if (typeof ExcelJS === 'undefined') {
+            showToast("⚠️ Loading Excel engine, please wait a moment...");
+            return;
+        }
+
+        const getVal = (id, fallback) => {
+            const el = document.getElementById(id);
+            if (!el) return fallback || '';
+            const v = (el.value || '').trim();
+            if (v.length > 0) return v;
+            return (el.placeholder || fallback || '').trim();
         };
 
-        ws['!cols'] = [
-            {wch: 25},
-            {wch: 30},
-            {wch: 10},
-            {wch: 18},
-            {wch: 25}
+        const busNameVal = getVal('bus-name', 'YOUR BUSINESS NAME');
+        const busProp = getVal('bus-prop', 'Proprietor Name');
+        const busGst = getVal('bus-gst', 'GSTIN Number');
+        const busEmail = getVal('bus-email', 'business@email.com');
+        const busMobile = getVal('bus-mobile', '+91 0000000000');
+
+        const invNo = getVal('inv-no', 'INV-001');
+        const invDate = (document.getElementById('inv-date') && document.getElementById('inv-date').value) || new Date().toISOString().split('T')[0];
+        const invState = getVal('inv-state', 'State Code');
+
+        const selectedCurr = (document.getElementById('currency-select') && document.getElementById('currency-select').value) || 'INR';
+        const currSym = (typeof currencySymbols !== 'undefined' && currencySymbols[selectedCurr]) ? currencySymbols[selectedCurr] : '₹';
+
+        const billName = getVal('bill-name', 'Client / Company Name');
+        const billAddr = getVal('bill-addr', 'Billing Address / City');
+        const billGst = getVal('bill-gst', 'Client GSTIN');
+
+        const shipName = getVal('ship-name', 'Receiver Name / Location');
+        const shipAddr = getVal('ship-addr', 'Shipping Address');
+        const shipSupply = getVal('ship-supply', 'Place of Supply');
+
+        const bankSelectEl = document.getElementById('bank-select');
+        let bankName = bankSelectEl ? bankSelectEl.value : '';
+        if (bankName === 'Other') {
+            bankName = getVal('manual-bank-name', 'Custom Bank Name');
+        } else if (!bankName) {
+            bankName = 'Select Bank';
+        }
+
+        const bankAcc = getVal('bank-acc', 'Account Number');
+        const bankIfsc = getVal('bank-ifsc', 'IFSC Code');
+        const bankBranch = getVal('bank-branch', 'Branch Name');
+
+        const subTotalVal = parseFloat(document.getElementById('sub-total').textContent.replace(/[^0-9.]/g,'')) || 0;
+        const cgstVal = parseFloat(document.getElementById('cgst-total').textContent.replace(/[^0-9.]/g,'')) || 0;
+        const sgstVal = parseFloat(document.getElementById('sgst-total').textContent.replace(/[^0-9.]/g,'')) || 0;
+        const grandTotalVal = parseFloat(document.getElementById('grand-total').textContent.replace(/[^0-9.]/g,'')) || 0;
+        const wordsVal = document.getElementById('amount-in-words') ? document.getElementById('amount-in-words').textContent.trim() : 'Amount in words: -';
+
+        const wb = new ExcelJS.Workbook();
+        wb.creator = 'Filesque';
+        const ws = wb.addWorksheet('Tax Invoice', {
+            views: [{ showGridLines: true }]
+        });
+
+        // Exact column widths
+        ws.columns = [
+            { key: 'colA', width: 34 },
+            { key: 'colB', width: 14 },
+            { key: 'colC', width: 15 },
+            { key: 'colD', width: 18 },
+            { key: 'colE', width: 20 }
         ];
 
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Tax Invoice");
-        
-        const fileName = `Invoice_${(document.getElementById('inv-no').value || 'INV').replace(/[\/]/g, '_')}.xlsx`;
-        XLSX.writeFile(wb, fileName);
-        
+        const borderThin = { style: 'thin', color: { argb: 'FF000000' } };
+        const borderMedium = { style: 'medium', color: { argb: 'FF000000' } };
+        const borderDouble = { style: 'double', color: { argb: 'FF000000' } };
+
+        const boxBorderAll = {
+            top: borderThin,
+            bottom: borderThin,
+            left: borderThin,
+            right: borderThin
+        };
+
+        const fillGray = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFF1F5F9' }
+        };
+
+        const fillNavy = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FF0F172A' }
+        };
+
+        // -----------------------------------------------------------
+        // ROW 1: TAX INVOICE (Merged A1:E1, Bold Red Centered)
+        // -----------------------------------------------------------
+        ws.mergeCells('A1:E1');
+        const cA1 = ws.getCell('A1');
+        cA1.value = 'TAX INVOICE';
+        cA1.font = { name: 'Arial', size: 14, bold: true, color: { argb: 'FFC00000' } };
+        cA1.alignment = { horizontal: 'center', vertical: 'middle' };
+        ws.getRow(1).height = 30;
+        ['A1','B1','C1','D1','E1'].forEach(c => {
+            ws.getCell(c).border = { top: borderMedium, bottom: borderMedium };
+        });
+
+        // -----------------------------------------------------------
+        // ROWS 2-6: Business Info (Left A:C) & Invoice Meta (Right D:E)
+        // -----------------------------------------------------------
+        const r2 = ws.addRow([busNameVal, '', '', 'Invoice No:', invNo]);
+        ws.mergeCells('A2:C2');
+        r2.getCell(1).font = { name: 'Arial', size: 12, bold: true, color: { argb: 'FF000000' } };
+        r2.getCell(4).font = { name: 'Arial', size: 9.5, color: { argb: 'FF334155' } };
+        r2.getCell(5).font = { name: 'Arial', size: 9.5, bold: true, color: { argb: 'FF000000' } };
+        r2.getCell(5).alignment = { horizontal: 'right' };
+        r2.height = 19;
+
+        const r3 = ws.addRow([`Owner: ${busProp}`, '', '', 'Invoice Date:', invDate]);
+        ws.mergeCells('A3:C3');
+        r3.getCell(1).font = { name: 'Arial', size: 9.5, color: { argb: 'FF334155' } };
+        r3.getCell(4).font = { name: 'Arial', size: 9.5, color: { argb: 'FF334155' } };
+        r3.getCell(5).font = { name: 'Arial', size: 9.5, bold: true, color: { argb: 'FF000000' } };
+        r3.getCell(5).alignment = { horizontal: 'right' };
+        r3.height = 18;
+
+        const r4 = ws.addRow([`GSTIN: ${busGst}`, '', '', 'State Code:', invState]);
+        ws.mergeCells('A4:C4');
+        r4.getCell(1).font = { name: 'Arial', size: 9.5, bold: true, color: { argb: 'FF000000' } };
+        r4.getCell(4).font = { name: 'Arial', size: 9.5, color: { argb: 'FF334155' } };
+        r4.getCell(5).font = { name: 'Arial', size: 9.5, bold: true, color: { argb: 'FF000000' } };
+        r4.getCell(5).alignment = { horizontal: 'right' };
+        r4.height = 18;
+
+        const r5 = ws.addRow([`Email: ${busEmail}`, '', '', 'Currency:', `${selectedCurr} (${currSym})`]);
+        ws.mergeCells('A5:C5');
+        r5.getCell(1).font = { name: 'Arial', size: 9.5, color: { argb: 'FF334155' } };
+        r5.getCell(4).font = { name: 'Arial', size: 9.5, color: { argb: 'FF334155' } };
+        r5.getCell(5).font = { name: 'Arial', size: 9.5, bold: true, color: { argb: 'FF000000' } };
+        r5.getCell(5).alignment = { horizontal: 'right' };
+        r5.height = 18;
+
+        const r6 = ws.addRow([`Mobile: ${busMobile}`, '', '', '', '']);
+        ws.mergeCells('A6:C6');
+        r6.getCell(1).font = { name: 'Arial', size: 9.5, color: { argb: 'FF334155' } };
+        r6.height = 18;
+
+        // Row 7: Blank Spacer with bottom divider line
+        const r7 = ws.addRow(['', '', '', '', '']);
+        r7.height = 14;
+        ['A7','B7','C7','D7','E7'].forEach(c => {
+            ws.getCell(c).border = { bottom: borderMedium };
+        });
+
+        // -----------------------------------------------------------
+        // ROWS 8-11: BILLED TO (Cols A:B) & SHIPPED TO (Cols D:E)
+        // -----------------------------------------------------------
+        ws.mergeCells('A8:B8');
+        ws.getCell('A8').value = 'BILLED TO (CUSTOMER)';
+        ws.getCell('A8').font = { name: 'Arial', size: 9.5, bold: true, color: { argb: 'FF000000' } };
+        ws.getCell('A8').fill = fillGray;
+        ws.getCell('A8').alignment = { vertical: 'middle', indent: 1 };
+        ['A8','B8'].forEach(c => ws.getCell(c).border = boxBorderAll);
+
+        ws.mergeCells('D8:E8');
+        ws.getCell('D8').value = 'SHIPPED TO (DELIVERY ADDRESS)';
+        ws.getCell('D8').font = { name: 'Arial', size: 9.5, bold: true, color: { argb: 'FF000000' } };
+        ws.getCell('D8').fill = fillGray;
+        ws.getCell('D8').alignment = { vertical: 'middle', indent: 1 };
+        ['D8','E8'].forEach(c => ws.getCell(c).border = boxBorderAll);
+        ws.getRow(8).height = 22;
+
+        ws.mergeCells('A9:B9');
+        ws.getCell('A9').value = billName;
+        ws.getCell('A9').font = { name: 'Arial', size: 9.5, bold: true, color: { argb: 'FF000000' } };
+        ws.getCell('A9').alignment = { vertical: 'middle', indent: 1 };
+        ['A9','B9'].forEach(c => ws.getCell(c).border = boxBorderAll);
+
+        ws.mergeCells('D9:E9');
+        ws.getCell('D9').value = shipName;
+        ws.getCell('D9').font = { name: 'Arial', size: 9.5, bold: true, color: { argb: 'FF000000' } };
+        ws.getCell('D9').alignment = { vertical: 'middle', indent: 1 };
+        ['D9','E9'].forEach(c => ws.getCell(c).border = boxBorderAll);
+        ws.getRow(9).height = 20;
+
+        ws.mergeCells('A10:B10');
+        ws.getCell('A10').value = billAddr;
+        ws.getCell('A10').font = { name: 'Arial', size: 9.5, color: { argb: 'FF334155' } };
+        ws.getCell('A10').alignment = { vertical: 'middle', indent: 1 };
+        ['A10','B10'].forEach(c => ws.getCell(c).border = boxBorderAll);
+
+        ws.mergeCells('D10:E10');
+        ws.getCell('D10').value = shipAddr;
+        ws.getCell('D10').font = { name: 'Arial', size: 9.5, color: { argb: 'FF334155' } };
+        ws.getCell('D10').alignment = { vertical: 'middle', indent: 1 };
+        ['D10','E10'].forEach(c => ws.getCell(c).border = boxBorderAll);
+        ws.getRow(10).height = 20;
+
+        ws.mergeCells('A11:B11');
+        ws.getCell('A11').value = billGst.startsWith('GSTIN') ? billGst : `GSTIN: ${billGst}`;
+        ws.getCell('A11').font = { name: 'Arial', size: 9.5, bold: true, color: { argb: 'FF000000' } };
+        ws.getCell('A11').alignment = { vertical: 'middle', indent: 1 };
+        ['A11','B11'].forEach(c => ws.getCell(c).border = boxBorderAll);
+
+        ws.mergeCells('D11:E11');
+        ws.getCell('D11').value = shipSupply.startsWith('Place of Supply') ? shipSupply : `Place of Supply: ${shipSupply}`;
+        ws.getCell('D11').font = { name: 'Arial', size: 9.5, bold: true, color: { argb: 'FF000000' } };
+        ws.getCell('D11').alignment = { vertical: 'middle', indent: 1 };
+        ['D11','E11'].forEach(c => ws.getCell(c).border = boxBorderAll);
+        ws.getRow(11).height = 20;
+
+        // Row 12: Blank Spacer
+        const r12 = ws.addRow(['', '', '', '', '']);
+        r12.height = 14;
+
+        // -----------------------------------------------------------
+        // ROW 13: Table Header (Navy Background & White Bold Text)
+        // -----------------------------------------------------------
+        const r13 = ws.addRow(['ITEM DESCRIPTION / HSN', 'QTY', `PRICE (${currSym})`, 'GST %', `TOTAL (${currSym})`]);
+        r13.height = 26;
+        for (let c = 1; c <= 5; c++) {
+            const cell = r13.getCell(c);
+            cell.font = { name: 'Arial', size: 9.5, bold: true, color: { argb: 'FFFFFFFF' } };
+            cell.fill = fillNavy;
+            cell.border = {
+                top: borderMedium,
+                bottom: borderMedium,
+                left: borderThin,
+                right: borderThin
+            };
+            if (c === 1) cell.alignment = { horizontal: 'left', vertical: 'middle', indent: 1 };
+            else if (c === 2 || c === 4) cell.alignment = { horizontal: 'center', vertical: 'middle' };
+            else cell.alignment = { horizontal: 'right', vertical: 'middle' };
+        }
+
+        // Data Rows
+        document.querySelectorAll('.item-row').forEach(row => {
+            const desc = row.querySelector('.item-desc').value.trim() || 'Product Description';
+            const hsn = row.querySelector('.item-hsn').value.trim();
+            const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+            const price = parseFloat(row.querySelector('.item-price').value) || 0;
+            const tax = (row.querySelector('.item-tax').value || '0') + '%';
+            const total = parseFloat(row.querySelector('.item-total').textContent.replace(/[^0-9.]/g,'')) || 0;
+
+            const fullDesc = hsn ? `${desc} (HSN: ${hsn})` : desc;
+            const rowItem = ws.addRow([fullDesc, qty, price, tax, total]);
+            rowItem.height = 22;
+
+            for (let c = 1; c <= 5; c++) {
+                const cell = rowItem.getCell(c);
+                cell.border = boxBorderAll;
+                if (c === 1) {
+                    cell.font = { name: 'Arial', size: 9.5, bold: true, color: { argb: 'FF000000' } };
+                    cell.alignment = { horizontal: 'left', vertical: 'middle', indent: 1 };
+                } else if (c === 2) {
+                    cell.font = { name: 'Arial', size: 9.5, bold: true };
+                    cell.alignment = { horizontal: 'center', vertical: 'middle' };
+                } else if (c === 3) {
+                    cell.font = { name: 'Arial', size: 9.5 };
+                    cell.numFmt = '#,##0.00';
+                    cell.alignment = { horizontal: 'right', vertical: 'middle' };
+                } else if (c === 4) {
+                    cell.font = { name: 'Arial', size: 9.5, bold: true };
+                    cell.alignment = { horizontal: 'center', vertical: 'middle' };
+                } else if (c === 5) {
+                    cell.font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF000000' } };
+                    cell.numFmt = '#,##0.00';
+                    cell.alignment = { horizontal: 'right', vertical: 'middle' };
+                }
+            }
+        });
+
+        // Row 15: Blank Spacer
+        const r15 = ws.addRow(['', '', '', '', '']);
+        r15.height = 14;
+
+        // -----------------------------------------------------------
+        // ROWS 16-20: BANK ACCOUNT DETAILS & TOTALS
+        // -----------------------------------------------------------
+        // Row 16
+        const r16 = ws.addRow(['', '', '', 'Taxable Subtotal:', subTotalVal]);
+        r16.height = 22;
+        const n16 = r16.number;
+        ws.mergeCells(`A${n16}:B${n16}`);
+        ws.getCell(`A${n16}`).value = 'BANK ACCOUNT DETAILS';
+        ws.getCell(`A${n16}`).font = { name: 'Arial', size: 9.5, bold: true, color: { argb: 'FF000000' } };
+        ws.getCell(`A${n16}`).fill = fillGray;
+        ws.getCell(`A${n16}`).alignment = { vertical: 'middle', indent: 1 };
+        [`A${n16}`, `B${n16}`].forEach(c => ws.getCell(c).border = boxBorderAll);
+        r16.getCell(4).font = { name: 'Arial', size: 9.5, bold: true, color: { argb: 'FF334155' } };
+        r16.getCell(5).numFmt = '#,##0.00';
+        r16.getCell(5).font = { name: 'Arial', size: 9.5, bold: true };
+        r16.getCell(5).alignment = { horizontal: 'right' };
+
+        // Row 17
+        const r17 = ws.addRow(['', '', '', 'CGST (9%):', cgstVal]);
+        r17.height = 20;
+        const n17 = r17.number;
+        ws.mergeCells(`A${n17}:B${n17}`);
+        ws.getCell(`A${n17}`).value = bankName.startsWith('Bank Name') ? bankName : `Bank Name: ${bankName}`;
+        ws.getCell(`A${n17}`).font = { name: 'Arial', size: 9.5, color: { argb: 'FF000000' } };
+        ws.getCell(`A${n17}`).alignment = { vertical: 'middle', indent: 1 };
+        [`A${n17}`, `B${n17}`].forEach(c => ws.getCell(c).border = boxBorderAll);
+        r17.getCell(4).font = { name: 'Arial', size: 9.5, bold: true, color: { argb: 'FF334155' } };
+        r17.getCell(5).numFmt = '#,##0.00';
+        r17.getCell(5).font = { name: 'Arial', size: 9.5, bold: true };
+        r17.getCell(5).alignment = { horizontal: 'right' };
+
+        // Row 18
+        const r18 = ws.addRow(['', '', '', 'SGST (9%):', sgstVal]);
+        r18.height = 20;
+        const n18 = r18.number;
+        ws.mergeCells(`A${n18}:B${n18}`);
+        ws.getCell(`A${n18}`).value = bankAcc.startsWith('A/C Number') ? bankAcc : `A/C Number: ${bankAcc}`;
+        ws.getCell(`A${n18}`).font = { name: 'Arial', size: 9.5, color: { argb: 'FF000000' } };
+        ws.getCell(`A${n18}`).alignment = { vertical: 'middle', indent: 1 };
+        [`A${n18}`, `B${n18}`].forEach(c => ws.getCell(c).border = boxBorderAll);
+        r18.getCell(4).font = { name: 'Arial', size: 9.5, bold: true, color: { argb: 'FF334155' } };
+        r18.getCell(5).numFmt = '#,##0.00';
+        r18.getCell(5).font = { name: 'Arial', size: 9.5, bold: true };
+        r18.getCell(5).alignment = { horizontal: 'right' };
+
+        // Row 19
+        const r19 = ws.addRow(['', '', '', 'Grand Total:', grandTotalVal]);
+        r19.height = 26;
+        const n19 = r19.number;
+        ws.mergeCells(`A${n19}:B${n19}`);
+        ws.getCell(`A${n19}`).value = bankIfsc;
+        ws.getCell(`A${n19}`).font = { name: 'Arial', size: 9.5, color: { argb: 'FF000000' } };
+        ws.getCell(`A${n19}`).alignment = { vertical: 'middle', indent: 1 };
+        [`A${n19}`, `B${n19}`].forEach(c => ws.getCell(c).border = boxBorderAll);
+        r19.getCell(4).font = { name: 'Arial', size: 11, bold: true, color: { argb: 'FF000000' } };
+        r19.getCell(4).border = { top: borderThin, bottom: borderDouble };
+        r19.getCell(5).font = { name: 'Arial', size: 12, bold: true, color: { argb: 'FFDC2626' } };
+        r19.getCell(5).numFmt = '#,##0.00';
+        r19.getCell(5).alignment = { horizontal: 'right', vertical: 'middle' };
+        r19.getCell(5).border = { top: borderThin, bottom: borderDouble };
+
+        // Row 20
+        const r20 = ws.addRow(['', '', '', '', '']);
+        r20.height = 20;
+        const n20 = r20.number;
+        ws.mergeCells(`A${n20}:B${n20}`);
+        ws.getCell(`A${n20}`).value = bankBranch;
+        ws.getCell(`A${n20}`).font = { name: 'Arial', size: 9.5, color: { argb: 'FF000000' } };
+        ws.getCell(`A${n20}`).alignment = { vertical: 'middle', indent: 1 };
+        [`A${n20}`, `B${n20}`].forEach(c => ws.getCell(c).border = boxBorderAll);
+
+        // Row 21: Amount in Words
+        const r21 = ws.addRow(['', '', '', '', '']);
+        r21.height = 22;
+        const n21 = r21.number;
+        ws.mergeCells(`A${n21}:E${n21}`);
+        ws.getCell(`A${n21}`).value = wordsVal;
+        ws.getCell(`A${n21}`).font = { name: 'Arial', size: 9.5, italic: true, bold: true, color: { argb: 'FF000000' } };
+        ws.getCell(`A${n21}`).alignment = { vertical: 'middle' };
+
+        // Row 22: Spacer
+        const r22 = ws.addRow(['', '', '', '', '']);
+        r22.height = 14;
+
+        // -----------------------------------------------------------
+        // ROWS 23-26: Terms & Conditions & Signatory
+        // -----------------------------------------------------------
+        const r23 = ws.addRow(['Terms & Conditions:', '', '', `For ${busNameVal}`, '']);
+        const n23 = r23.number;
+        ws.mergeCells(`D${n23}:E${n23}`);
+        ['A','B','C','D','E'].forEach(col => {
+            ws.getCell(`${col}${n23}`).border = { top: borderMedium };
+        });
+        r23.getCell(1).font = { name: 'Arial', size: 9.5, bold: true, color: { argb: 'FF000000' } };
+        r23.getCell(4).font = { name: 'Arial', size: 10, bold: true, color: { argb: 'FF000000' } };
+        r23.getCell(4).alignment = { horizontal: 'center' };
+        r23.height = 20;
+
+        const r24 = ws.addRow(['1. Goods once sold will not be taken back.', '', '', '', '']);
+        r24.getCell(1).font = { name: 'Arial', size: 8.5, color: { argb: 'FF475569' } };
+        r24.height = 18;
+
+        const r25 = ws.addRow(['2. Subject to State Jurisdiction.', '', '', '', '']);
+        r25.getCell(1).font = { name: 'Arial', size: 8.5, color: { argb: 'FF475569' } };
+        r25.height = 36; // Generous space for physical signature
+
+        const r26 = ws.addRow(['', '', '', '(Authorized Signatory)', '']);
+        const n26 = r26.number;
+        ws.mergeCells(`D${n26}:E${n26}`);
+        r26.getCell(4).font = { name: 'Arial', size: 9, bold: true, color: { argb: 'FF64748B' } };
+        r26.getCell(4).alignment = { horizontal: 'center' };
+        ['D','E'].forEach(col => {
+            ws.getCell(`${col}${n26}`).border = { top: { style: 'thin', color: { argb: 'FF94A3B8' } } };
+        });
+        r26.height = 20;
+
+        // Outer Frame: Bottom border on last row + Left border on Col A + Right border on Col E
+        const lastRow = ws.rowCount;
+        ['A','B','C','D','E'].forEach(col => {
+            const c = ws.getCell(`${col}${lastRow}`);
+            c.border = Object.assign({}, c.border || {}, { bottom: borderMedium });
+        });
+
+        for (let r = 1; r <= lastRow; r++) {
+            const cellA = ws.getCell(`A${r}`);
+            cellA.border = Object.assign({}, cellA.border || {}, { left: borderMedium });
+
+            const cellE = ws.getCell(`E${r}`);
+            cellE.border = Object.assign({}, cellE.border || {}, { right: borderMedium });
+        }
+
+        // Trigger Excel file download
+        const buffer = await wb.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const cleanBusName = busNameVal.replace(/[^a-zA-Z0-9]/g, '_');
+        const cleanInvNo = invNo.replace(/[^a-zA-Z0-9]/g, '_');
+        a.download = `Invoice_${cleanInvNo}_${cleanBusName}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+
         showToast("📥 Excel (.xlsx) Downloaded Successfully!");
     }
 
@@ -671,16 +1256,23 @@
     });
 </script>
 
-
+<script>
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobile-menu');
+    if (menu) {
+        menu.classList.toggle('hidden');
+    }
+}
+</script>
 
 <!-- Related Free Tools -->
-<aside style="position:relative;z-index:1;" class="w-full py-6 px-6 bg-slate-50 border-t border-slate-200" aria-label="Related tools">
+<aside class="no-print w-full py-6 px-6 bg-slate-50 border-t border-slate-200" aria-label="Related tools" style="position:relative;z-index:1;">
     <div class="max-w-screen-xl mx-auto">
         <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Related Free Tools</p>
         <div class="flex flex-wrap gap-2 justify-start items-center">
             <a href="barcode-gen.html" class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-white border border-slate-200 text-slate-700 hover:border-red-400 hover:text-red-600 transition-all shadow-sm whitespace-nowrap">Barcode Generator</a>
-        <a href="qr-studio.html" class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-white border border-slate-200 text-slate-700 hover:border-red-400 hover:text-red-600 transition-all shadow-sm whitespace-nowrap">QR Code Generator</a>
-        <a href="sign-maker.html" class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-white border border-slate-200 text-slate-700 hover:border-red-400 hover:text-red-600 transition-all shadow-sm whitespace-nowrap">Digital Signature</a>
+            <a href="qr-studio.html" class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-white border border-slate-200 text-slate-700 hover:border-red-400 hover:text-red-600 transition-all shadow-sm whitespace-nowrap">QR Code Generator</a>
+            <a href="sign-maker.html" class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-white border border-slate-200 text-slate-700 hover:border-red-400 hover:text-red-600 transition-all shadow-sm whitespace-nowrap">Digital Signature</a>
             <a href="index.html" class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold bg-white border border-slate-200 text-slate-400 hover:text-red-600 hover:border-red-300 transition-all shadow-sm whitespace-nowrap">← All Tools</a>
         </div>
     </div>
