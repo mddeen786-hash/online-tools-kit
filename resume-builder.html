@@ -119,6 +119,7 @@
     }
   </script>
   <!-- Lucide Icons -->
+  <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   
   <style>
@@ -582,7 +583,7 @@
       <!-- Export Word Document Button -->
       <button type="button" onclick="downloadWordDocument()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 py-1.5 rounded-xl text-xs font-bold shadow-xs hover:shadow-md transition flex items-center space-x-1.5 cursor-pointer active:scale-95">
         <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
-        <span class="whitespace-nowrap">Word (.doc)</span>
+        <span class="whitespace-nowrap">Word (.docx)</span>
       </button>
 
       <!-- Print / PDF Button -->
@@ -595,6 +596,21 @@
   </header>
 
   <!-- Main Split-Screen Container -->
+    <!-- Mobile Segmented View Switcher (< lg only) -->
+  <div class="no-print lg:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/90 px-3 py-2 flex items-center justify-between gap-2 shadow-2xs">
+    <div class="flex items-center bg-slate-100 p-1 rounded-xl w-full border border-slate-200/90">
+      <button type="button" id="tab-btn-editor" onclick="switchMobileTab('editor')" class="flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 bg-white text-slate-900 shadow-2xs cursor-pointer">
+        <i data-lucide="edit-3" class="w-3.5 h-3.5 text-red-600"></i>
+        <span>Edit Resume</span>
+      </button>
+      <button type="button" id="tab-btn-preview" onclick="switchMobileTab('preview')" class="flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+        <i data-lucide="eye" class="w-3.5 h-3.5 text-slate-500"></i>
+        <span>Live Preview</span>
+        <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+      </button>
+    </div>
+  </div>
+
   <main class="flex-1 flex overflow-hidden relative">
 
     <!-- LEFT: Sticky Input Form with High-Contrast Dark Headings with Border (Scrollable) -->
@@ -771,10 +787,31 @@
 
     </section>
 
-    <section id="preview-panel" class="preview-canvas flex-1 overflow-y-auto p-4 sm:p-8 flex justify-center items-start">
-      <!-- A4 Sheet Dynamic Container -->
-      <div id="resume-sheet" class="a4-sheet template-modern rounded-lg overflow-hidden text-slate-900">
-        <!-- Sheet content dynamically rendered -->
+    <section id="preview-panel" class="preview-canvas flex-1 overflow-y-auto p-2 sm:p-6 lg:p-8 hidden lg:flex flex-col items-center justify-start">
+      <!-- Mobile Quick Actions in Preview Mode -->
+      <div class="lg:hidden w-full max-w-[794px] flex items-center justify-between gap-2 mb-3 bg-white/90 backdrop-blur-md p-2 rounded-xl border border-slate-200/90 shadow-2xs">
+        <button type="button" onclick="switchMobileTab('editor')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 flex items-center gap-1.5 cursor-pointer">
+          <i data-lucide="arrow-left" class="w-3.5 h-3.5 text-red-600"></i>
+          <span>Back to Edit</span>
+        </button>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="downloadWordDocument()" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-2xs flex items-center gap-1 cursor-pointer">
+            <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+            <span>Word (.docx)</span>
+          </button>
+          <button type="button" onclick="window.print()" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-2xs flex items-center gap-1 cursor-pointer">
+            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+            <span>PDF</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Scalable Sheet Wrapper for Perfect Mobile Responsiveness -->
+      <div id="sheet-scale-wrapper" class="w-full flex justify-center transition-transform origin-top pb-16">
+        <!-- A4 Sheet Dynamic Container -->
+        <div id="resume-sheet" class="a4-sheet template-modern rounded-lg overflow-hidden text-slate-900">
+          <!-- Sheet content dynamically rendered -->
+        </div>
       </div>
     </section>
 
@@ -2062,55 +2099,73 @@
       }
 
       // Complete Word Document Wrapper with Word XML Page Formatting
-      const wordDocument = `
-        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-        <head>
-          <meta charset='utf-8'>
-          <title>${escapeHtml(p.fullName)} - ${tpl.toUpperCase()} Resume</title>
-          <!--[if gte mso 9]>
-          <xml>
-            <w:WordDocument>
-              <w:View>Print</w:View>
-              <w:Zoom>100</w:Zoom>
-              <w:DoNotOptimizeForBrowser/>
-            </w:WordDocument>
-          </xml>
-          <![endif]-->
-          <style>
-            @page Section1 {
-              size: 595.3pt 841.9pt; /* A4 */
-              margin: 36.0pt 36.0pt 36.0pt 36.0pt;
-              mso-header-margin: 35.4pt;
-              mso-footer-margin: 35.4pt;
-              mso-paper-source: 0;
-            }
-            div.Section1 { page: Section1; }
-            body { margin: 0; padding: 0; font-family: 'Segoe UI', Calibri, Arial, sans-serif; }
-          </style>
-        </head>
-        <body>
-          <div class="Section1">
-            ${bodyContent}
-          </div>
-        </body>
-        </html>
-      `;
+      const wordDocument = `<!DOCTYPE html><html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+  <meta charset='utf-8'>
+  <title>${escapeHtml(p.fullName || 'Resume')}</title>
+  <!--[if gte mso 9]>
+  <xml>
+    <w:WordDocument>
+      <w:View>Print</w:View>
+      <w:Zoom>100</w:Zoom>
+      <w:DoNotOptimizeForBrowser/>
+    </w:WordDocument>
+  </xml>
+  <![endif]-->
+  <style>
+    @page Section1 {
+      size: 595.3pt 841.9pt; /* A4 */
+      margin: 36.0pt 36.0pt 36.0pt 36.0pt;
+      mso-header-margin: 35.4pt;
+      mso-footer-margin: 35.4pt;
+      mso-paper-source: 0;
+    }
+    div.Section1 { page: Section1; }
+    body { margin: 0; padding: 0; font-family: 'Segoe UI', Calibri, Arial, sans-serif; }
+  </style>
+</head>
+<body>
+  <div class="Section1">
+    ${bodyContent}
+  </div>
+</body>
+</html>`;
 
-      // Trigger download
-      const blob = new Blob(['\ufeff', wordDocument], {
-        type: 'application/msword;charset=utf-8'
+      const safeName = (p.fullName || 'Candidate').replace(/[^a-zA-Z0-9_\-]/g, '_');
+      const fileName = `Resume_${safeName}_${tpl}.docx`;
+
+      // Priority 1: Native OpenXML .docx generation via htmlDocx (Zero corruption, 100% native Word)
+      if (window.htmlDocx && typeof window.htmlDocx.asBlob === 'function') {
+        try {
+          const docxBlob = window.htmlDocx.asBlob(wordDocument);
+          const url = URL.createObjectURL(docxBlob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          showToast('Word Document (.docx) Ready', `Exported native Microsoft Word document.`);
+          return;
+        } catch (docxErr) {
+          console.warn('htmlDocx export failed, falling back:', docxErr);
+        }
+      }
+
+      // Priority 2: Clean Word export without BOM/whitespace corruption
+      const cleanBlob = new Blob([wordDocument.trim()], {
+        type: 'application/msword'
       });
-      const url = URL.createObjectURL(blob);
+      const url = URL.createObjectURL(cleanBlob);
       const a = document.createElement('a');
       a.href = url;
-      const fileName = `Resume_${(p.fullName || 'Candidate').replace(/\s+/g, '_')}_${tpl}.doc`;
-      a.download = fileName;
+      a.download = `Resume_${safeName}_${tpl}.doc`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-
-      showToast('Word File Downloaded', `Saved in ${tpl.toUpperCase()} format with clean heading spacing.`);
+      showToast('Word File Downloaded', `Saved in ${tpl.toUpperCase()} format.`);
     }
 
         // AI ENHANCE ENGINE (Client-side ATS Action-Oriented Polishing)
@@ -2380,6 +2435,62 @@
         toast.classList.remove('translate-y-0', 'opacity-100');
       }, 3500);
     }
-  </script>
+  
+    // ============================================================
+    // RESPONSIVE MOBILE VIEWPORT & TAB CONTROLLER
+    // ============================================================
+    let currentMobileTab = 'editor';
+
+    function switchMobileTab(tab) {
+      currentMobileTab = tab;
+      const formPanel = document.getElementById('form-panel');
+      const previewPanel = document.getElementById('preview-panel');
+      const btnEditor = document.getElementById('tab-btn-editor');
+      const btnPreview = document.getElementById('tab-btn-preview');
+
+      if (!formPanel || !previewPanel) return;
+
+      if (tab === 'editor') {
+        formPanel.classList.remove('hidden');
+        formPanel.classList.add('flex');
+        previewPanel.classList.add('hidden');
+        previewPanel.classList.remove('flex');
+        if (btnEditor) btnEditor.className = 'flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 bg-white text-slate-900 shadow-2xs cursor-pointer';
+        if (btnPreview) btnPreview.className = 'flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5 cursor-pointer';
+      } else {
+        formPanel.classList.add('hidden');
+        formPanel.classList.remove('flex');
+        previewPanel.classList.remove('hidden');
+        previewPanel.classList.add('flex');
+        if (btnEditor) btnEditor.className = 'flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1.5 cursor-pointer';
+        if (btnPreview) btnPreview.className = 'flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 bg-white text-slate-900 shadow-2xs cursor-pointer';
+        updateMobileScale();
+      }
+      lucide.createIcons();
+    }
+
+    function updateMobileScale() {
+      const sheet = document.getElementById('resume-sheet');
+      const wrapper = document.getElementById('sheet-scale-wrapper');
+      if (!sheet) return;
+
+      if (window.innerWidth < 1024) {
+        // Calculate available width for mobile/tablet screens
+        const availWidth = Math.min(window.innerWidth - 24, 794);
+        const sheetWidth = 794; // 210mm in pixels at 96 DPI
+        const scale = Math.min(1, Math.max(0.36, availWidth / sheetWidth));
+        sheet.style.transform = `scale(${scale})`;
+        sheet.style.transformOrigin = 'top center';
+        if (wrapper) {
+          wrapper.style.height = `${sheet.offsetHeight * scale + 30}px`;
+        }
+      } else {
+        sheet.style.transform = 'none';
+        if (wrapper) wrapper.style.height = 'auto';
+      }
+    }
+    window.addEventListener('resize', updateMobileScale);
+
+</script>
 </body>
 </html>
