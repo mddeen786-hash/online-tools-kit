@@ -17,6 +17,18 @@ try { Tesseract = require('tesseract.js'); } catch(e) { console.log('Tesseract n
 let sharp = null;
 try { sharp = require('sharp'); } catch(e) { console.log('Sharp not installed.'); }
 
+// Google tag (gtag.js) tracking configuration
+const GTAG_ID = 'G-VKFGNJ8JEX';
+const GTAG_SNIPPET = `<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=${GTAG_ID}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', '${GTAG_ID}');
+</script>`;
+
 const app = express();
 const PORT = 3000;
 
@@ -2243,7 +2255,7 @@ app.get('/workflow-builder', (req, res) => {
       '</div>';
   }).join('');
 
-  res.send('<!DOCTYPE html><html><head><title>Workflow Builder - Filesque</title><script src="https://cdn.tailwindcss.com"></script><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"><style>' +
+  res.send('<!DOCTYPE html><html><head>' + GTAG_SNIPPET + '<title>Workflow Builder - Filesque</title><script src="https://cdn.tailwindcss.com"></script><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"><style>' +
     '*{margin:0;padding:0;box-sizing:border-box}' +
     'body{font-family:"Plus Jakarta Sans",sans-serif;background:#f8fafc;min-height:100vh}' +
     '.navbar{background:rgba(255,255,255,0.9);backdrop-filter:blur(12px);border-bottom:1px solid #f1f5f9;padding:1.25rem 3rem;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 2px 0 rgba(0,0,0,0.05)}' +

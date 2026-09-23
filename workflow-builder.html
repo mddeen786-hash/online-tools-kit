@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VKFGNJ8JEX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-VKFGNJ8JEX');
+  </script>
   <meta charset="utf-8">
   <title>Workflow Builder - Filesque</title>
   <style>
@@ -223,7 +232,7 @@
         <button class="btn btn-secondary" onclick="clearWorkflow()">🗑️ Clear</button>
       </div>
       <div class="file-upload-section">
-        <h3>📁 Test Your Workflow</h3>
+        <h3>📁 Upload Documents</h3>
         <input type="file" id="wfFile" multiple>
         <button class="btn" onclick="executeWorkflow()" style="margin-left: 10px;">▶️ Execute Workflow</button>
         <div id="executionResult" style="margin-top:10px;"></div>

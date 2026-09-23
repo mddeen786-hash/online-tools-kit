@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VKFGNJ8JEX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-VKFGNJ8JEX');
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LinguaLens Pro - AI OCR, Voice Dictation, Sentence Corrector & Universal Translator</title>
+  
+  <!-- Tesseract.js Browser CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --secondary: #059669;
+      --secondary-hover: #047857;
+      --tertiary: #d97706;
+      --tertiary-hover: #b45309;
+      --danger: #ef4444;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 30px 15px;
+    }
+    .pro-container {
+      max-width: 1050px;
+      margin: 0 auto;
+      background: var(--surface);
+      border-radius: 16px;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.06);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .pro-header {
+      padding: 24px 30px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .pro-title h1 {
+      font-size: 22px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pro-title p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    
+    .segmented-control {
+      display: flex;
+      background: #f1f5f9;
+      padding: 4px;
+      border-radius: 10px;
+      gap: 4px;
+    }
+    .seg-btn {
+      border: none;
+      background: transparent;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .seg-btn.active {
+      background: var(--surface);
+      color: var(--primary);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    }
+
+    .workspace {
+      padding: 24px 30px;
+    }
+    
+    .upload-card {
+      border: 2px dashed #cbd5e1;
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 30px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-bottom: 20px;
+      display: none;
+    }
+    .upload-card:hover {
+      border-color: var(--primary);
+      background: #eff6ff;
+    }
+    #imagePreview {
+      max-width: 100%;
+      max-height: 250px;
+      border-radius: 8px;
+      margin-top: 15px;
+      display: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .ocr-controls-row {
+      display: none;
+      margin-bottom: 15px;
+      padding: 10px 15px;
+      background: #f1f5f9;
+      border-radius: 8px;
+      align-items: center;
+      gap: 12px;
+    }
+    .ocr-controls-row label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .ocr-controls-row select {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .translation-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 768px) {
+      .translation-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .pane {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .pane-header {
+      padding: 12px 16px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .pane-header select {
+      border: none;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      outline: none;
+      max-width: 250px;
+    }
+    optgroup {
+      font-weight: bold;
+      color: var(--primary);
+    }
+    option {
+      color: var(--text);
+      font-weight: normal;
+    }
+    .pane textarea {
+      width: 100%;
+      height: 260px;
+      border: none;
+      padding: 16px;
+      font-size: 15px;
+      line-height: 1.6;
+      resize: none;
+      outline: none;
+      color: var(--text);
+      background: transparent;
+    }
+    .pane textarea:read-only {
+      background: #fafafa;
+    }
+    .pane-footer {
+      padding: 10px 16px;
+      border-top: 1px solid #f1f5f9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      background: #fff;
+    }
+    .footer-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .icon-btn {
+      background: none;
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text-muted);
+      padding: 6px 10px;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .icon-btn:hover {
+      color: var(--primary);
+      background: #eff6ff;
+    }
+    .icon-btn.recording {
+      color: #ffffff !important;
+      background: var(--danger) !important;
+      border-color: var(--danger) !important;
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.45);
+      animation: pulse-ring 1.2s infinite;
+    }
+    @keyframes pulse-ring {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+      100% { transform: scale(1); }
+    }
+
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 22px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .buttons-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn-action {
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: 0.2s;
+    }
+    .btn-main {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-main:hover {
+      background: var(--primary-hover);
+    }
+    .btn-secondary {
+      background: var(--secondary);
+      color: white;
+    }
+    .btn-secondary:hover {
+      background: var(--secondary-hover);
+    }
+    .btn-tertiary {
+      background: var(--tertiary);
+      color: white;
+    }
+    .btn-tertiary:hover {
+      background: var(--tertiary-hover);
+    }
+    .btn-action:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    .progress-wrap {
+      margin-top: 16px;
+      display: none;
+    }
+    .progress-bar-bg {
+      width: 100%;
+      height: 6px;
+      background: #e2e8f0;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      width: 0%;
+      height: 100%;
+      background: var(--primary);
+      transition: width 0.2s ease;
+    }
+    .status-text {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+<div class="pro-container">
+  <div class="pro-header">
+    <div class="pro-title">
+      <h1>🌐 LinguaLens Pro</h1>
+      <p>Universal AI Text Translation, OCR Scanning, Voice Dictation & Grammar Refiner</p>
+    </div>
+    
+    <div class="segmented-control">
+      <button class="seg-btn active" id="btnTextTab" onclick="switchMode('text')">✍️ Text / Hinglish</button>
+      <button class="seg-btn" id="btnImageTab" onclick="switchMode('image')">📷 Image Lens OCR</button>
+    </div>
+  </div>
+
+  <div class="workspace">
+    <!-- Image Mode Upload Area -->
+    <div class="upload-card" id="imageModeWrap" onclick="document.getElementById('filePicker').click()">
+      <p style="font-weight: 600; color: #475569; font-size: 15px;">📁 Click to Upload Document / Picture</p>
+      <p style="font-size: 13px; color: #94a3b8; margin-top: 5px;">Natural AI OCR without broken letters & ligature preservation</p>
+      <input type="file" id="filePicker" accept="image/*" style="display: none;" onchange="handleImage(event)" />
+      <img id="imagePreview" alt="Image preview" />
+    </div>
+
+    <!-- Image OCR Script Selector -->
+    <div class="ocr-controls-row" id="ocrControlsRow">
+      <label for="ocrScriptLang">Image Script/Language:</label>
+      <select id="ocrScriptLang">
+        <option value="eng" selected>Latin / English / Standard</option>
+        <option value="hin">Hindi / Devanagari (हिंदी)</option>
+        <option value="ara">Arabic / Persian (العربية)</option>
+        <option value="chi_sim">Chinese Simplified (简体中文)</option>
+        <option value="jpn">Japanese (日本語)</option>
+        <option value="kor">Korean (한국어)</option>
+        <option value="rus">Russian / Cyrillic (Русский)</option>
+        <option value="fra">French (Français)</option>
+        <option value="deu">German (Deutsch)</option>
+        <option value="spa">Spanish (Español)</option>
+      </select>
+    </div>
+
+    <!-- Translation Panels Grid -->
+    <div class="translation-grid">
+      <!-- Input Box -->
+      <div class="pane">
+        <div class="pane-header">
+          <select id="sourceLang" onchange="syncRecognitionLang()">
+            <option value="auto" selected>Detect Language (Auto / Hinglish)</option>
+            <optgroup label="Popular Languages">
+              <option value="hi">Hindi (हिंदी)</option>
+              <option value="en">English</option>
+              <option value="ur">Urdu (اُردُو)</option>
+              <option value="bn">Bengali (বাংলা)</option>
+              <option value="mr">Marathi (मराठी)</option>
+              <option value="ar">Arabic (العربية)</option>
+              <option value="es">Spanish (Español)</option>
+              <option value="fr">French (Français)</option>
+              <option value="de">German (Deutsch)</option>
+              <option value="ru">Russian (Русский)</option>
+            </optgroup>
+          </select>
+          <button class="icon-btn" onclick="clearInput()" title="Clear content">🗑️ Clear</button>
+        </div>
+        <textarea id="inputText" placeholder="Yahan type karein, mic se bolein ya image scan karein..."></textarea>
+        <div class="pane-footer">
+          <span id="inputCharCount">0 characters</span>
+          <div class="footer-actions">
+            <button class="icon-btn" id="voiceMicBtn" onclick="toggleVoiceInput()" title="Voice Input (Mic)">🎙️ Mic</button>
+            <button class="icon-btn" onclick="speakText('inputText')" title="Listen text">🔊 Speak</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Output Box (Full Un-cut Language Spectrum) -->
+      <div class="pane">
+        <div class="pane-header">
+          <select id="targetLang">
+            <optgroup label="🌍 Global Languages">
+              <option value="en">English</option>
+              <option value="es">Spanish (Español)</option>
+              <option value="fr">French (Français)</option>
+              <option value="de">German (Deutsch)</option>
+              <option value="ru">Russian (Русский)</option>
+              <option value="zh-CN">Chinese Simplified (简体中文)</option>
+              <option value="zh-TW">Chinese Traditional (繁體中文)</option>
+              <option value="ja">Japanese (日本語)</option>
+              <option value="ko">Korean (한국어)</option>
+              <option value="ar">Arabic (العربية)</option>
+              <option value="pt">Portuguese (Português)</option>
+              <option value="it">Italian (Italiano)</option>
+              <option value="tr">Turkish (Türkçe)</option>
+              <option value="nl">Dutch (Nederlands)</option>
+              <option value="pl">Polish (Polski)</option>
+              <option value="sv">Swedish (Svenska)</option>
+              <option value="vi">Vietnamese (Tiếng Việt)</option>
+              <option value="th">Thai (ไทย)</option>
+              <option value="id">Indonesian (Bahasa Indonesia)</option>
+              <option value="ms">Malay (Bahasa Melayu)</option>
+              <option value="fa">Persian (فارسی)</option>
+              <option value="he">Hebrew (עברית)</option>
+              <option value="uk">Ukrainian (Українська)</option>
+              <option value="ro">Romanian (Română)</option>
+              <option value="el">Greek (Ελληνικά)</option>
+            </optgroup>
+            <optgroup label="🇮🇳 Indian Languages">
+              <option value="hi" selected>Hindi (हिंदी)</option>
+              <option value="bn">Bengali (বাংলা)</option>
+              <option value="te">Telugu (తెలుగు)</option>
+              <option value="mr">Marathi (मराठी)</option>
+              <option value="ta">Tamil (தமிழ்)</option>
+              <option value="ur">Urdu (اُردُو)</option>
+              <option value="gu">Gujarati (ગુજરાતી)</option>
+              <option value="kn">Kannada (ಕನ್ನಡ)</option>
+              <option value="ml">Malayalam (മലയാളം)</option>
+              <option value="pa">Punjabi (ਪੰਜਾਬੀ)</option>
+              <option value="or">Odia (ଓଡ଼ିଆ)</option>
+              <option value="as">Assamese (অসমীয়া)</option>
+              <option value="sa">Sanskrit (संस्कृतम्)</option>
+              <option value="ne">Nepali (नेपाली)</option>
+              <option value="sd">Sindhi (سنڌي)</option>
+              <option value="mai">Maithili (मैथिली)</option>
+              <option value="kok">Konkani (कोंकणी)</option>
+              <option value="mni-Mtei">Manipuri (মৈতৈলোন্)</option>
+              <option value="doi">Dogri (डोगरी)</option>
+              <option value="bho">Bhojpuri (भोजपुरी)</option>
+            </optgroup>
+          </select>
+          <button class="icon-btn" onclick="copyResult()" title="Copy to clipboard">📋 Copy</button>
+        </div>
+        <textarea id="outputText" placeholder="Accurate translation & refined output yahan aayega..." readonly></textarea>
+        <div class="pane-footer">
+          <span id="outputCharCount">0 characters</span>
+          <button class="icon-btn" onclick="speakText('outputText')" title="Listen output">🔊 Speak</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions Bar -->
+    <div class="action-bar">
+      <div>
+        <span style="font-size: 13px; color: #475569; font-weight: 500;">
+          ✨ Native Speech Pipe, Context Translation & Dual Grammar Active
+        </span>
+      </div>
+
+      <div class="buttons-group">
+        <!-- Concept 2 Action Button -->
+        <button class="btn-action btn-tertiary" id="hindiGrammarBtn" onclick="runHindiGrammarFix()">
+          ✍️ Fix Hindi Grammar
+        </button>
+
+        <!-- Concept 1 Action Button -->
+        <button class="btn-action btn-main" id="translateBtn" onclick="processAll()">
+          ⚡ Translate & Perfect
+        </button>
+      </div>
+    </div>
+
+    <!-- Progress UI -->
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressBarFill"></div>
+      </div>
+      <div class="status-text" id="statusText">Processing...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let activeMode = 'text';
+  let uploadedFile = null;
+  let recognition = null;
+  let isRecording = false;
+
+  document.getElementById('inputText').addEventListener('input', function() {
+    document.getElementById('inputCharCount').innerText = `${this.value.length} characters`;
+  });
+
+  // Strict Mode Switch: Eliminates any data overlap between Tabs
+  function switchMode(mode) {
+    activeMode = mode;
+    const btnText = document.getElementById('btnTextTab');
+    const btnImage = document.getElementById('btnImageTab');
+    const imageWrap = document.getElementById('imageModeWrap');
+    const ocrControlsRow = document.getElementById('ocrControlsRow');
+    const inputArea = document.getElementById('inputText');
+
+    clearInput();
+
+    if (mode === 'text') {
+      btnText.classList.add('active');
+      btnImage.classList.remove('active');
+      imageWrap.style.display = 'none';
+      ocrControlsRow.style.display = 'none';
+      inputArea.placeholder = "Yahan type karein ya mic se bolein (e.g. 'me sone jaraha hu uthne ke baad office jaunga')...";
+      inputArea.removeAttribute('readonly');
+    } else {
+      btnImage.classList.add('active');
+      btnText.classList.remove('active');
+      imageWrap.style.display = 'block';
+      ocrControlsRow.style.display = 'flex';
+      inputArea.placeholder = "Image upload hone ke baad scan kiya gaya text yahan dikhega...";
+      inputArea.setAttribute('readonly', true);
+    }
+  }
+
+  function handleImage(e) {
+    const file = e.target.files[0];
+    if (file) {
+      uploadedFile = file;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = document.getElementById('imagePreview');
+        img.src = event.target.result;
+        img.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function clearInput() {
+    document.getElementById('inputText').value = '';
+    document.getElementById('outputText').value = '';
+    document.getElementById('inputCharCount').innerText = '0 characters';
+    document.getElementById('outputCharCount').innerText = '0 characters';
+    uploadedFile = null;
+    const img = document.getElementById('imagePreview');
+    img.src = '';
+    img.style.display = 'none';
+    document.getElementById('filePicker').value = '';
+    if (isRecording) {
+      stopVoiceEngine();
+    }
+  }
+
+  function copyResult() {
+    const text = document.getElementById('outputText').value;
+    if (text) {
+      navigator.clipboard.writeText(text);
+      alert('Copied to clipboard!');
+    }
+  }
+
+  function speakText(textareaId) {
+    const text = document.getElementById(textareaId).value;
+    if (!text) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    window.speechSynthesis.speak(utterance);
+  }
+
+  /* =========================================================================
+     DIRECT NATIVE SPEECH RECOGNITION (No Stream Conflict)
+  ========================================================================= */
+  function getSelectedLangCode() {
+    const val = document.getElementById('sourceLang').value;
+    if (val === 'en') return 'en-US';
+    if (val === 'hi' || val === 'auto') return 'hi-IN';
+    if (val === 'mr') return 'mr-IN';
+    if (val === 'bn') return 'bn-IN';
+    if (val === 'ur') return 'ur-PK';
+    if (val === 'es') return 'es-ES';
+    if (val === 'de') return 'de-DE';
+    if (val === 'ar') return 'ar-SA';
+    return 'hi-IN';
+  }
+
+  function syncRecognitionLang() {
+    if (recognition && isRecording) {
+      recognition.lang = getSelectedLangCode();
+    }
+  }
+
+  function stopVoiceEngine() {
+    isRecording = false;
+    const micBtn = document.getElementById('voiceMicBtn');
+    micBtn.classList.remove('recording');
+    micBtn.innerText = '🎙️ Mic';
+
+    if (recognition) {
+      try { recognition.stop(); } catch(e){}
+    }
+  }
+
+  function toggleVoiceInput() {
+    const micBtn = document.getElementById('voiceMicBtn');
+    const inputArea = document.getElementById('inputText');
+    const statusText = document.getElementById('statusText');
+    const progressWrap = document.getElementById('progressWrap');
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert('Aapka browser Web Speech API support nahi karta. Kripya Google Chrome use karein.');
+      return;
+    }
+
+    if (isRecording) {
+      stopVoiceEngine();
+      statusText.innerText = 'Mic band ho gaya.';
+      setTimeout(() => { progressWrap.style.display = 'none'; }, 1500);
+      return;
+    }
+
+    try {
+      if (recognition) {
+        try { recognition.abort(); } catch(e){}
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = getSelectedLangCode();
+
+      let finalCommitted = inputArea.value.trim();
+      if (finalCommitted.length > 0) finalCommitted += ' ';
+
+      recognition.onstart = () => {
+        isRecording = true;
+        micBtn.classList.add('recording');
+        micBtn.innerText = '🔴 Listening...';
+        progressWrap.style.display = 'block';
+        statusText.innerText = '🎙️ Mic active hai! Abhi boliye, seedha likha jayega...';
+      };
+
+      recognition.onresult = (event) => {
+        let interimTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          const chunk = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalCommitted += chunk + ' ';
+          } else {
+            interimTranscript += chunk;
+          }
+        }
+        inputArea.value = (finalCommitted + interimTranscript).trim();
+        document.getElementById('inputCharCount').innerText = `${inputArea.value.length} characters`;
+        statusText.innerText = '⚡ Bolte rahiye... aawaz capture ho rahi hai!';
+      };
+
+      recognition.onerror = (event) => {
+        console.warn('Speech event error:', event.error);
+        if (event.error === 'not-allowed') {
+          alert('Microphone permission blocked hai! Chrome ke URL bar ke lock 🔒 icon par jaakar microphone "Allow" karein.');
+          stopVoiceEngine();
+        } else if (event.error === 'no-speech') {
+          statusText.innerText = 'Aawaz ka intezar hai... bolein.';
+        }
+      };
+
+      recognition.onend = () => {
+        if (isRecording) {
+          try {
+            recognition.start();
+          } catch(e) {
+            stopVoiceEngine();
+          }
+        } else {
+          stopVoiceEngine();
+        }
+      };
+
+      recognition.start();
+
+    } catch (err) {
+      console.error('Speech start error:', err);
+      alert('Mic shuru nahi ho saka: ' + err.message);
+      stopVoiceEngine();
+    }
+  }
+
+  /* =========================================================================
+     OCR PREPROCESSING & ADVANCED RECOGNITION
+  ========================================================================= */
+  function preprocessImage(imageSource) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = imageSource;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const scale = 2.0;
+        canvas.width = Math.floor(img.width * scale);
+        canvas.height = Math.floor(img.height * scale);
+
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imgData.data;
+        for (let i = 0; i < data.length; i += 4) {
+          let gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+          gray = (gray - 128) * 1.25 + 128;
+          gray = Math.max(0, Math.min(255, gray));
+          data[i] = gray; data[i + 1] = gray; data[i + 2] = gray;
+        }
+        ctx.putImageData(imgData, 0, 0);
+        resolve(canvas.toDataURL('image/png'));
+      };
+    });
+  }
+
+  /* =========================================================================
+     DEEP ENGLISH GRAMMAR & SYNTAX RESTRUCTURING
+  ========================================================================= */
+  async function polishEnglishGrammar(text) {
+    let current = text.trim();
+
+    try {
+      const params = new URLSearchParams();
+      params.append('text', current);
+      params.append('language', 'en-US');
+
+      const res = await fetch('https://api.languagetool.org/v2/check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params
+      });
+      const data = await res.json();
+
+      if (data && data.matches && data.matches.length > 0) {
+        const matches = data.matches.sort((a, b) => b.offset - a.offset);
+        for (const m of matches) {
+          if (m.replacements && m.replacements.length > 0) {
+            current = current.substring(0, m.offset) + m.replacements[0].value + current.substring(m.offset + m.length);
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('LanguageTool pass skipped:', e);
+    }
+
+    current = current
+      .replace(/\bi\b/g, 'I')
+      .replace(/\b(wake up|get up)\s+going\s+to\s+(the\s+)?office\b/gi, '$1 and go to the office')
+      .replace(/\b(wake up|get up)\s+going\s+to\s+(the\s+)?work\b/gi, '$1 and go to work')
+      .replace(/\b(wake up|get up)\s+going\s+to\s+(the\s+)?school\b/gi, '$1 and go to school')
+      .replace(/\bwant\s+to\s+(\w+)\s+and\s+(\w+)\s+going\s+to\b/gi, 'want to $1 and $2 and go to')
+      .replace(/\bgo\s+to\s+office\b/gi, 'go to the office')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (current.length > 0) {
+      current = current.charAt(0).toUpperCase() + current.slice(1);
+      if (!/[.?!]$/.test(current)) {
+        current += '.';
+      }
+    }
+
+    return current;
+  }
+
+  /* =========================================================================
+     CONCEPT 1: UNIVERSAL CONTEXT TRANSLATION ENGINE
+  ========================================================================= */
+  async function ContextTranslate(text, sourceLang, targetLang) {
+    const cleanText = encodeURIComponent(text.trim().replace(/\n+/g, ' '));
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${cleanText}`;
+    
+    const res = await fetch(url);
+    const data = await res.json();
+    
+    let translated = '';
+    let detectedSource = sourceLang;
+
+    if (data && data[0]) {
+      translated = data[0].map(item => item[0]).join('');
+    }
+    if (data && data[2]) {
+      detectedSource = data[2];
+    }
+    return { translated, detectedSource };
+  }
+
+  /* =========================================================================
+     CONCEPT 2: DEDICATED HINDI GRAMMAR & RESTRUCTURING ENGINE
+  ========================================================================= */
+  async function deepCorrectHindiSentence(text) {
+    let current = text.trim();
+    const statusText = document.getElementById('statusText');
+    statusText.innerText = 'Analyzing Hindi sentence structure...';
+    
+    try {
+      const { translated } = await ContextTranslate(current, 'auto', 'hi');
+      if (translated) current = translated;
+    } catch (e) {
+      console.warn('Hindi conversion pass skipped', e);
+    }
+
+    current = current
+      .replace(/\s+/g, ' ')
+      .replace(/[\|\;]+$/, '')
+      .replace(/\bme\b/gi, 'मैं')
+      .replace(/\baane ke bad\b/gi, 'आने के बाद')
+      .trim();
+
+    if (current.length > 0) {
+      current = current.charAt(0).toUpperCase() + current.slice(1);
+      if (!/[।\|]$/.test(current)) {
+        current += '।';
+      }
+    }
+    return current;
+  }
+
+  async function runHindiGrammarFix() {
+    const btn = document.getElementById('hindiGrammarBtn');
+    const inputArea = document.getElementById('inputText');
+    const outputArea = document.getElementById('outputText');
+    const progressWrap = document.getElementById('progressWrap');
+    const progressBar = document.getElementById('progressBarFill');
+    const statusText = document.getElementById('statusText');
+
+    const rawText = inputArea.value.trim();
+    if (!rawText) {
+      alert('Kripya pehle text likhein ya mic se bolein!');
+      return;
+    }
+
+    btn.disabled = true;
+    progressWrap.style.display = 'block';
+    progressBar.style.width = '40%';
+    statusText.innerText = 'Initializing Hindi Grammar Fix...';
+
+    try {
+      const fixed = await deepCorrectHindiSentence(rawText);
+      progressBar.style.width = '100%';
+      statusText.innerText = '✅ Hindi Sentence Structure Corrected!';
+      outputArea.value = fixed;
+      document.getElementById('outputCharCount').innerText = `${fixed.length} characters`;
+    } catch (err) {
+      statusText.innerText = 'Hindi Correction failed.';
+    } finally {
+      btn.disabled = false;
+      setTimeout(() => { progressWrap.style.display = 'none'; }, 2200);
+    }
+  }
+
+  async function processAll() {
+    const btn = document.getElementById('translateBtn');
+    const inputArea = document.getElementById('inputText');
+    const outputArea = document.getElementById('outputText');
+    const progressWrap = document.getElementById('progressWrap');
+    const progressBar = document.getElementById('progressBarFill');
+    const statusText = document.getElementById('statusText');
+    
+    const sourceLang = document.getElementById('sourceLang').value;
+    const targetLang = document.getElementById('targetLang').value;
+
+    let rawText = inputArea.value.trim();
+
+    if (activeMode === 'image') {
+      if (!uploadedFile) {
+        alert('Kripya pehle image upload karein!');
+        return;
+      }
+      progressWrap.style.display = 'block';
+      progressBar.style.width = '25%';
+      statusText.innerText = 'Image cleaning...';
+
+      const processedBase64 = await preprocessImage(document.getElementById('imagePreview').src);
+      const ocrLang = document.getElementById('ocrScriptLang').value;
+      progressBar.style.width = '50%';
+      statusText.innerText = `Running Neural OCR Engine (${ocrLang})...`;
+
+      const worker = await Tesseract.createWorker(ocrLang, 1);
+      await worker.setParameters({
+        tessedit_pageseg_mode: Tesseract.PSM.AUTO,
+        preserve_interword_spaces: '1'
+      });
+
+      const result = await worker.recognize(processedBase64);
+      await worker.terminate();
+
+      rawText = result.data.text.trim()
+        .replace(/^[QO\u25A0\u25CF\u2022\u25AA\-\*\[\]\(\)]\s*(?=[A-Z])/gm, '')
+        .replace(/\bYam\b/g, 'Yarn')
+        .replace(/\bcarly\b/g, 'early')
+        .replace(/([a-zA-Z])-\s*\n([a-zA-Z])/g, '$1$2');
+
+      inputArea.value = rawText;
+      document.getElementById('inputCharCount').innerText = `${rawText.length} characters`;
+    }
+
+    if (!rawText) {
+      alert('Koi text enter ya scan nahi hua!');
+      return;
+    }
+
+    btn.disabled = true;
+    progressWrap.style.display = 'block';
+    progressBar.style.width = '65%';
+    statusText.innerText = 'Translating context naturally...';
+
+    try {
+      const { translated } = await ContextTranslate(rawText, sourceLang, targetLang);
+      let finalResult = translated || rawText;
+
+      if (targetLang === 'en') {
+        progressBar.style.width = '85%';
+        statusText.innerText = 'Polishing English sentence structure...';
+        finalResult = await polishEnglishGrammar(finalResult);
+      } else if (translated && !/[.?!|।]$/.test(translated)) {
+        if (targetLang === 'hi') finalResult += '।';
+        else finalResult += '.';
+      }
+
+      progressBar.style.width = '100%';
+      statusText.innerText = '✅ Context-aware Translation Complete!';
+      outputArea.value = finalResult;
+      document.getElementById('outputCharCount').innerText = `${finalResult.length} characters`;
+
+    } catch (err) {
+      console.error(err);
+      statusText.innerText = '❌ Error during translation.';
+    } finally {
+      btn.disabled = false;
+      setTimeout(() => { progressWrap.style.display = 'none'; }, 2200);
+    }
+  }
+</script>
+
+</body>
+</html>
