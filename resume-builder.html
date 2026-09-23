@@ -4,6 +4,87 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Professional Resume & CV Builder Studio | Filesque</title>
+  <meta name="description" content="Build professional, ATS-friendly modern resumes and CVs online for free. Choose executive, tech, or creative templates with live A4 preview, PDF download & Word (.doc) export.">
+  <meta name="keywords" content="resume builder free, cv maker online, ats resume generator, curriculum vitae builder, free resume templates, download resume pdf word, job application biodata">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="author" content="Filesque">
+  <link rel="canonical" href="https://filesques.onrender.com/resume-builder.html">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://filesques.onrender.com/resume-builder.html">
+  <meta property="og:title" content="Professional Resume & CV Builder Studio | Filesque">
+  <meta property="og:description" content="Build professional, ATS-friendly modern resumes and CVs online for free. Instant PDF download and Word export.">
+  <meta property="og:site_name" content="Filesque">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Professional Resume & CV Builder Studio | Filesque">
+  <meta name="twitter:description" content="Build professional, ATS-friendly modern resumes and CVs online for free. Instant PDF download and Word export.">
+
+  <!-- PWA Theme -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#9333ea">
+
+  <!-- Breadcrumb JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://filesques.onrender.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Business Categories", "item": "https://filesques.onrender.com/#business-section" },
+      { "@type": "ListItem", "position": 3, "name": "Resume & CV Builder", "item": "https://filesques.onrender.com/resume-builder.html" }
+    ]
+  }
+  </script>
+
+  <!-- SoftwareApplication JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Resume & CV Builder",
+    "url": "https://filesques.onrender.com/resume-builder.html",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web Browser",
+    "description": "Free online ATS-friendly resume and CV builder with modern templates, real-time live preview, and Microsoft Word / PDF export.",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "featureList": [
+      "ATS-Friendly Modern Layouts",
+      "Executive, Tech, Two-Column, and Creative Templates",
+      "Live A4 Resume Sheet Preview",
+      "Microsoft Word (.doc) Export",
+      "High Resolution Print & PDF Download",
+      "Custom Section Reordering & Skill Tags"
+    ]
+  }
+  </script>
+
+  <!-- FAQPage JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is the Resume & CV Builder free to use?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes, Filesque Resume Builder is completely free with no hidden charges, watermarks, or sign-up needed." }
+      },
+      {
+        "@type": "Question",
+        "name": "Are the resumes ATS-friendly?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes, our templates are designed following standard ATS (Applicant Tracking System) parsing rules with clean hierarchy and searchable text." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I download my resume as a Word document or PDF?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes, you can export your completed resume directly to an editable Microsoft Word (.doc) format or print and save as PDF." }
+      }
+    ]
+  }
+  </script>
   <!-- Google Fonts: Plus Jakarta Sans, Inter, Merriweather -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -494,7 +575,8 @@
       <!-- Sample Button -->
       <button type="button" onclick="loadSampleData()" class="px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200/90 shadow-2xs transition-all flex items-center space-x-1.5 cursor-pointer active:scale-95" title="Fill with Sample Data">
         <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-600"></i>
-        <span class="hidden sm:inline">Sample</span>
+        <span class="hidden sm:inline">Sample Data</span>
+        <span class="sm:hidden">Sample</span>
       </button>
 
       <!-- Export Word Document Button -->
@@ -711,84 +793,23 @@
 
   <!-- Application Logic -->
   <script>
-    // State Store
+    // State Store - Initial Clean Blank State
     let resumeData = {
       template: 'modern',
       personal: {
-        fullName: 'Alex Morgan',
-        title: 'Senior Software Architect',
-        email: 'alex.morgan@example.com',
-        phone: '+1 (555) 234-5678',
-        location: 'San Francisco, CA',
-        linkedin: 'linkedin.com/in/alexmorgan',
-        website: 'alexmorgan.dev'
+        fullName: '',
+        title: '',
+        email: '',
+        phone: '',
+        location: '',
+        linkedin: '',
+        website: ''
       },
-      summary: 'High-impact Software Architect with 7+ years of experience engineering resilient, distributed cloud services. Spearheaded microservice modernization initiatives that boosted throughput by 300% and saved $1.2M in annual cloud hosting expenditures.',
-      experience: [
-        {
-          id: 1,
-          role: 'Staff Infrastructure Architect',
-          company: 'CloudSphere Technologies',
-          location: 'San Francisco, CA',
-          period: '2022 - Present',
-          description: '• Architected multi-region Kubernetes clusters handling 45M+ daily requests with 99.995% uptime.\n• Led team of 14 senior engineers in migrating monolithic legacy billing systems to event-driven Go microservices.\n• Reduced deployment latency by 65% by establishing automated CI/CD canary deployment pipelines.'
-        },
-        {
-          id: 2,
-          role: 'Senior Backend Engineer',
-          company: 'Veloce Data Systems',
-          location: 'New York, NY',
-          period: '2019 - 2022',
-          description: '• Engineered distributed caching topologies using Redis and Apache Kafka, slashing p99 latency from 450ms to 28ms.\n• Mentored 8 junior and mid-level engineers, fostering best practices in automated integration testing and TDD.'
-        }
-      ],
-      education: [
-        {
-          id: 1,
-          degree: 'M.S. in Computer Science',
-          institution: 'Stanford University',
-          year: '2017 - 2019',
-          grade: 'GPA 3.9/4.0'
-        },
-        {
-          id: 2,
-          degree: 'B.S. in Software Engineering',
-          institution: 'University of California, Berkeley',
-          year: '2013 - 2017',
-          grade: 'Magna Cum Laude'
-        }
-      ],
-      skills: [
-        {
-          id: 1,
-          category: 'Languages & Frameworks',
-          items: 'Go, Python, TypeScript, Node.js, React, Java, Rust'
-        },
-        {
-          id: 2,
-          category: 'Cloud & Infrastructure',
-          items: 'AWS, Google Cloud (GCP), Kubernetes, Docker, Terraform, CI/CD, Kafka, Redis'
-        },
-        {
-          id: 3,
-          category: 'Architecture & Databases',
-          items: 'Microservices, Distributed Systems, PostgreSQL, MongoDB, Cassandra, GraphQL, gRPC'
-        }
-      ],
-      projects: [
-        {
-          id: 1,
-          title: 'Distributed Rate-Limiter Engine',
-          role: 'Lead Creator',
-          description: 'High-performance Token Bucket rate-limiter built in Go with Redis backplane, bench-marked at 120,000 requests/sec per node.'
-        },
-        {
-          id: 2,
-          title: 'Autonomous Data Pipeline Orchestrator',
-          role: 'Core Contributor',
-          description: 'Open-source workflow engine synchronizing real-time telemetry from 200+ IoT nodes with zero data loss.'
-        }
-      ]
+      summary: '',
+      experience: [],
+      education: [],
+      skills: [],
+      projects: []
     };
 
     // Available Templates
@@ -802,9 +823,9 @@
         resumeData.template = urlTpl;
       }
 
-      syncStateToForm();
-      renderAllDynamicForms();
-      setTemplate(resumeData.template || 'modern');
+      // Always start 100% clean and blank by default (no prefill)
+      clearAllResumeData(true, true);
+      setTemplate(resumeData.template || 'modern', true);
       lucide.createIcons();
     });
 
@@ -1081,6 +1102,41 @@
       const tpl = resumeData.template || 'modern';
       const sheet = document.getElementById('resume-sheet');
       sheet.className = `a4-sheet rounded-lg overflow-hidden text-slate-900 template-${tpl}`;
+
+      const isBlank = !resumeData.personal.fullName &&
+                      !resumeData.personal.title &&
+                      !resumeData.personal.email &&
+                      !resumeData.personal.phone &&
+                      !resumeData.personal.location &&
+                      !resumeData.personal.linkedin &&
+                      !resumeData.personal.website &&
+                      !resumeData.summary.trim() &&
+                      resumeData.experience.length === 0 &&
+                      resumeData.education.length === 0 &&
+                      resumeData.skills.length === 0 &&
+                      resumeData.projects.length === 0;
+
+      if (isBlank) {
+        sheet.innerHTML = `
+          <div class="flex flex-col items-center justify-center min-h-[297mm] p-12 text-center select-none bg-slate-50/40">
+            <div class="w-16 h-16 rounded-2xl bg-white border border-slate-200/90 shadow-2xs flex items-center justify-center text-slate-400 mb-5">
+              <i data-lucide="file-text" class="w-8 h-8 text-slate-400"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-800 tracking-tight mb-2">Blank Resume Canvas</h3>
+            <p class="text-xs sm:text-sm text-slate-500 max-w-md leading-relaxed mb-6">
+              Your resume is completely clean and blank. Start typing your info on the left panel, or click <strong class="text-slate-700 font-semibold">"Sample Data"</strong> to instantly populate an executive profile.
+            </p>
+            <div class="flex flex-wrap items-center justify-center gap-3">
+              <button type="button" onclick="loadSampleData()" class="px-4 py-2.5 rounded-xl text-xs font-bold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200/90 shadow-2xs transition-all flex items-center gap-2 cursor-pointer active:scale-95">
+                <i data-lucide="sparkles" class="w-4 h-4 text-amber-600"></i>
+                <span>Load Sample Data</span>
+              </button>
+            </div>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
 
       if (tpl === 'sidebar') {
         renderSidebarTemplate(sheet);
@@ -1467,7 +1523,7 @@
     }
 
     // Template Switcher Trigger
-    function setTemplate(tplName) {
+    function setTemplate(tplName, silent = false) {
       if (!AVAILABLE_TEMPLATES.includes(tplName)) tplName = 'modern';
       resumeData.template = tplName;
 
@@ -1483,7 +1539,9 @@
       });
 
       updateResume();
-      showToast('Template Changed', `Switched layout to ${tplName.toUpperCase()} style.`);
+      if (!silent) {
+        showToast('Template Changed', `Switched layout to ${tplName.toUpperCase()} style.`);
+      }
     }
 
     // ============================================================
@@ -2173,8 +2231,9 @@
 
     
     // Complete Reset / Clear All Resume Content
-    function clearAllResumeData() {
-      if (confirm('Are you sure you want to clear all resume content? All fields will be wiped clean.')) {
+    // Complete Reset / Clear All Resume Content
+    function clearAllResumeData(force = false, silent = false) {
+      if (force || confirm('Are you sure you want to clear all resume content? All fields will be wiped clean.')) {
         resumeData.personal = {
           fullName: '',
           title: '',
@@ -2191,24 +2250,26 @@
         resumeData.projects = [];
 
         // Clear Form Inputs
-        document.getElementById('input-fullName').value = '';
-        document.getElementById('input-title').value = '';
-        document.getElementById('input-email').value = '';
-        document.getElementById('input-phone').value = '';
-        document.getElementById('input-location').value = '';
-        document.getElementById('input-linkedin').value = '';
-        document.getElementById('input-website').value = '';
-        document.getElementById('input-summary').value = '';
+        const fieldIds = [
+          'input-fullName', 'input-title', 'input-email', 'input-phone',
+          'input-location', 'input-linkedin', 'input-website', 'input-summary'
+        ];
+        fieldIds.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = '';
+        });
 
         renderAllDynamicForms();
         updateResume();
-        showToast('All Content Cleared', 'Resume has been completely reset.');
+        if (!silent) {
+          showToast('All Content Cleared', 'Resume has been completely reset.');
+        }
       }
     }
 
     function loadSampleData() {
       resumeData = {
-        template: 'modern',
+        template: resumeData.template || 'modern',
         personal: {
           fullName: 'Elena Rostova',
           title: 'Lead Full-Stack AI Engineer',

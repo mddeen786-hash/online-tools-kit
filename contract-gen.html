@@ -1,0 +1,2316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Business Contract & Agreement Generator | Filesque</title>
+  <meta name="description" content="Generate and customize legally binding business contracts, NDAs, freelance agreements, and MSA online for free. Live document preview, payment milestones, PDF download & Word (.doc) export.">
+  <meta name="keywords" content="smart business contract generator, free agreement generator, freelance contract maker, nda generator online, msa agreement template, legal contract maker, export contract to word pdf">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="author" content="Filesque">
+  <link rel="canonical" href="https://filesques.onrender.com/contract-gen.html">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://filesques.onrender.com/contract-gen.html">
+  <meta property="og:title" content="Smart Business Contract & Agreement Generator | Filesque">
+  <meta property="og:description" content="Generate and customize legally binding business contracts, NDAs, freelance agreements, and MSA online for free. Export to Word & PDF instantly.">
+  <meta property="og:site_name" content="Filesque">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Smart Business Contract & Agreement Generator | Filesque">
+  <meta name="twitter:description" content="Generate and customize legally binding business contracts, NDAs, freelance agreements, and MSA online for free. Export to Word & PDF instantly.">
+
+  <!-- PWA Theme -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#dc2626">
+
+  <!-- Breadcrumb JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://filesques.onrender.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Business Categories", "item": "https://filesques.onrender.com/#business-section" },
+      { "@type": "ListItem", "position": 3, "name": "Smart Business Contract", "item": "https://filesques.onrender.com/contract-gen.html" }
+    ]
+  }
+  </script>
+
+  <!-- SoftwareApplication JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Smart Business Contract Generator",
+    "url": "https://filesques.onrender.com/contract-gen.html",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web Browser",
+    "description": "Free online contract and legal agreement generator with live document preview, custom milestones, and Microsoft Word (.doc) export.",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "featureList": [
+      "Freelance Service Agreements",
+      "Mutual Non-Disclosure Agreements (NDA)",
+      "Software Development & IP Assignment",
+      "Master Services Agreement (MSA)",
+      "Retainer Consulting Contracts",
+      "Partnership & Joint Venture Agreements",
+      "Live A4 Legal Document Sheet Preview",
+      "Word (.doc) & PDF Export"
+    ]
+  }
+  </script>
+
+  <!-- FAQPage JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is the Smart Business Contract Generator free?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes, creating, customizing, and exporting contracts is 100% free with no account or signup required." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I export my agreements to Microsoft Word and PDF?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes, you can export your agreement directly into an editable Microsoft Word (.doc) file or print/save as an official PDF." }
+      },
+      {
+        "@type": "Question",
+        "name": "What contract templates are supported?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Filesque supports Freelance Agreements, NDAs, Software Development Contracts, Master Services Agreements (MSA), Retainer Contracts, and Partnership Agreements." }
+      }
+    ]
+  }
+  </script>
+  
+  <!-- Google Fonts: Plus Jakarta Sans, Inter, Merriweather, Cinzel -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Inter:wght@400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+            serif: ['"Merriweather"', 'Georgia', 'serif'],
+            formal: ['"Cinzel"', 'serif'],
+            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace']
+          },
+          colors: {
+            brand: {
+              50: '#fef2f2',
+              100: '#fee2e2',
+              500: '#ef4444',
+              600: '#dc2626',
+              700: '#b91c1c',
+            },
+            slate: {
+              850: '#111827',
+              900: '#0f172a',
+              950: '#020617',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Custom Smooth Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* A4 Contract Sheet */
+    .a4-contract {
+      width: 210mm;
+      min-height: 297mm;
+      background: #ffffff;
+      color: #0f172a;
+      box-shadow: 0 20px 45px -15px rgba(15, 23, 42, 0.22), 0 0 0 1px rgba(15, 23, 42, 0.08);
+      position: relative;
+      margin: 0 auto;
+      box-sizing: border-box;
+      padding: 24mm 22mm;
+      transition: all 0.2s ease-in-out;
+    }
+
+    /* Watermark styling */
+    .watermark-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-35deg);
+      font-size: 76pt;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: rgba(15, 23, 42, 0.04);
+      pointer-events: none;
+      user-select: none;
+      z-index: 10;
+      white-space: nowrap;
+      border: 6px dashed rgba(15, 23, 42, 0.06);
+      padding: 10px 40px;
+      border-radius: 12px;
+    }
+
+    /* Legal font styling toggles */
+    .font-legal-serif {
+      font-family: 'Merriweather', Georgia, serif;
+    }
+    .font-legal-sans {
+      font-family: 'Plus Jakarta Sans', Inter, sans-serif;
+    }
+
+    /* Strict Print Media Rules - Exact Match to Preview */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 12mm 14mm 12mm 14mm;
+      }
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      body {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      #app-top-header, .no-print, nav, #config-sidebar, .preview-toolbar, .print-hide {
+        display: none !important;
+      }
+      #preview-panel {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
+      }
+      #contract-sheet-wrapper {
+        transform: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+      }
+      .a4-contract {
+        width: 100% !important;
+        min-height: auto !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: #ffffff !important;
+      }
+      .doc-contract-header {
+        display: block !important;
+        visibility: visible !important;
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+      }
+      .print-break-inside-avoid {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      .print-break-before {
+        page-break-before: always !important;
+        break-before: page !important;
+      }
+      /* Ensure borders and backgrounds stay crisp in print */
+      .bg-slate-50 {
+        background-color: #f8fafc !important;
+      }
+      .border-slate-200 {
+        border-color: #e2e8f0 !important;
+      }
+    }
+
+    /* Animated Dot Blink */
+    @keyframes dotBlink { 
+      0%, 100% { opacity: 1; transform: scale(1); } 
+      50% { opacity: 0.2; transform: scale(0.85); } 
+    }
+    .animate-blink { 
+      animation: dotBlink 1.2s ease-in-out infinite !important; 
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-900 selection:bg-red-500 selection:text-white">
+
+  <!-- ========================================== -->
+  <!-- TOP APP HEADER / NAVBAR (FILESQUE BRAND)   -->
+  <!-- ========================================== -->
+  <header id="app-top-header" class="no-print sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-8 py-3 shadow-xs">
+    <div class="max-w-[1700px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      
+      <!-- Brand Logo (7xl) with Animated Blinking Dot & Studio Identity -->
+      <div class="flex items-center space-x-3.5 shrink-0">
+        <a href="index.html" class="cursor-pointer flex items-center space-x-1.5 group shrink-0" title="Filesque Home">
+          <span class="text-4xl sm:text-7xl font-black tracking-tighter text-[#0f172a] flex items-center leading-none">
+            <span class="inline-block transform group-hover:-translate-y-0.5 transition-transform duration-300">Files</span><span class="text-[#dc2626] inline-block transform group-hover:translate-y-0.5 group-hover:scale-105 transition-all duration-300">que</span>
+          </span>
+          <span class="w-3.5 h-3.5 rounded-full bg-[#fca5a5] ml-1 inline-block shrink-0 animate-pulse animate-blink shadow-xs"></span>
+        </a>
+        <div class="h-8 w-px bg-slate-200 hidden sm:block"></div>
+        <div class="flex items-center space-x-2">
+          <span class="px-2.5 py-1 rounded-md bg-purple-50 text-purple-700 border border-purple-200/80 text-[11px] font-extrabold uppercase tracking-wider flex items-center gap-1.5 shadow-2xs">
+            <i data-lucide="scale" class="w-3.5 h-3.5 text-purple-600"></i>
+            Legal Studio
+          </span>
+          <span class="text-xs font-semibold text-slate-500 hidden xl:inline">Smart Business Contract & Agreement Generator</span>
+        </div>
+      </div>
+
+      <!-- Right Side Controls: Template Panel & Action Buttons Moved Right -->
+      <div class="flex flex-wrap items-center justify-end gap-3 sm:gap-4 md:ml-auto">
+        
+        <!-- Quick Template Selector in Navbar (Shifted Right) -->
+        <div class="flex items-center space-x-2 bg-slate-100/90 p-1.5 rounded-xl border border-slate-200/90 shadow-2xs">
+          <label for="quick-template-select" class="text-xs font-bold text-slate-600 px-2 flex items-center gap-1.5 select-none">
+            <i data-lucide="file-text" class="w-3.5 h-3.5 text-slate-500"></i>
+            <span>Template:</span>
+          </label>
+          <select id="quick-template-select" onchange="onTemplateChange(this.value)" class="bg-white text-xs font-bold text-slate-800 rounded-lg px-3 py-1.5 border border-slate-200 outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 cursor-pointer shadow-2xs">
+            <option value="freelance">Freelance Service Agreement</option>
+            <option value="nda">Mutual Non-Disclosure Agreement (NDA)</option>
+            <option value="software">Software Dev & IP Agreement</option>
+            <option value="msa">Master Services Agreement (MSA)</option>
+            <option value="retainer">Retainer Consulting Agreement</option>
+            <option value="partnership">Partnership & Joint Venture Agreement</option>
+          </select>
+        </div>
+
+        <!-- Action Buttons (Shifted Right) -->
+        <div class="flex items-center flex-wrap gap-2">
+          <button onclick="loadSampleData()" class="px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs" title="Fill with realistic sample data">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
+            <span>Sample Data</span>
+          </button>
+
+          <button onclick="exportToWord()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 transition flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs" title="Export formal contract to Microsoft Word (.doc)">
+            <i data-lucide="file-down" class="w-3.5 h-3.5 text-blue-600"></i>
+            <span>Word (.doc)</span>
+          </button>
+
+          <button onclick="window.print()" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white shadow-md hover:shadow-lg transition flex items-center gap-2 transform active:scale-95 cursor-pointer" title="Print or save as official PDF">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            <span>Download / Print PDF</span>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ========================================== -->
+  <!-- MAIN WORKSPACE: TWO COLUMN LAYOUT          -->
+  <!-- ========================================== -->
+  <main class="flex-1 max-w-[1700px] w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col lg:flex-row gap-8 items-start">
+    
+    <!-- ========================================== -->
+    <!-- LEFT PANEL: CONFIGURATION & CLAUSE EDITOR  -->
+    <!-- ========================================== -->
+    <aside id="config-sidebar" class="no-print w-full lg:w-[480px] xl:w-[520px] shrink-0 space-y-4">
+      
+      <!-- Studio Intro Card: Light Theme Glossy Professional Look -->
+      <div class="bg-white/95 backdrop-blur-md p-5 rounded-2xl shadow-xs border border-slate-200/90 text-slate-800">
+        <div class="flex items-center justify-between mb-2.5">
+          <span class="text-[11px] font-extrabold tracking-wider uppercase text-purple-700 bg-purple-50 border border-purple-200/80 px-2.5 py-1 rounded-lg flex items-center gap-1.5 shadow-2xs">
+            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-purple-600"></i>
+            Legal Agreement Studio
+          </span>
+          <span class="text-[10px] bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-full font-mono font-bold border border-slate-200">v2.4 Pro</span>
+        </div>
+        <h1 class="text-lg font-black tracking-tight text-slate-900">Smart Agreement Generator</h1>
+        <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+          Select standard contracts, configure commercial milestones, customize legal clauses, and print binding corporate agreements.
+        </p>
+        <!-- Left Panel Action Buttons: Sample Data & Clear All -->
+        <div class="mt-4 pt-3.5 border-t border-slate-100 flex items-center gap-2.5">
+          <button onclick="loadSampleData()" type="button" class="flex-1 py-2 px-3 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-bold rounded-xl border border-purple-200/80 transition flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer active:scale-98" title="Fill with realistic sample agreement">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-600"></i>
+            <span>Load Sample</span>
+          </button>
+          <button onclick="clearAllForm()" type="button" class="flex-1 py-2 px-3 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 text-xs font-extrabold rounded-xl border border-red-200/80 transition flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer active:scale-98" title="Clear all fields completely">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5 text-red-500"></i>
+            <span>Clear All</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Accordion 1: Contract Setup & Document Style -->
+      <details class="group bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden transition-all duration-200" open>
+        <summary class="flex items-center justify-between p-4 cursor-pointer select-none bg-slate-50/70 hover:bg-slate-100/70 transition">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-sm">
+              <i data-lucide="file-cog" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wide">1. Agreement Setup & Style</h2>
+              <p class="text-[11px] text-slate-500">Document type, reference ID, jurisdiction & typography</p>
+            </div>
+          </div>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transform group-open:rotate-180 transition-transform"></i>
+        </summary>
+        <div class="p-4 space-y-3.5 border-t border-slate-100">
+          <div>
+            <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Contract Title</label>
+            <input type="text" id="doc-title" oninput="updateContractDOM()" class="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none transition" placeholder="e.g. Master Services Agreement">
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Reference Number</label>
+              <input type="text" id="doc-ref" oninput="updateContractDOM()" class="w-full text-xs font-mono font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-purple-500 outline-none" placeholder="FSQ-AGR-2026-001">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Execution Date</label>
+              <input type="date" id="doc-date" onchange="updateContractDOM()" class="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-purple-500 outline-none">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Effective Date</label>
+              <input type="date" id="doc-effective-date" onchange="updateContractDOM()" class="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-purple-500 outline-none">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Governing Jurisdiction</label>
+              <input type="text" id="doc-jurisdiction" oninput="updateContractDOM()" class="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-purple-500 outline-none" placeholder="e.g. State of Delaware, USA">
+            </div>
+          </div>
+
+          <!-- Document Styling Options -->
+          <div class="pt-2 border-t border-slate-100 grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Typography Style</label>
+              <select id="doc-font-style" onchange="updateFontStyle(this.value)" class="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white outline-none cursor-pointer">
+                <option value="sans">Modern Corporate Sans</option>
+                <option value="serif">Formal Legal Serif</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Watermark Stamp</label>
+              <select id="doc-watermark" onchange="updateWatermark(this.value)" class="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white outline-none cursor-pointer">
+                <option value="NONE">None (Clean Official)</option>
+                <option value="CONFIDENTIAL">CONFIDENTIAL</option>
+                <option value="DRAFT">DRAFT</option>
+                <option value="EXECUTED">EXECUTED</option>
+                <option value="OFFICIAL">OFFICIAL COPY</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <!-- Accordion 2: First Party (Provider / Disclosing Party) -->
+      <details class="group bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden transition-all duration-200" open>
+        <summary class="flex items-center justify-between p-4 cursor-pointer select-none bg-slate-50/70 hover:bg-slate-100/70 transition">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm">
+              <i data-lucide="building-2" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wide">2. Party One (Service Provider)</h2>
+              <p class="text-[11px] text-slate-500">Corporate entity, authorized representative, address</p>
+            </div>
+          </div>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transform group-open:rotate-180 transition-transform"></i>
+        </summary>
+        <div class="p-4 space-y-3.5 border-t border-slate-100">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Company / Entity Name</label>
+              <input type="text" id="p1-company" oninput="updateContractDOM()" class="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 outline-none" placeholder="e.g. Apex Digital Solutions LLC">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Registration / Tax ID</label>
+              <input type="text" id="p1-tax" oninput="updateContractDOM()" class="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 outline-none" placeholder="EIN / Reg #12-3456789">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Authorized Signer Name</label>
+              <input type="text" id="p1-signer" oninput="updateContractDOM()" class="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 outline-none" placeholder="e.g. Marcus Vance">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Signer Title</label>
+              <input type="text" id="p1-title" oninput="updateContractDOM()" class="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 outline-none" placeholder="e.g. Chief Executive Officer">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Registered Address</label>
+            <input type="text" id="p1-address" oninput="updateContractDOM()" class="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 outline-none" placeholder="e.g. 500 Market Street, Suite 400, San Francisco, CA 94105">
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Email Address</label>
+              <input type="email" id="p1-email" oninput="updateContractDOM()" class="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 outline-none" placeholder="legal@company.com">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Phone Number</label>
+              <input type="text" id="p1-phone" oninput="updateContractDOM()" class="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 outline-none" placeholder="+1 (555) 019-2834">
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <!-- Accordion 3: Second Party (Client / Receiving Party) -->
+      <details class="group bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden transition-all duration-200" open>
+        <summary class="flex items-center justify-between p-4 cursor-pointer select-none bg-slate-50/70 hover:bg-slate-100/70 transition">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm">
+              <i data-lucide="user-check" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wide">3. Party Two (Client / Recipient)</h2>
+              <p class="text-[11px] text-slate-500">Corporate client, authorized representative, address</p>
+            </div>
+          </div>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transform group-open:rotate-180 transition-transform"></i>
+        </summary>
+        <div class="p-4 space-y-3.5 border-t border-slate-100">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Company / Entity Name</label>
+              <input type="text" id="p2-company" oninput="updateContractDOM()" class="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-emerald-500 outline-none" placeholder="e.g. Nexus Enterprises Inc.">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Registration / Tax ID</label>
+              <input type="text" id="p2-tax" oninput="updateContractDOM()" class="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-emerald-500 outline-none" placeholder="EIN / Reg #98-7654321">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Authorized Signer Name</label>
+              <input type="text" id="p2-signer" oninput="updateContractDOM()" class="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-emerald-500 outline-none" placeholder="e.g. Helena Troy">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Signer Title</label>
+              <input type="text" id="p2-title" oninput="updateContractDOM()" class="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-emerald-500 outline-none" placeholder="e.g. VP of Operations">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Registered Address</label>
+            <input type="text" id="p2-address" oninput="updateContractDOM()" class="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-emerald-500 outline-none" placeholder="e.g. 742 Evergreen Terrace, Austin, TX 78701">
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Email Address</label>
+              <input type="email" id="p2-email" oninput="updateContractDOM()" class="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-emerald-500 outline-none" placeholder="operations@nexus.com">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Phone Number</label>
+              <input type="text" id="p2-phone" oninput="updateContractDOM()" class="w-full text-xs font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-emerald-500 outline-none" placeholder="+1 (555) 890-1234">
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <!-- Accordion 4: Project Scope & Deliverables -->
+      <details class="group bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden transition-all duration-200">
+        <summary class="flex items-center justify-between p-4 cursor-pointer select-none bg-slate-50/70 hover:bg-slate-100/70 transition">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm">
+              <i data-lucide="target" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wide">4. Scope of Work & Deliverables</h2>
+              <p class="text-[11px] text-slate-500">Core duties, project objectives & specifications</p>
+            </div>
+          </div>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transform group-open:rotate-180 transition-transform"></i>
+        </summary>
+        <div class="p-4 space-y-3.5 border-t border-slate-100">
+          <div>
+            <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Project Summary / Purpose</label>
+            <textarea id="scope-summary" oninput="updateContractDOM()" rows="3" class="w-full text-xs font-medium px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-amber-500 outline-none" placeholder="Describe the primary goal and nature of the engagement..."></textarea>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Key Deliverables (One per line)</label>
+            <textarea id="scope-deliverables" oninput="updateContractDOM()" rows="4" class="w-full text-xs font-mono font-medium px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-amber-500 outline-none" placeholder="Architecture Blueprint & Technical Specs&#10;Interactive Web App Prototype & Source Code&#10;QA Validation, Performance Testing & Deployment Guide"></textarea>
+          </div>
+        </div>
+      </details>
+
+      <!-- Accordion 5: Commercial Terms & Payment Milestones -->
+      <details class="group bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden transition-all duration-200" open>
+        <summary class="flex items-center justify-between p-4 cursor-pointer select-none bg-slate-50/70 hover:bg-slate-100/70 transition">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center font-bold text-sm">
+              <i data-lucide="badge-dollar-sign" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wide">5. Payment Terms & Milestones</h2>
+              <p class="text-[11px] text-slate-500">Compensation breakdown, schedule & invoicing terms</p>
+            </div>
+          </div>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transform group-open:rotate-180 transition-transform"></i>
+        </summary>
+        <div class="p-4 space-y-4 border-t border-slate-100">
+          
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Currency</label>
+              <select id="currency-select" onchange="updateContractDOM()" class="w-full text-xs font-bold px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white outline-none cursor-pointer">
+                <option value="$">USD ($) - US Dollar</option>
+                <option value="€">EUR (€) - Euro</option>
+                <option value="£">GBP (£) - British Pound</option>
+                <option value="₹">INR (₹) - Indian Rupee</option>
+                <option value="CA$">CAD ($) - Canadian Dollar</option>
+                <option value="A$">AUD ($) - Australian Dollar</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Invoicing Schedule</label>
+              <select id="payment-terms-select" onchange="updateContractDOM()" class="w-full text-xs font-bold px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white outline-none cursor-pointer">
+                <option value="Milestone-Based Net-15">Milestone-Based Net-15</option>
+                <option value="Net-30 Days from Invoice">Net-30 Days from Invoice</option>
+                <option value="50% Upfront, 50% on Completion">50% Upfront, 50% upon Final Sign-off</option>
+                <option value="Due Immediately upon Receipt">Due Immediately upon Receipt</option>
+                <option value="Monthly Retainer in Advance">Monthly Retainer in Advance</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Dynamic Milestone Rows Container -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Milestone Breakdown</label>
+              <span id="milestone-count-badge" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-violet-50 text-violet-700">3 Milestones</span>
+            </div>
+
+            <div id="milestones-editor-list" class="space-y-2.5">
+              <!-- Dynamically populated via JS -->
+            </div>
+
+            <button onclick="addMilestoneRow()" type="button" class="mt-3 w-full py-2 bg-violet-50 hover:bg-violet-100 text-violet-700 font-bold text-xs rounded-xl border border-dashed border-violet-300 flex items-center justify-center gap-1.5 transition">
+              <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+              <span>Add New Payment Milestone</span>
+            </button>
+          </div>
+
+          <!-- Total Calculation Display -->
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/80 flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-600">Total Contract Value:</span>
+            <span id="editor-total-value" class="text-sm font-black text-slate-900">$0.00</span>
+          </div>
+        </div>
+      </details>
+
+      <!-- Accordion 6: Dynamic Legal Clauses Editor -->
+      <details class="group bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden transition-all duration-200" open>
+        <summary class="flex items-center justify-between p-4 cursor-pointer select-none bg-slate-50/70 hover:bg-slate-100/70 transition">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-sm">
+              <i data-lucide="scroll-text" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wide">6. Standard Legal Clauses</h2>
+              <p class="text-[11px] text-slate-500">Edit, add, delete, or re-order contract provisions</p>
+            </div>
+          </div>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transform group-open:rotate-180 transition-transform"></i>
+        </summary>
+        <div class="p-4 space-y-3.5 border-t border-slate-100">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] text-slate-500">Auto-filled with standard enforceable language:</span>
+            <button onclick="resetClausesToDefault()" type="button" class="text-[11px] font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1" title="Reload standard clauses for this template">
+              <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+              <span>Reset Clauses</span>
+            </button>
+          </div>
+
+          <!-- Clauses Accordion Container -->
+          <div id="clauses-editor-container" class="space-y-3">
+            <!-- Dynamically populated via JS -->
+          </div>
+
+          <button onclick="addNewCustomClause()" type="button" class="w-full py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs rounded-xl border border-dashed border-rose-300 flex items-center justify-center gap-1.5 transition">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>Add Custom Legal Clause</span>
+          </button>
+        </div>
+      </details>
+
+      <!-- Accordion 7: Execution & Signatures -->
+      <details class="group bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden transition-all duration-200">
+        <summary class="flex items-center justify-between p-4 cursor-pointer select-none bg-slate-50/70 hover:bg-slate-100/70 transition">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center font-bold text-sm">
+              <i data-lucide="pen-tool" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wide">7. Execution & Signature Blocks</h2>
+              <p class="text-[11px] text-slate-500">Digital verification stamp & signing layout</p>
+            </div>
+          </div>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transform group-open:rotate-180 transition-transform"></i>
+        </summary>
+        <div class="p-4 space-y-3.5 border-t border-slate-100">
+          <label class="flex items-start space-x-3 cursor-pointer select-none p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition">
+            <input type="checkbox" id="seal-checkbox" onchange="updateContractDOM()" checked class="mt-0.5 w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500">
+            <div>
+              <span class="text-xs font-bold text-slate-800">Include Smart Digital Verification Seal</span>
+              <p class="text-[11px] text-slate-500">Embeds an official cryptographic compliance badge on the signature page</p>
+            </div>
+          </label>
+
+          <label class="flex items-start space-x-3 cursor-pointer select-none p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition">
+            <input type="checkbox" id="witness-checkbox" onchange="updateContractDOM()" class="mt-0.5 w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500">
+            <div>
+              <span class="text-xs font-bold text-slate-800">Include Witness Signature Lines</span>
+              <p class="text-[11px] text-slate-500">Adds secondary attestation lines for formal notary or legal witnesses</p>
+            </div>
+          </label>
+        </div>
+      </details>
+
+      <!-- Bottom Quick Action: Clear All -->
+      <div class="p-3.5 bg-white rounded-2xl border border-slate-200/90 shadow-2xs flex items-center justify-between gap-3">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center font-bold">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-slate-800">Clear All Content</div>
+            <div class="text-[10px] text-slate-400">Wipe all parties, clauses &amp; milestones clean</div>
+          </div>
+        </div>
+        <button onclick="clearAllForm()" type="button" class="px-3.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 font-extrabold text-xs rounded-xl border border-red-200 transition flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          <span>Clear All</span>
+        </button>
+      </div>
+
+    </aside>
+
+    <!-- ========================================== -->
+    <!-- RIGHT PANEL: LIVE LEGAL DOCUMENT PREVIEW   -->
+    <!-- ========================================== -->
+    <section id="preview-panel" class="flex-1 w-full min-w-0 flex flex-col items-center">
+      
+      <!-- Preview Sticky Toolbar -->
+      <div class="preview-toolbar no-print w-full max-w-[210mm] bg-white border border-slate-200/90 rounded-2xl shadow-xs px-4 py-2.5 mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center space-x-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="text-xs font-bold text-slate-700">Live Legal Document Preview</span>
+          <span id="preview-template-tag" class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-rose-50 text-rose-600 border border-rose-200">Blank Agreement</span>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <div class="flex items-center bg-slate-100 rounded-lg p-0.5 border border-slate-200 text-xs font-bold">
+            <button onclick="setZoom(0.85)" class="px-2 py-1 rounded hover:bg-white text-slate-600 transition" title="Compact View">85%</button>
+            <button onclick="setZoom(1.0)" class="px-2 py-1 rounded bg-white text-slate-900 shadow-2xs transition" title="100% Actual Size">100%</button>
+            <button onclick="setZoom(1.15)" class="px-2 py-1 rounded hover:bg-white text-slate-600 transition" title="Zoom In">115%</button>
+          </div>
+
+          <button onclick="window.print()" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white flex items-center gap-1.5 shadow-xs transition">
+            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+            <span>Print</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Live A4 Formal Legal Document Sheet -->
+      <div id="contract-sheet-wrapper" class="w-full flex justify-center pb-16 transition-transform origin-top">
+        
+        <article id="contract-sheet" class="a4-contract font-legal-sans">
+          
+          <!-- Watermark Container -->
+          <div id="sheet-watermark" class="watermark-overlay hidden">CONFIDENTIAL</div>
+
+          <!-- Document Top Formal Header -->
+          <div class="doc-contract-header border-b-2 border-slate-900 pb-5 mb-6 print-break-inside-avoid">
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block font-sans">Official Corporate Agreement</span>
+                <h1 id="view-doc-title" class="text-2xl font-normal italic text-slate-300 tracking-tight mt-0.5 font-formal uppercase">[UNTITLED AGREEMENT]</h1>
+                <p id="view-doc-subtitle" class="text-xs text-slate-500 font-medium mt-1">Draft Instrument</p>
+              </div>
+              <div class="text-right">
+                <span id="view-status-badge" class="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded border border-slate-300 text-slate-400 mb-1">Clean Draft</span>
+                <div class="text-[11px] font-mono text-slate-600">
+                  Ref: <strong id="view-doc-ref" class="text-slate-900">—</strong>
+                </div>
+                <div class="text-[11px] text-slate-500">
+                  Date: <span id="view-doc-date">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Preamble / Parties Identification Block -->
+          <section class="mb-6 leading-relaxed text-xs text-slate-700 print-break-inside-avoid">
+            <p class="mb-3">
+              This <strong id="view-contract-type-name" class="text-slate-900">Agreement</strong> (the <em>"Agreement"</em>) is entered into and made effective as of <strong id="view-effective-date" class="text-slate-900">—</strong> (the <em>"Effective Date"</em>), by and between:
+            </p>
+
+            <div class="grid grid-cols-2 gap-4 my-4 p-4 rounded-xl bg-slate-50 border border-slate-200">
+              <!-- Party 1 Summary Box -->
+              <div class="space-y-1">
+                <span class="text-[10px] font-extrabold uppercase tracking-wider text-blue-600 block">Service Provider (First Party)</span>
+                <div id="view-p1-company" class="font-normal italic text-slate-400 text-sm">[Party 1 / Service Provider]</div>
+                <div id="view-p1-tax" class="text-[11px] text-slate-500 font-mono">Tax / Reg: —</div>
+                <div id="view-p1-address" class="text-[11px] text-slate-600">—</div>
+                <div class="text-[11px] text-slate-500">Contact: <span id="view-p1-email" class="text-slate-700">—</span></div>
+              </div>
+
+              <!-- Party 2 Summary Box -->
+              <div class="space-y-1 border-l border-slate-200 pl-4">
+                <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-600 block">Client (Second Party)</span>
+                <div id="view-p2-company" class="font-normal italic text-slate-400 text-sm">[Party 2 / Client]</div>
+                <div id="view-p2-tax" class="text-[11px] text-slate-500 font-mono">Tax / Reg: —</div>
+                <div id="view-p2-address" class="text-[11px] text-slate-600">—</div>
+                <div class="text-[11px] text-slate-500">Contact: <span id="view-p2-email" class="text-slate-700">—</span></div>
+              </div>
+            </div>
+
+            <p class="italic text-slate-600 text-[11px]">
+              Service Provider and Client may hereinafter individually be referred to as a <em>"Party"</em> and collectively as the <em>"Parties"</em>.
+            </p>
+          </section>
+
+          <!-- Recitals ("WHEREAS") -->
+          <section class="mb-6 leading-relaxed text-xs text-slate-700 print-break-inside-avoid">
+            <h2 class="text-xs font-black uppercase tracking-wider text-slate-900 mb-2 border-b border-slate-200 pb-1">Recitals</h2>
+            <div class="space-y-1.5 pl-3 border-l-2 border-slate-300">
+              <p>
+                <strong>WHEREAS</strong>, Service Provider specializes in professional technology and business services and possesses the requisite technical expertise, personnel, and facilities to execute the contemplated deliverables;
+              </p>
+              <p>
+                <strong>WHEREAS</strong>, Client desires to retain Service Provider to render professional services, and Service Provider agrees to perform such services under the terms, covenants, and considerations set forth herein;
+              </p>
+              <p>
+                <strong>NOW, THEREFORE</strong>, in consideration of the mutual covenants, representations, warranties, and valuable considerations contained herein, the Parties agree as follows:
+              </p>
+            </div>
+          </section>
+
+          <!-- Scope of Work & Deliverables -->
+          <section id="view-scope-section" class="mb-6 leading-relaxed text-xs text-slate-700 print-break-inside-avoid">
+            <h2 class="text-xs font-black uppercase tracking-wider text-slate-900 mb-2 border-b border-slate-200 pb-1 flex items-center justify-between">
+              <span>1. Engagement Scope & Deliverables</span>
+            </h2>
+            <p id="view-scope-summary" class="mb-2.5 text-slate-400 italic leading-normal">
+              No scope of work defined.
+            </p>
+            <div id="view-deliverables-box" class="bg-slate-50/80 p-3 rounded-lg border border-slate-200/80">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-1.5">Designated Deliverables:</span>
+              <ul id="view-deliverables-list" class="list-disc list-inside space-y-1 text-slate-800 text-xs">
+                <!-- Dynamically populated -->
+              </ul>
+            </div>
+          </section>
+
+          <!-- Commercial Terms & Payment Milestone Table -->
+          <section class="mb-6 leading-relaxed text-xs text-slate-700 print-break-inside-avoid">
+            <h2 class="text-xs font-black uppercase tracking-wider text-slate-900 mb-2 border-b border-slate-200 pb-1 flex items-center justify-between">
+              <span>2. Consideration & Payment Milestones</span>
+              <span id="view-payment-terms-badge" class="text-[10px] font-bold text-purple-700 font-mono">Milestone-Based Net-15</span>
+            </h2>
+            <p class="mb-3 text-slate-700">
+              In full consideration for the timely delivery of acceptable services, Client shall pay Service Provider the aggregate contract sum according to the following schedule of deliverables and milestones:
+            </p>
+
+            <!-- Table of Milestones -->
+            <div class="overflow-x-auto border border-slate-200 rounded-lg shadow-2xs mb-2">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+                    <th class="py-2 px-3 w-12 text-center">#</th>
+                    <th class="py-2 px-3">Milestone & Deliverable</th>
+                    <th class="py-2 px-3 w-28 text-center">Target Date</th>
+                    <th class="py-2 px-3 w-28 text-right">Amount</th>
+                    <th class="py-2 px-3 w-24 text-center">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="view-milestones-tbody" class="divide-y divide-slate-100 font-medium">
+                  <!-- Dynamically populated -->
+                </tbody>
+                <tfoot>
+                  <tr class="bg-slate-50 font-black text-slate-900 border-t-2 border-slate-300">
+                    <td colspan="3" class="py-2.5 px-3 text-right uppercase tracking-wider text-[11px]">Total Contract Value:</td>
+                    <td id="view-total-amount" class="py-2.5 px-3 text-right text-sm font-extrabold text-slate-950 font-mono">$0.00</td>
+                    <td></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+            <p class="text-[10px] text-slate-500 italic">
+              Invoices shall be rendered upon completion and written acceptance of each milestone. Late payments exceeding fifteen (15) days past due date may accrue interest at the statutory rate of 1.5% per month.
+            </p>
+          </section>
+
+          <!-- Legal Clauses Container -->
+          <section id="view-clauses-container" class="space-y-4 text-xs text-slate-700">
+            <!-- Dynamically populated clauses -->
+          </section>
+
+          <!-- Execution & Signatures Section -->
+          <section class="mt-8 pt-6 border-t-2 border-slate-900 print-break-inside-avoid">
+            <p class="text-xs text-slate-700 mb-6 leading-relaxed">
+              <strong>IN WITNESS WHEREOF</strong>, the Parties hereto have caused this Agreement to be executed by their duly authorized representatives as of the Effective Date written above.
+            </p>
+
+            <div class="grid grid-cols-2 gap-8">
+              
+              <!-- First Party Signature Block -->
+              <div class="space-y-3">
+                <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 block">For &amp; On Behalf Of Service Provider:</span>
+                <div class="border-b border-slate-800 pb-1 pt-6 flex items-end justify-between">
+                  <div class="font-serif italic text-lg text-blue-900 select-none" id="sig-preview-p1">Marcus Vance</div>
+                  <span class="text-[10px] font-mono text-slate-400">Authorized Signature</span>
+                </div>
+                <div class="space-y-0.5 text-xs text-slate-800 font-medium">
+                  <div>Name: <strong id="sig-name-p1" class="text-slate-900">Marcus Vance</strong></div>
+                  <div>Title: <span id="sig-title-p1">Chief Executive Officer</span></div>
+                  <div>Entity: <span id="sig-company-p1">Apex Digital Solutions LLC</span></div>
+                  <div>Date: <span id="sig-date-p1">September 23, 2026</span></div>
+                </div>
+              </div>
+
+              <!-- Second Party Signature Block -->
+              <div class="space-y-3">
+                <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 block">For &amp; On Behalf Of Client:</span>
+                <div class="border-b border-slate-800 pb-1 pt-6 flex items-end justify-between">
+                  <div class="font-serif italic text-lg text-emerald-900 select-none" id="sig-preview-p2">Helena Troy</div>
+                  <span class="text-[10px] font-mono text-slate-400">Authorized Signature</span>
+                </div>
+                <div class="space-y-0.5 text-xs text-slate-800 font-medium">
+                  <div>Name: <strong id="sig-name-p2" class="text-slate-900">Helena Troy</strong></div>
+                  <div>Title: <span id="sig-title-p2">VP of Operations</span></div>
+                  <div>Entity: <span id="sig-company-p2">Nexus Enterprises Inc.</span></div>
+                  <div>Date: <span id="sig-date-p2">September 23, 2026</span></div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Optional Witness Line -->
+            <div id="view-witness-block" class="mt-6 pt-4 border-t border-slate-200 hidden">
+              <div class="grid grid-cols-2 gap-8 text-xs text-slate-600">
+                <div>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-3">Witness 1:</span>
+                  <div class="border-b border-dashed border-slate-400 pb-1 text-slate-400 font-mono text-[10px]">Signature &amp; Date</div>
+                  <div class="mt-1">Full Legal Name: ________________________</div>
+                </div>
+                <div>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-3">Witness 2:</span>
+                  <div class="border-b border-dashed border-slate-400 pb-1 text-slate-400 font-mono text-[10px]">Signature &amp; Date</div>
+                  <div class="mt-1">Full Legal Name: ________________________</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Digital Security Seal Badge -->
+            <div id="view-digital-seal" class="mt-6 p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs text-slate-600">
+              <div class="flex items-center space-x-2.5">
+                <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm">
+                  <i data-lucide="shield-check" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <div class="font-bold text-slate-900 text-[11px] uppercase tracking-wide">Filesque Smart Verification Hash</div>
+                  <div id="seal-hash-code" class="text-[10px] font-mono text-slate-500">SHA-256: 8f4b2c19a0d8e4f16b7c53e9a210d7b4c6e8f9a1</div>
+                </div>
+              </div>
+              <div class="text-right text-[10px] text-slate-500 font-mono">
+                Security Protocol: <strong class="text-slate-800">FSQ-LEGAL-ENFORCE-v2</strong>
+              </div>
+            </div>
+
+            <!-- Document Footer Note -->
+            <footer class="mt-6 pt-3 border-t border-slate-200 flex items-center justify-between text-[10px] text-slate-400 font-sans">
+              <div>Generated via Filesque Smart Agreement Studio | Confidential Corporate Instrument</div>
+              <div id="footer-ref-display">Ref: FSQ-AGR-2026-001 | Page 1 of 1</div>
+            </footer>
+
+          </section>
+
+        </article>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- JAVASCRIPT: TEMPLATES, LOGIC, EXPORTS      -->
+  <!-- ========================================== -->
+  <script>
+    // --- TEMPLATES DEFINITION ---
+    const TEMPLATES = {
+      freelance: {
+        name: "Freelance Service Agreement",
+        title: "Independent Contractor & Freelance Services Agreement",
+        ref: "FSQ-FL-2026-042",
+        jurisdiction: "State of California, USA",
+        p1: {
+          company: "Apex Digital Solutions LLC",
+          tax: "EIN #12-3456789",
+          signer: "Marcus Vance",
+          title: "Principal Consultant",
+          address: "500 Market Street, Suite 400, San Francisco, CA 94105",
+          email: "marcus@apexdigital.io",
+          phone: "+1 (555) 019-2834"
+        },
+        p2: {
+          company: "Nexus Enterprises Inc.",
+          tax: "EIN #98-7654321",
+          signer: "Helena Troy",
+          title: "VP of Product Engineering",
+          address: "742 Evergreen Terrace, Austin, TX 78701",
+          email: "helena.troy@nexus.com",
+          phone: "+1 (555) 890-1234"
+        },
+        scopeSummary: "Service Provider shall design, develop, and deploy cloud-native enterprise workflows, RESTful integrations, and production-ready automated modules specified in the deliverables schedule.",
+        deliverables: [
+          "Complete architectural system audit & database schema definition",
+          "Responsive high-throughput frontend user studio & API integrations",
+          "Comprehensive unit tests, integration benchmarks & Docker deploy scripts",
+          "Handover documentation, technical training session & 30-day post-launch warranty"
+        ],
+        paymentTerms: "Milestone-Based Net-15",
+        currency: "$",
+        milestones: [
+          { name: "Discovery & Architectural Blueprint", desc: "Approved technical specifications & UX wireframes", date: "2026-10-05", amount: 4500, status: "Pending" },
+          { name: "Core Application Development & APIs", desc: "Working prototype with functional microservices", date: "2026-10-25", amount: 8500, status: "Pending" },
+          { name: "Final QA, Testing & Production Release", desc: "Live production deployment & documentation handover", date: "2026-11-15", amount: 5000, status: "Pending" }
+        ],
+        clauses: [
+          {
+            title: "Independent Contractor Relationship",
+            body: "The Parties expressly agree that Service Provider is an independent contractor and not an employee, agent, joint venturer, or partner of Client. Service Provider retains sole discretion in determining the manner and means of performing the services and shall be solely responsible for all tax filings and statutory withholdings."
+          },
+          {
+            title: "Intellectual Property Ownership & Assignment",
+            body: "Upon full and final receipt of all agreed compensation set forth in Section 2, Service Provider assigns to Client all right, title, and interest worldwide in and to all custom deliverables and work product created specifically for Client under this Agreement. Service Provider retains ownership of its pre-existing tools, libraries, and proprietary background know-how."
+          },
+          {
+            title: "Confidentiality & Non-Disclosure",
+            body: "Each Party agrees to hold in strict confidence all proprietary, technical, and financial information disclosed by the other Party. Neither Party shall disclose such confidential information to any third party without prior written authorization, exercising at least the same degree of care as it uses to protect its own sensitive trade secrets."
+          },
+          {
+            title: "Warranties & Performance Standards",
+            body: "Service Provider represents and warrants that all services will be executed in a professional, workmanlike manner in compliance with customary industry practices and that the deliverables will not knowingly infringe upon any third-party patent, copyright, or trademark rights."
+          },
+          {
+            title: "Term & Termination Provisions",
+            body: "Either Party may terminate this Agreement for convenience upon providing fourteen (14) calendar days written notice to the other Party. In the event of early termination, Client shall immediately compensate Service Provider for all completed milestones and approved hours incurred up to the effective termination date."
+          },
+          {
+            title: "Limitation of Liability",
+            body: "Except for breaches of confidentiality or willful misconduct, neither Party shall be liable for indirect, incidental, punitive, or consequential damages. Each Party's total aggregate liability arising out of this Agreement shall be strictly capped at the total amount actually paid by Client hereunder."
+          },
+          {
+            title: "Governing Law & Legal Venue",
+            body: "This Agreement shall be governed by, construed, and enforced in accordance with the substantive laws of the governing jurisdiction designated herein, without regard to principles of conflicts of law. Any legal proceedings shall be instituted exclusively in courts situated in such jurisdiction."
+          }
+        ]
+      },
+
+      nda: {
+        name: "Mutual Non-Disclosure Agreement (NDA)",
+        title: "Bilateral Corporate Non-Disclosure Agreement",
+        ref: "FSQ-NDA-2026-108",
+        jurisdiction: "State of Delaware, USA",
+        p1: {
+          company: "Vanguard Innovations Corp.",
+          tax: "EIN #45-1234567",
+          signer: "Alexander Wright",
+          title: "Managing Director",
+          address: "1200 Avenue of the Americas, New York, NY 10036",
+          email: "alexander@vanguardinnovations.com",
+          phone: "+1 (212) 555-0199"
+        },
+        p2: {
+          company: "Horizon Capital Partners LLC",
+          tax: "EIN #88-9988776",
+          signer: "Sarah Jenkins",
+          title: "Chief Investment Officer",
+          address: "100 Montgomery Street, Suite 2200, San Francisco, CA 94104",
+          email: "sjenkins@horizoncap.com",
+          phone: "+1 (415) 555-0144"
+        },
+        scopeSummary: "The Parties intend to explore a strategic commercial and technical collaboration regarding proprietary software architectures, algorithmic models, and private equity co-investments.",
+        deliverables: [
+          "Exchange of technical specifications, software architecture & patent disclosures",
+          "Review of financial audits, operating metrics & corporate cap tables",
+          "Joint feasibility evaluation & confidential term sheet deliberation"
+        ],
+        paymentTerms: "Due Immediately upon Receipt",
+        currency: "$",
+        milestones: [
+          { name: "Execution & Mutual Disclosure Commencement", desc: "Exchange of designated confidential files under secure channel", date: "2026-10-01", amount: 0, status: "Active" },
+          { name: "Preliminary Feasibility Review", desc: "Mutual technical assessment & strategic analysis", date: "2026-10-20", amount: 0, status: "Pending" }
+        ],
+        clauses: [
+          {
+            title: "Definition of Confidential Information",
+            body: "Confidential Information includes all non-public technical data, source code, algorithm models, product blueprints, financial forecasts, customer lists, and business strategies disclosed by one Party to the other, whether conveyed orally, visually, electronically, or in tangible documentation marked confidential."
+          },
+          {
+            title: "Non-Disclosure & Restricted Use Obligations",
+            body: "The receiving Party shall maintain the confidential nature of all disclosed information with utmost fidelity, shall not use such information for any purpose other than evaluating the contemplated business transaction, and shall restrict dissemination exclusively to employees and legal counsel on a strict need-to-know basis."
+          },
+          {
+            title: "Exclusions from Confidential Treatment",
+            body: "Confidential Information does not encompass data that: (a) is or becomes publicly known through no breach of this Agreement; (b) was already legitimately known to the recipient prior to disclosure; (c) is independently developed without reference to proprietary data; or (d) is required to be disclosed under subpoena or court order."
+          },
+          {
+            title: "Term & Survival of Confidentiality",
+            body: "This Agreement shall remain in effect for three (3) years from the Effective Date, during which all confidentiality covenants and non-disclosure obligations shall fully survive any expiration or termination of business discussions."
+          },
+          {
+            title: "Return or Destruction of Materials",
+            body: "Upon written request from the disclosing Party, the receiving Party shall promptly return or permanently destroy all tangible and digital documents, extracts, models, and copies embodying the Confidential Information and furnish certified written confirmation thereof."
+          },
+          {
+            title: "Injunctive Relief & Legal Remedies",
+            body: "The Parties acknowledge that any unauthorized disclosure or use of Confidential Information will cause irreparable injury for which monetary damages alone would be inadequate. Consequently, the disclosing Party shall be entitled to seek injunctive relief without posting bond in addition to all other legal remedies."
+          },
+          {
+            title: "Governing Law & Severability",
+            body: "This Agreement shall be interpreted and governed strictly under the laws of the State of Delaware. If any provision is deemed unenforceable by a court of competent jurisdiction, the remaining terms shall continue in full legal force and effect."
+          }
+        ]
+      },
+
+      software: {
+        name: "Software Dev & IP Agreement",
+        title: "Custom Software Development & Intellectual Property Agreement",
+        ref: "FSQ-DEV-2026-250",
+        jurisdiction: "State of Washington, USA",
+        p1: {
+          company: "HyperScale Labs Inc.",
+          tax: "EIN #33-7711223",
+          signer: "David Zhao",
+          title: "Head of Engineering",
+          address: "800 5th Avenue, Suite 3100, Seattle, WA 98104",
+          email: "david@hyperscalelabs.dev",
+          phone: "+1 (206) 555-0812"
+        },
+        p2: {
+          company: "CloudMatrix Systems Corp.",
+          tax: "EIN #77-4433221",
+          signer: "Evelyn Reed",
+          title: "Chief Technology Officer",
+          address: "100 Tech Parkway, Floor 14, Chicago, IL 60601",
+          email: "e.reed@cloudmatrix.io",
+          phone: "+1 (312) 555-0976"
+        },
+        scopeSummary: "Developer shall engineer, test, optimize, and deploy a secure distributed transaction processing backend with microsecond latency, multi-region replication, and Kubernetes orchestration.",
+        deliverables: [
+          "Distributed Golang Microservice Architecture with gRPC protocols",
+          "Zero-knowledge encrypted database layer with PostgreSQL & Redis cache",
+          "Automated CI/CD deployment pipelines on AWS with Terraform configurations",
+          "Comprehensive API documentation, load testing benchmarks & security audit"
+        ],
+        paymentTerms: "Milestone-Based Net-15",
+        currency: "$",
+        milestones: [
+          { name: "Phase 1: Architecture & API Schema Sign-off", desc: "Formal technical specification & staging environment", date: "2026-10-15", amount: 12000, status: "Pending" },
+          { name: "Phase 2: Alpha Microservice Build & Database", desc: "Functional backend cluster passing automated integration tests", date: "2026-11-10", amount: 18000, status: "Pending" },
+          { name: "Phase 3: Beta Load Testing & Security Audit", desc: "Sub-10ms response stress benchmarks under 100k req/sec", date: "2026-12-01", amount: 15000, status: "Pending" },
+          { name: "Phase 4: Final Handover & Source Code Transfer", desc: "Production cutover, git repo ownership transfer & docs", date: "2026-12-20", amount: 10000, status: "Pending" }
+        ],
+        clauses: [
+          {
+            title: "Development Methodology & Acceptance Testing",
+            body: "Developer shall build the software in strict conformity with agreed acceptance criteria. Client shall have ten (10) business days following delivery of each milestone to test and inspect the deliverables. If a defect is identified, Developer shall remediate the issue within seven (7) business days at no additional cost."
+          },
+          {
+            title: "Total Intellectual Property Assignment",
+            body: "Upon complete disbursement of all milestone fees, Developer irrevocably assigns, transfers, and conveys to Client all right, title, and ownership throughout the universe in the custom source code, documentation, algorithms, patents, and copyrightable works created hereunder."
+          },
+          {
+            title: "Open Source & Third-Party Licensing Warranty",
+            body: "Developer warrants that no proprietary deliverables shall contain viral or restrictive open-source licenses (such as GPL or AGPL) that would mandate disclosure of Client's proprietary codebase. Any permissive open-source libraries (MIT, Apache 2.0) must be explicitly itemized in writing."
+          },
+          {
+            title: "Post-Delivery Warranty & Bug Remediation",
+            body: "Developer provides a ninety (90) day warranty commencing on final production deployment, guaranteeing that the software shall operate free from critical defects and in compliance with functional specifications."
+          },
+          {
+            title: "Non-Solicitation of Technical Talent",
+            body: "During the term of this Agreement and for twelve (12) months thereafter, neither Party shall directly or indirectly solicit, recruit, or hire any software engineer or technical contractor of the other Party who was involved in this project."
+          }
+        ]
+      },
+
+      msa: {
+        name: "Master Services Agreement (MSA)",
+        title: "Enterprise Master Services Agreement",
+        ref: "FSQ-MSA-2026-500",
+        jurisdiction: "State of New York, USA",
+        p1: {
+          company: "Stratos Global Solutions LLC",
+          tax: "EIN #11-9988442",
+          signer: "Jonathan Sterling",
+          title: "Senior Vice President",
+          address: "350 5th Avenue, Suite 6200, New York, NY 10118",
+          email: "jsterling@stratosglobal.com",
+          phone: "+1 (212) 555-4300"
+        },
+        p2: {
+          company: "OmniCorp Retail Brands PLC",
+          tax: "EIN #66-3322119",
+          signer: "Claire Fontaine",
+          title: "Chief Procurement Officer",
+          address: "500 Madison Avenue, New York, NY 10022",
+          email: "c.fontaine@omnicorp.com",
+          phone: "+1 (212) 555-9800"
+        },
+        scopeSummary: "Provider shall furnish strategic enterprise consulting, omni-channel platform maintenance, cloud infrastructure modernization, and 24/7 technical support services governed by Statements of Work (SOWs).",
+        deliverables: [
+          "Enterprise E-Commerce Cloud Infrastructure Modernization",
+          "Automated Inventory Sync API & Multi-Warehouse ERP Integration",
+          "24/7 Managed SRE Monitoring with 99.95% Uptime SLA Guarantee",
+          "Bi-Weekly Executive Performance Briefings & Cost Optimization"
+        ],
+        paymentTerms: "Net-30 Days from Invoice",
+        currency: "$",
+        milestones: [
+          { name: "Initial SOW Execution & Cloud Assessment", desc: "Comprehensive architecture review and security baseline", date: "2026-10-01", amount: 15000, status: "Active" },
+          { name: "ERP & Multi-Channel API Cutover", desc: "Real-time automated transaction synchronizer deployment", date: "2026-11-01", amount: 25000, status: "Pending" },
+          { name: "Continuous Infrastructure Retainer (Q4)", desc: "Monthly enterprise support and 99.95% SLA operations", date: "2026-12-31", amount: 20000, status: "Pending" }
+        ],
+        clauses: [
+          {
+            title: "Structure of Statements of Work (SOW)",
+            body: "This Master Services Agreement establishes the general contractual terms under which Provider shall furnish services to Client. Specific project deliverables, staffing, and pricing shall be delineated in individually executed Statements of Work (SOWs), which shall incorporate the terms of this MSA."
+          },
+          {
+            title: "Service Level Agreement (SLA) & Penalties",
+            body: "Provider commits to maintaining 99.95% system availability for all managed production infrastructure. If availability falls below agreed benchmarks during any calendar month, Client shall receive a 10% credit against the applicable monthly service fee."
+          },
+          {
+            title: "Invoicing & Audit Rights",
+            body: "Provider shall issue invoices on a monthly basis, payable within thirty (30) calendar days. Client maintains the right, upon reasonable written notice, to audit Provider's project time logs and expense receipts once per fiscal year."
+          },
+          {
+            title: "Mutual Indemnification",
+            body: "Provider shall defend and indemnify Client against any third-party claims asserting that deliverables infringe intellectual property rights. Client shall indemnify Provider against claims arising from Client-supplied proprietary content or unlawful instructions."
+          },
+          {
+            title: "Term & Termination for Cause",
+            body: "This Agreement shall persist for an initial term of one (1) year. Either Party may terminate immediately upon written notice if the other Party commits a material breach that remains uncured for thirty (30) days following written notification."
+          }
+        ]
+      },
+
+      retainer: {
+        name: "Retainer Consulting Agreement",
+        title: "Professional Retainer & Advisory Services Agreement",
+        ref: "FSQ-RET-2026-304",
+        jurisdiction: "State of Texas, USA",
+        p1: {
+          company: "Crestview Strategic Advisors",
+          tax: "EIN #22-5544331",
+          signer: "Victoria Thorne",
+          title: "Principal Partner",
+          address: "100 Congress Avenue, Suite 1900, Austin, TX 78701",
+          email: "v.thorne@crestviewadvisors.com",
+          phone: "+1 (512) 555-0188"
+        },
+        p2: {
+          company: "BioHealth Diagnostics LLC",
+          tax: "EIN #55-1122334",
+          signer: "Dr. Ronald Evans",
+          title: "Chief Medical Officer",
+          address: "2100 Medical Parkway, Suite 500, Dallas, TX 75201",
+          email: "revans@biohealthdx.com",
+          phone: "+1 (214) 555-0132"
+        },
+        scopeSummary: "Consultant agrees to provide dedicated executive advisory, regulatory compliance strategy, and capital formation guidance up to 30 dedicated hours per calendar month.",
+        deliverables: [
+          "Strategic FDA Regulatory Filing Evaluation & Advisory",
+          "Clinical Trial Operations Optimization & CRO Vendor Sourcing",
+          "Bi-Weekly Executive Board Briefings & Monthly Activity Time Sheets",
+          "Ad-hoc Priority Advisory Response within 4-Hour Turnaround"
+        ],
+        paymentTerms: "Monthly Retainer in Advance",
+        currency: "$",
+        milestones: [
+          { name: "Month 1 Executive Retainer (October)", desc: "30 hours allocated advisory & strategy sessions", date: "2026-10-01", amount: 7500, status: "Active" },
+          { name: "Month 2 Executive Retainer (November)", desc: "30 hours allocated advisory & regulatory guidance", date: "2026-11-01", amount: 7500, status: "Pending" },
+          { name: "Month 3 Executive Retainer (December)", desc: "30 hours allocated advisory & clinical trials planning", date: "2026-12-01", amount: 7500, status: "Pending" }
+        ],
+        clauses: [
+          {
+            title: "Retainer Allocation & Excess Hours",
+            body: "Client shall pay a monthly retainer of $7,500 in advance on the first day of each month, granting access to up to thirty (30) hours of strategic consulting. Any additional hours requested by Client shall be billed at the discounted partner rate of $275 per hour."
+          },
+          {
+            title: "No Rollover of Unused Hours",
+            body: "Consultant reserves dedicated availability on its schedule each month. Accordingly, unused hours in any calendar month do not roll over to subsequent months and are non-refundable."
+          },
+          {
+            title: "Conflicts of Interest & Fiduciary Duty",
+            body: "Consultant warrants that during the term of this Agreement, it will not accept advisory engagements with direct commercial competitors of Client without prior written consent."
+          },
+          {
+            title: "Auto-Renewal & Notice of Cancellation",
+            body: "This Agreement shall automatically renew on a month-to-month basis unless either Party furnishes written notice of cancellation at least thirty (30) days prior to the expiration of the current billing cycle."
+          }
+        ]
+      },
+
+      partnership: {
+        name: "Partnership & Joint Venture Agreement",
+        title: "Strategic Joint Venture & Commercial Partnership Agreement",
+        ref: "FSQ-JV-2026-880",
+        jurisdiction: "State of Delaware, USA",
+        p1: {
+          company: "Solaris Energy Dynamics Inc.",
+          tax: "EIN #44-8899112",
+          signer: "Liam O'Connor",
+          title: "Chief Operating Officer",
+          address: "400 West Colfax Avenue, Denver, CO 80204",
+          email: "liam@solarisdynamics.com",
+          phone: "+1 (303) 555-0177"
+        },
+        p2: {
+          company: "EcoGrid Infrastructure Group",
+          tax: "EIN #99-2233445",
+          signer: "Maya Patel",
+          title: "Director of Infrastructure",
+          address: "600 North Pearl Street, Dallas, TX 75201",
+          email: "maya.patel@ecogrid.io",
+          phone: "+1 (214) 555-0899"
+        },
+        scopeSummary: "The Parties establish a formal 50/50 Joint Commercial Venture to co-develop, permit, construct, and operate utility-scale clean solar energy storage facilities.",
+        deliverables: [
+          "Joint Environmental Impact Permitting & Feasibility Study",
+          "Procurement of 250MW Battery Storage Hardware at Wholesale Rates",
+          "Municipal Interconnection Approvals & Power Purchase Agreements (PPAs)",
+          "Commercial Operation Date (COD) Commissioning & Revenue Share Operations"
+        ],
+        paymentTerms: "50% Upfront, 50% upon Final Sign-off",
+        currency: "$",
+        milestones: [
+          { name: "Tranche 1: Initial Joint Venture Capital Call", desc: "Permitting, land lease deposits & environmental filings", date: "2026-10-15", amount: 50000, status: "Active" },
+          { name: "Tranche 2: Engineering Procurement & Interconnection", desc: "Equipment down payment & utility interconnection bond", date: "2026-11-30", amount: 100000, status: "Pending" },
+          { name: "Tranche 3: Construction Completion & Grid Synchronization", desc: "Commercial operation commissioning and commercialization", date: "2026-12-31", amount: 150000, status: "Pending" }
+        ],
+        clauses: [
+          {
+            title: "Capital Contributions & Ownership Percentages",
+            body: "Each Partner shall contribute equal 50% initial working capital to the venture. Capital ownership, net profit distributions, and shared tax write-offs shall be allocated strictly in proportion to these equity stakes."
+          },
+          {
+            title: "Governance & Unanimous Consent Decisions",
+            body: "All significant business decisions—including capital expenditures exceeding $25,000, debt financing, legal agreements, and asset divestitures—shall require the unanimous written consent of both Partners."
+          },
+          {
+            title: "Deadlock Resolution & Buy-Sell Mechanism",
+            body: "In the event of an irreconcilable deadlock lasting more than thirty (30) days, either Partner may initiate a shotgun buy-sell mechanism, offering to either buy the other Partner's equity or sell its own at a stated valuation."
+          },
+          {
+            title: "Confidentiality & Intellectual Property",
+            body: "All proprietary solar telemetry, energy management software, and client contracts generated under the joint venture shall remain the exclusive joint property of the partnership."
+          }
+        ]
+      }
+    };
+
+    // Global Contract State
+    let currentContractData = null;
+    let currentClauses = [];
+    let currentMilestones = [];
+
+    // --- INITIALIZATION ---
+    window.addEventListener('DOMContentLoaded', () => {
+      // Always start with clean/blank form and preview by default
+      clearAllForm(true, true);
+      lucide.createIcons();
+    });
+
+    // --- TEMPLATE SWITCHER ---
+    function onTemplateChange(key) {
+      loadTemplate(key);
+      document.getElementById('quick-template-select').value = key;
+    }
+
+    function loadTemplate(key) {
+      const tpl = TEMPLATES[key];
+      if (!tpl) return;
+
+      currentContractData = JSON.parse(JSON.stringify(tpl));
+      currentClauses = JSON.parse(JSON.stringify(tpl.clauses));
+      currentMilestones = JSON.parse(JSON.stringify(tpl.milestones));
+
+      // Fill Inputs
+      document.getElementById('doc-title').value = tpl.title;
+      document.getElementById('doc-ref').value = tpl.ref;
+      
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('doc-date').value = today;
+      document.getElementById('doc-effective-date').value = today;
+      document.getElementById('doc-jurisdiction').value = tpl.jurisdiction;
+
+      // P1
+      document.getElementById('p1-company').value = tpl.p1.company;
+      document.getElementById('p1-tax').value = tpl.p1.tax;
+      document.getElementById('p1-signer').value = tpl.p1.signer;
+      document.getElementById('p1-title').value = tpl.p1.title;
+      document.getElementById('p1-address').value = tpl.p1.address;
+      document.getElementById('p1-email').value = tpl.p1.email;
+      document.getElementById('p1-phone').value = tpl.p1.phone;
+
+      // P2
+      document.getElementById('p2-company').value = tpl.p2.company;
+      document.getElementById('p2-tax').value = tpl.p2.tax;
+      document.getElementById('p2-signer').value = tpl.p2.signer;
+      document.getElementById('p2-title').value = tpl.p2.title;
+      document.getElementById('p2-address').value = tpl.p2.address;
+      document.getElementById('p2-email').value = tpl.p2.email;
+      document.getElementById('p2-phone').value = tpl.p2.phone;
+
+      // Scope
+      document.getElementById('scope-summary').value = tpl.scopeSummary;
+      document.getElementById('scope-deliverables').value = tpl.deliverables.join('\n');
+
+      // Commercial
+      document.getElementById('currency-select').value = tpl.currency || '$';
+      document.getElementById('payment-terms-select').value = tpl.paymentTerms;
+
+      // Render Sub-components
+      renderMilestonesEditor();
+      renderClausesEditor();
+
+      // Update Preview Sheet
+      updateContractDOM();
+
+      document.getElementById('preview-template-tag').textContent = tpl.name;
+    }
+
+    // --- RE-RENDER CONTRACT DOM SHEET ---
+    function updateContractDOM() {
+      const docTitle = document.getElementById('doc-title').value.trim();
+      const docRef = document.getElementById('doc-ref').value.trim();
+      const docDate = document.getElementById('doc-date').value;
+      const effectiveDate = document.getElementById('doc-effective-date').value || docDate;
+      const jurisdiction = document.getElementById('doc-jurisdiction').value.trim();
+
+      const p1Company = document.getElementById('p1-company').value.trim();
+      const p1Tax = document.getElementById('p1-tax').value.trim();
+      const p1Signer = document.getElementById('p1-signer').value.trim();
+      const p1Title = document.getElementById('p1-title').value.trim();
+      const p1Address = document.getElementById('p1-address').value.trim();
+      const p1Email = document.getElementById('p1-email').value.trim();
+
+      const p2Company = document.getElementById('p2-company').value.trim();
+      const p2Tax = document.getElementById('p2-tax').value.trim();
+      const p2Signer = document.getElementById('p2-signer').value.trim();
+      const p2Title = document.getElementById('p2-title').value.trim();
+      const p2Address = document.getElementById('p2-address').value.trim();
+      const p2Email = document.getElementById('p2-email').value.trim();
+
+      const scopeSummary = document.getElementById('scope-summary').value.trim();
+      const deliverablesRaw = document.getElementById('scope-deliverables').value.trim();
+      const deliverablesList = deliverablesRaw ? deliverablesRaw.split('\n').filter(d => d.trim().length > 0) : [];
+
+      const currency = document.getElementById('currency-select').value || '$';
+      const paymentTerms = document.getElementById('payment-terms-select').value || 'Standard';
+
+      // Format Date string
+      function formatReadableDate(dStr) {
+        if (!dStr) return '—';
+        try {
+          const parts = dStr.split('-');
+          if (parts.length === 3) {
+            const d = new Date(parts[0], parts[1]-1, parts[2]);
+            return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+          }
+        } catch(e) {}
+        return dStr;
+      }
+
+      // Update Header
+      const docTitleEl = document.getElementById('view-doc-title');
+      if (docTitle) {
+        docTitleEl.textContent = docTitle;
+        docTitleEl.className = 'text-2xl font-black text-slate-900 tracking-tight mt-0.5 font-formal uppercase';
+      } else {
+        docTitleEl.textContent = '[UNTITLED AGREEMENT]';
+        docTitleEl.className = 'text-2xl font-normal italic text-slate-300 tracking-tight mt-0.5 font-formal uppercase';
+      }
+
+      document.getElementById('view-doc-ref').textContent = docRef || '—';
+      document.getElementById('view-doc-date').textContent = formatReadableDate(docDate);
+      document.getElementById('view-effective-date').textContent = formatReadableDate(effectiveDate);
+      document.getElementById('view-contract-type-name').textContent = docTitle || 'Agreement';
+
+      // Status Badge
+      const statusBadge = document.getElementById('view-status-badge');
+      if (!docTitle && !p1Company && !p2Company) {
+        statusBadge.textContent = 'Clean Draft';
+        statusBadge.className = 'inline-block text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded border border-slate-300 text-slate-400 mb-1';
+      } else {
+        statusBadge.textContent = 'Executed';
+        statusBadge.className = 'inline-block text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded border border-slate-800 text-slate-900 mb-1';
+      }
+
+      // Update Parties
+      const p1CompEl = document.getElementById('view-p1-company');
+      if (p1Company) {
+        p1CompEl.textContent = p1Company;
+        p1CompEl.className = 'font-bold text-slate-900 text-sm';
+      } else {
+        p1CompEl.textContent = '[Party 1 / Service Provider]';
+        p1CompEl.className = 'font-normal italic text-slate-400 text-sm';
+      }
+      document.getElementById('view-p1-tax').textContent = 'Tax / Reg: ' + (p1Tax || '—');
+      document.getElementById('view-p1-address').textContent = p1Address || '—';
+      document.getElementById('view-p1-email').textContent = p1Email || '—';
+
+      const p2CompEl = document.getElementById('view-p2-company');
+      if (p2Company) {
+        p2CompEl.textContent = p2Company;
+        p2CompEl.className = 'font-bold text-slate-900 text-sm';
+      } else {
+        p2CompEl.textContent = '[Party 2 / Client]';
+        p2CompEl.className = 'font-normal italic text-slate-400 text-sm';
+      }
+      document.getElementById('view-p2-tax').textContent = 'Tax / Reg: ' + (p2Tax || '—');
+      document.getElementById('view-p2-address').textContent = p2Address || '—';
+      document.getElementById('view-p2-email').textContent = p2Email || '—';
+
+      // Scope & Deliverables
+      const scopeSummaryEl = document.getElementById('view-scope-summary');
+      if (scopeSummary) {
+        scopeSummaryEl.textContent = scopeSummary;
+        scopeSummaryEl.className = 'mb-2 text-slate-700';
+      } else {
+        scopeSummaryEl.innerHTML = '<span class="text-slate-400 italic">No scope of work defined.</span>';
+        scopeSummaryEl.className = 'mb-2';
+      }
+
+      const delivUl = document.getElementById('view-deliverables-list');
+      delivUl.innerHTML = '';
+      if (deliverablesList.length === 0) {
+        delivUl.innerHTML = '<li class="text-slate-400 italic">No specific deliverables listed.</li>';
+      } else {
+        deliverablesList.forEach(item => {
+          const li = document.createElement('li');
+          li.textContent = item;
+          delivUl.appendChild(li);
+        });
+      }
+
+      // Payment Terms Badge
+      document.getElementById('view-payment-terms-badge').textContent = paymentTerms;
+
+      // Milestones Table
+      renderMilestonesPreview(currency);
+
+      // Clauses
+      renderClausesPreview(p1Company || '[Provider Name]', p2Company || '[Client Name]', jurisdiction || '[Jurisdiction]');
+
+      // Signatures
+      document.getElementById('sig-preview-p1').textContent = p1Signer || '____________________';
+      document.getElementById('sig-name-p1').textContent = p1Signer || '[Party 1 Signer]';
+      document.getElementById('sig-title-p1').textContent = p1Title || '[Title / Designation]';
+      document.getElementById('sig-company-p1').textContent = p1Company || '[Party 1 Entity]';
+      document.getElementById('sig-date-p1').textContent = formatReadableDate(docDate);
+
+      document.getElementById('sig-preview-p2').textContent = p2Signer || '____________________';
+      document.getElementById('sig-name-p2').textContent = p2Signer || '[Party 2 Signer]';
+      document.getElementById('sig-title-p2').textContent = p2Title || '[Title / Designation]';
+      document.getElementById('sig-company-p2').textContent = p2Company || '[Party 2 Entity]';
+      document.getElementById('sig-date-p2').textContent = formatReadableDate(docDate);
+
+      // Toggles: Witness & Seal
+      const showWitness = document.getElementById('witness-checkbox').checked;
+      const witnessBlock = document.getElementById('view-witness-block');
+      if (showWitness) witnessBlock.classList.remove('hidden');
+      else witnessBlock.classList.add('hidden');
+
+      const showSeal = document.getElementById('seal-checkbox').checked;
+      const sealBlock = document.getElementById('view-digital-seal');
+      if (showSeal) sealBlock.classList.remove('hidden');
+      else sealBlock.classList.add('hidden');
+
+      // Footer
+      document.getElementById('footer-ref-display').textContent = 'Ref: ' + (docRef || '—') + ' | Page 1 of 1';
+
+      // Generate a dynamic SHA code based on content
+      const hashStr = Math.abs(hashCode((docTitle || 'Agreement') + (p1Company || '') + (p2Company || '') + (docRef || ''))).toString(16);
+      document.getElementById('seal-hash-code').textContent = 'SHA-256: 0x' + hashStr.padEnd(16, 'a') + '8f4c' + hashStr;
+      
+      lucide.createIcons();
+    }
+
+    function hashCode(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+        hash |= 0;
+      }
+      return hash;
+    }
+
+    // --- MILESTONES MANAGEMENT ---
+    function renderMilestonesEditor() {
+      const container = document.getElementById('milestones-editor-list');
+      container.innerHTML = '';
+
+      currentMilestones.forEach((m, idx) => {
+        const row = document.createElement('div');
+        row.className = 'p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2';
+        row.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-bold text-slate-800 flex items-center gap-1.5">
+              <span class="w-4 h-4 rounded-full bg-violet-100 text-violet-700 text-[10px] flex items-center justify-center font-bold">${idx + 1}</span>
+              Milestone #${idx + 1}
+            </span>
+            <button onclick="removeMilestoneRow(${idx})" type="button" class="text-slate-400 hover:text-red-600 transition" title="Delete Milestone">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <input type="text" value="${escapeHtml(m.name)}" oninput="updateMilestoneField(${idx}, 'name', this.value)" placeholder="Milestone Name" class="text-xs font-semibold px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg outline-none focus:border-violet-500">
+            <input type="number" value="${m.amount}" oninput="updateMilestoneField(${idx}, 'amount', parseFloat(this.value) || 0)" placeholder="Amount" class="text-xs font-mono font-semibold px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg outline-none focus:border-violet-500">
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <input type="text" value="${escapeHtml(m.desc)}" oninput="updateMilestoneField(${idx}, 'desc', this.value)" placeholder="Deliverable details" class="text-[11px] px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg outline-none focus:border-violet-500">
+            <input type="date" value="${m.date || ''}" onchange="updateMilestoneField(${idx}, 'date', this.value)" class="text-[11px] px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg outline-none focus:border-violet-500">
+          </div>
+        `;
+        container.appendChild(row);
+      });
+
+      if (currentMilestones.length === 0) {
+        container.innerHTML = '<div class="p-3 bg-slate-50 border border-dashed border-slate-200 rounded-xl text-center text-xs text-slate-400 italic">No milestones defined. Click below to add.</div>';
+      }
+      document.getElementById('milestone-count-badge').textContent = currentMilestones.length + ' Milestones';
+      updateTotalCalculation();
+      lucide.createIcons();
+    }
+
+    function addMilestoneRow() {
+      currentMilestones.push({
+        name: "New Project Milestone",
+        desc: "Deliverable completion and handover",
+        date: new Date().toISOString().split('T')[0],
+        amount: 2500,
+        status: "Pending"
+      });
+      renderMilestonesEditor();
+      updateContractDOM();
+    }
+
+    function removeMilestoneRow(idx) {
+      if (currentMilestones.length <= 1) {
+        alert("At least one payment milestone must be defined in the contract.");
+        return;
+      }
+      currentMilestones.splice(idx, 1);
+      renderMilestonesEditor();
+      updateContractDOM();
+    }
+
+    function updateMilestoneField(idx, field, value) {
+      if (currentMilestones[idx]) {
+        currentMilestones[idx][field] = value;
+        updateTotalCalculation();
+        updateContractDOM();
+      }
+    }
+
+    function updateTotalCalculation() {
+      const currency = document.getElementById('currency-select').value || '$';
+      const total = currentMilestones.reduce((sum, m) => sum + (Number(m.amount) || 0), 0);
+      const formatted = currency + total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('editor-total-value').textContent = formatted;
+      document.getElementById('view-total-amount').textContent = formatted;
+    }
+
+    function renderMilestonesPreview(currency) {
+      const tbody = document.getElementById('view-milestones-tbody');
+      tbody.innerHTML = '';
+
+      if (currentMilestones.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="py-6 px-3 text-center text-slate-400 italic text-xs">No milestones defined. Add milestones in the left panel.</td></tr>';
+        updateTotalCalculation();
+        return;
+      }
+
+      currentMilestones.forEach((m, idx) => {
+        const tr = document.createElement('tr');
+        tr.className = idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/70';
+        tr.innerHTML = `
+          <td class="py-2 px-3 text-center text-slate-400 font-mono text-[11px]">${idx + 1}</td>
+          <td class="py-2 px-3">
+            <div class="font-bold text-slate-900 text-xs">${escapeHtml(m.name)}</div>
+            <div class="text-[11px] text-slate-500">${escapeHtml(m.desc)}</div>
+          </td>
+          <td class="py-2 px-3 text-center text-[11px] text-slate-600 font-mono">${m.date || 'TBD'}</td>
+          <td class="py-2 px-3 text-right font-mono font-bold text-slate-900 text-xs">${currency}${Number(m.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+          <td class="py-2 px-3 text-center">
+            <span class="text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full ${m.status === 'Active' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'}">${m.status || 'Pending'}</span>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+      updateTotalCalculation();
+    }
+
+    // --- CLAUSES MANAGEMENT ---
+    function renderClausesEditor() {
+      const container = document.getElementById('clauses-editor-container');
+      container.innerHTML = '';
+
+      currentClauses.forEach((c, idx) => {
+        const card = document.createElement('div');
+        card.className = 'p-3.5 bg-slate-50 border border-slate-200/90 rounded-xl space-y-2';
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-bold text-slate-800 flex items-center gap-1.5">
+              <span class="w-4 h-4 rounded-full bg-rose-100 text-rose-700 text-[10px] flex items-center justify-center font-bold">${idx + 3}</span>
+              Clause ${idx + 3}
+            </span>
+            <div class="flex items-center space-x-1.5">
+              <button onclick="moveClause(${idx}, -1)" type="button" class="p-1 text-slate-400 hover:text-slate-700 transition" title="Move Up" ${idx === 0 ? 'disabled class="opacity-30"' : ''}>
+                <i data-lucide="arrow-up" class="w-3 h-3"></i>
+              </button>
+              <button onclick="moveClause(${idx}, 1)" type="button" class="p-1 text-slate-400 hover:text-slate-700 transition" title="Move Down" ${idx === currentClauses.length - 1 ? 'disabled class="opacity-30"' : ''}>
+                <i data-lucide="arrow-down" class="w-3 h-3"></i>
+              </button>
+              <button onclick="deleteClause(${idx})" type="button" class="p-1 text-slate-400 hover:text-red-600 transition" title="Delete Clause">
+                <i data-lucide="trash-2" class="w-3 h-3"></i>
+              </button>
+            </div>
+          </div>
+          <div>
+            <input type="text" value="${escapeHtml(c.title)}" oninput="updateClauseField(${idx}, 'title', this.value)" placeholder="Clause Title" class="w-full text-xs font-bold px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg outline-none focus:border-rose-500">
+          </div>
+          <div>
+            <textarea rows="3" oninput="updateClauseField(${idx}, 'body', this.value)" placeholder="Legal provisions..." class="w-full text-xs leading-relaxed px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg outline-none focus:border-rose-500">${escapeHtml(c.body)}</textarea>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+      if (currentClauses.length === 0) {
+        container.innerHTML = '<div class="p-3 bg-slate-50 border border-dashed border-slate-200 rounded-xl text-center text-xs text-slate-400 italic">No legal clauses defined. Click below to add.</div>';
+      }
+      lucide.createIcons();
+    }
+
+    function addNewCustomClause() {
+      currentClauses.push({
+        title: "Special Terms & Custom Covenants",
+        body: "The Parties hereto further agree to the supplemental conditions set forth herein. Any amendment or modification must be executed in writing by both authorized signatories."
+      });
+      renderClausesEditor();
+      updateContractDOM();
+    }
+
+    function deleteClause(idx) {
+      if (confirm("Remove this legal clause from the agreement?")) {
+        currentClauses.splice(idx, 1);
+        renderClausesEditor();
+        updateContractDOM();
+      }
+    }
+
+    function moveClause(idx, delta) {
+      const target = idx + delta;
+      if (target < 0 || target >= currentClauses.length) return;
+      const temp = currentClauses[idx];
+      currentClauses[idx] = currentClauses[target];
+      currentClauses[target] = temp;
+      renderClausesEditor();
+      updateContractDOM();
+    }
+
+    function updateClauseField(idx, field, value) {
+      if (currentClauses[idx]) {
+        currentClauses[idx][field] = value;
+        updateContractDOM();
+      }
+    }
+
+    function resetClausesToDefault() {
+      const key = document.getElementById('quick-template-select').value;
+      if (TEMPLATES[key]) {
+        currentClauses = JSON.parse(JSON.stringify(TEMPLATES[key].clauses));
+        renderClausesEditor();
+        updateContractDOM();
+      }
+    }
+
+    function renderClausesPreview(p1Name, p2Name, jurisdiction) {
+      const container = document.getElementById('view-clauses-container');
+      container.innerHTML = '';
+
+      if (currentClauses.length === 0) {
+        container.innerHTML = '<div class="py-8 px-4 text-center text-slate-400 italic text-xs border border-dashed border-slate-200 rounded-xl bg-slate-50/50">No clauses added. Choose a template or add custom clauses in the left panel.</div>';
+        return;
+      }
+
+      currentClauses.forEach((c, idx) => {
+        const secNum = idx + 3; // Starts after 1. Scope, 2. Payment
+        const article = document.createElement('article');
+        article.className = 'print-break-inside-avoid leading-relaxed';
+        
+        // Dynamically replace placeholders if any
+        let parsedBody = c.body
+          .replace(/\[Provider Name\]/g, p1Name)
+          .replace(/\[Client Name\]/g, p2Name)
+          .replace(/\[Jurisdiction\]/g, jurisdiction);
+
+        article.innerHTML = `
+          <h3 class="text-xs font-black uppercase tracking-wider text-slate-900 mb-1 flex items-center gap-1.5">
+            <span>${secNum}. ${escapeHtml(c.title)}</span>
+          </h3>
+          <p class="text-xs text-slate-700 leading-normal pl-4 border-l-2 border-slate-200">
+            ${escapeHtml(parsedBody)}
+          </p>
+        `;
+        container.appendChild(article);
+      });
+      if (currentClauses.length === 0) {
+        container.innerHTML = '<div class="p-3.5 bg-slate-50/70 border border-dashed border-slate-200 rounded-lg text-center text-slate-400 italic text-[11px]">No legal clauses currently included in this draft. Add clauses from the left editor.</div>';
+      }
+    }
+
+    // --- STYLING TOGGLES ---
+    function updateFontStyle(val) {
+      const sheet = document.getElementById('contract-sheet');
+      if (val === 'serif') {
+        sheet.classList.remove('font-legal-sans');
+        sheet.classList.add('font-legal-serif');
+      } else {
+        sheet.classList.remove('font-legal-serif');
+        sheet.classList.add('font-legal-sans');
+      }
+    }
+
+    function updateWatermark(val) {
+      const wm = document.getElementById('sheet-watermark');
+      if (val === 'NONE') {
+        wm.classList.add('hidden');
+      } else {
+        wm.textContent = val;
+        wm.classList.remove('hidden');
+      }
+    }
+
+    function setZoom(factor) {
+      const wrapper = document.getElementById('contract-sheet-wrapper');
+      wrapper.style.transform = `scale(${factor})`;
+    }
+
+    // --- SAMPLE DATA & CLEAR ---
+    function loadSampleData() {
+      let key = document.getElementById('quick-template-select').value;
+      if (!key || !TEMPLATES[key]) {
+        key = 'freelance';
+        document.getElementById('quick-template-select').value = key;
+      }
+      loadTemplate(key);
+      showToast('Sample Agreement Loaded', `${TEMPLATES[key].name} ka data load ho gaya hai.`);
+    }
+
+    function clearAllForm(force = false, silent = false) {
+      if (force || confirm("Pura form clean karna chahte hain? Sabhi inputs, parties, scope, milestones aur legal clauses completely wipe ho jayenge.")) {
+        // 1. Clear Document info
+        const setVal = (id, val) => {
+          const el = document.getElementById(id);
+          if (el) el.value = val;
+        };
+
+        setVal('doc-title', '');
+        setVal('doc-ref', '');
+        setVal('doc-date', '');
+        setVal('doc-effective-date', '');
+        setVal('doc-jurisdiction', '');
+        
+        // Font style & watermark reset
+        setVal('doc-font-style', 'sans');
+        if (typeof updateFontStyle === 'function') updateFontStyle('sans');
+        
+        setVal('doc-watermark', 'NONE');
+        if (typeof updateWatermark === 'function') updateWatermark('NONE');
+
+        // 2. Clear Party 1
+        ['p1-company', 'p1-tax', 'p1-signer', 'p1-title', 'p1-address', 'p1-email', 'p1-phone'].forEach(id => setVal(id, ''));
+
+        // 3. Clear Party 2
+        ['p2-company', 'p2-tax', 'p2-signer', 'p2-title', 'p2-address', 'p2-email', 'p2-phone'].forEach(id => setVal(id, ''));
+
+        // 4. Clear Scope & Deliverables
+        setVal('scope-summary', '');
+        setVal('scope-deliverables', '');
+
+        // 5. Reset Commercial Settings
+        setVal('currency-select', '$');
+        setVal('payment-terms-select', 'Milestone');
+
+        // 6. Reset Checkboxes
+        const witnessCb = document.getElementById('witness-checkbox');
+        if (witnessCb) witnessCb.checked = false;
+        const sealCb = document.getElementById('seal-checkbox');
+        if (sealCb) sealCb.checked = false;
+
+        // 7. Completely wipe Milestones & Clauses
+        currentMilestones = [];
+        currentClauses = [];
+        currentContractData = null;
+
+        // 8. Re-render left panel list editors
+        renderMilestonesEditor();
+        renderClausesEditor();
+
+        // 9. Update Live Document Preview Sheet to clean state
+        updateContractDOM();
+
+        // 10. Update preview template tag
+        const tag = document.getElementById('preview-template-tag');
+        if (tag) {
+          tag.textContent = 'Blank Agreement';
+          tag.className = 'text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-rose-50 text-rose-600 border border-rose-200';
+        }
+
+        // 11. Refresh icons
+        if (window.lucide && typeof lucide.createIcons === 'function') {
+          lucide.createIcons();
+        }
+
+        // 12. Show visual feedback toast only if not silent
+        if (!silent && typeof showToast === 'function') {
+          showToast('All Content Cleared', 'Sabhi inputs, parties aur clauses completely wipe ho gaye hain.');
+        }
+      }
+    }
+
+    function showToast(title, msg) {
+      let toast = document.getElementById('contract-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'contract-toast';
+        toast.className = 'fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 border border-slate-700 transition-all duration-300 transform translate-y-20 opacity-0';
+        toast.innerHTML = `
+          <div class="w-8 h-8 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center font-bold">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <div id="toast-title" class="text-xs font-bold text-white"></div>
+            <div id="toast-msg" class="text-[11px] text-slate-400"></div>
+          </div>
+        `;
+        document.body.appendChild(toast);
+      }
+      document.getElementById('toast-title').textContent = title;
+      document.getElementById('toast-msg').textContent = msg;
+      lucide.createIcons();
+
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3500);
+    }
+
+    // --- EXPORT TO WORD (.DOC) ---
+    function exportToWord() {
+      try {
+        const docTitle = document.getElementById('doc-title').value.trim() || 'Agreement';
+        const docRef = document.getElementById('doc-ref').value.trim() || 'FSQ-AGR';
+        const docDate = document.getElementById('doc-date').value || new Date().toISOString().split('T')[0];
+        const effectiveDate = document.getElementById('doc-effective-date').value || docDate;
+        const jurisdiction = document.getElementById('doc-jurisdiction').value.trim() || 'State of Delaware, USA';
+
+        const p1Company = document.getElementById('p1-company').value.trim() || 'Service Provider';
+        const p1Tax = document.getElementById('p1-tax').value.trim() || 'N/A';
+        const p1Signer = document.getElementById('p1-signer').value.trim() || 'Authorized Representative';
+        const p1Title = document.getElementById('p1-title').value.trim() || 'Officer';
+        const p1Address = document.getElementById('p1-address').value.trim() || 'Principal Business Address';
+        const p1Email = document.getElementById('p1-email').value.trim() || 'provider@contact.com';
+
+        const p2Company = document.getElementById('p2-company').value.trim() || 'Client';
+        const p2Tax = document.getElementById('p2-tax').value.trim() || 'N/A';
+        const p2Signer = document.getElementById('p2-signer').value.trim() || 'Authorized Representative';
+        const p2Title = document.getElementById('p2-title').value.trim() || 'Officer';
+        const p2Address = document.getElementById('p2-address').value.trim() || 'Principal Business Address';
+        const p2Email = document.getElementById('p2-email').value.trim() || 'client@contact.com';
+
+        const scopeSummary = document.getElementById('scope-summary').value.trim() || 'Services described herein.';
+        const deliverablesRaw = document.getElementById('scope-deliverables').value.trim();
+        const deliverablesList = deliverablesRaw ? deliverablesRaw.split('\n').filter(d => d.trim().length > 0) : [];
+
+        const currency = document.getElementById('currency-select').value || '$';
+        const paymentTerms = document.getElementById('payment-terms-select').value;
+        const totalAmount = document.getElementById('view-total-amount').textContent;
+
+        function formatReadable(dStr) {
+          if (!dStr) return '';
+          try {
+            const parts = dStr.split('-');
+            if (parts.length === 3) {
+              const d = new Date(parts[0], parts[1]-1, parts[2]);
+              return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            }
+          } catch(e) {}
+          return dStr;
+        }
+
+        // Generate Deliverables HTML List
+        let deliverablesHtml = '';
+        if (deliverablesList.length === 0) {
+          deliverablesHtml = '<p style="color: #94a3b8; font-style: italic; margin: 0;">No specific deliverables listed.</p>';
+        } else {
+          deliverablesHtml = '<ul style="margin: 0; padding-left: 18px; color: #1e293b;">';
+          deliverablesList.forEach(item => {
+            deliverablesHtml += `<li style="margin-bottom: 4px;">${escapeHtml(item)}</li>`;
+          });
+          deliverablesHtml += '</ul>';
+        }
+
+        // Generate Milestones Table Rows
+        let milestonesRows = '';
+        currentMilestones.forEach((m, idx) => {
+          const bg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
+          milestonesRows += `
+            <tr style="background-color: ${bg};">
+              <td style="padding: 7px 10px; border: 1px solid #cbd5e1; text-align: center; color: #64748b; font-family: monospace; font-size: 9.5pt;">${idx + 1}</td>
+              <td style="padding: 7px 10px; border: 1px solid #cbd5e1;">
+                <strong style="color: #0f172a; font-size: 10pt;">${escapeHtml(m.name)}</strong>
+                <div style="color: #64748b; font-size: 9pt;">${escapeHtml(m.desc)}</div>
+              </td>
+              <td style="padding: 7px 10px; border: 1px solid #cbd5e1; text-align: center; color: #334155; font-family: monospace; font-size: 9.5pt;">${m.date || 'TBD'}</td>
+              <td style="padding: 7px 10px; border: 1px solid #cbd5e1; text-align: right; color: #0f172a; font-weight: bold; font-family: monospace; font-size: 10pt;">${currency}${Number(m.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+              <td style="padding: 7px 10px; border: 1px solid #cbd5e1; text-align: center;">
+                <span style="display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 8pt; font-weight: bold; text-transform: uppercase; background-color: ${m.status === 'Active' ? '#fef3c7; color: #92400e;' : '#f1f5f9; color: #475569;'}">${m.status || 'Pending'}</span>
+              </td>
+            </tr>
+          `;
+        });
+
+        // Generate Clauses HTML
+        let clausesHtml = '';
+        currentClauses.forEach((c, idx) => {
+          const secNum = idx + 3;
+          let parsedBody = c.body
+            .replace(/\[Provider Name\]/g, p1Company)
+            .replace(/\[Client Name\]/g, p2Company)
+            .replace(/\[Jurisdiction\]/g, jurisdiction);
+
+          clausesHtml += `
+            <div style="margin-bottom: 16px;">
+              <h3 style="font-size: 10.5pt; font-weight: bold; text-transform: uppercase; color: #0f172a; margin: 0 0 4px 0; letter-spacing: 0.05em;">
+                ${secNum}. ${escapeHtml(c.title)}
+              </h3>
+              <div style="border-left: 3px solid #cbd5e1; padding-left: 14px; margin-left: 2px;">
+                <p style="font-size: 9.5pt; line-height: 1.55; color: #334155; margin: 0;">
+                  ${escapeHtml(parsedBody)}
+                </p>
+              </div>
+            </div>
+          `;
+        });
+
+        // Complete Word Document HTML Structure matching Website Look
+        const wordDocument = `
+          <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+          <head>
+            <meta charset='utf-8'>
+            <title>${escapeHtml(docTitle)}</title>
+            <!--[if gte mso 9]>
+            <xml>
+              <w:WordDocument>
+                <w:View>Print</w:View>
+                <w:Zoom>100</w:Zoom>
+                <w:DoNotOptimizeForBrowser/>
+              </w:WordDocument>
+            </xml>
+            <![endif]-->
+            <style>
+              @page {
+                size: 210mm 297mm;
+                margin: 20mm 18mm 20mm 18mm;
+                mso-page-orientation: portrait;
+              }
+              body {
+                font-family: 'Plus Jakarta Sans', 'Segoe UI', Arial, sans-serif;
+                font-size: 10pt;
+                color: #0f172a;
+                background-color: #ffffff;
+                line-height: 1.5;
+                margin: 0;
+                padding: 0;
+              }
+              p {
+                margin: 0 0 8px 0;
+              }
+              table {
+                border-collapse: collapse;
+                mso-table-lspace: 0pt;
+                mso-table-rspace: 0pt;
+              }
+            </style>
+          </head>
+          <body>
+
+            <!-- 1. TOP HEADER TABLE (Dual Column: Left Title, Right Ref & Badge) -->
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width: 100%; border-bottom: 2px solid #0f172a; padding-bottom: 12px; margin-bottom: 20px;">
+              <tr>
+                <td style="vertical-align: top; width: 68%;">
+                  <div style="font-size: 8.5pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.12em; color: #94a3b8; margin-bottom: 3px;">Official Corporate Agreement</div>
+                  <h1 style="font-size: 17pt; font-weight: 900; text-transform: uppercase; color: #0f172a; margin: 0; line-height: 1.25; letter-spacing: -0.01em;">${escapeHtml(docTitle)}</h1>
+                  <div style="font-size: 9.5pt; font-weight: 500; color: #64748b; margin-top: 4px;">Legally Binding Contractual Instrument</div>
+                </td>
+                <td style="vertical-align: top; width: 32%; text-align: right;">
+                  <div style="display: inline-block; border: 1.5px solid #0f172a; padding: 2px 8px; border-radius: 4px; font-size: 8pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.08em; color: #0f172a; margin-bottom: 6px;">Executed</div>
+                  <div style="font-size: 9pt; font-family: monospace; color: #64748b;">Ref: <strong style="color: #0f172a;">${escapeHtml(docRef)}</strong></div>
+                  <div style="font-size: 9pt; color: #64748b;">Date: ${formatReadable(docDate)}</div>
+                </td>
+              </tr>
+            </table>
+
+            <!-- 2. PREAMBLE -->
+            <p style="font-size: 9.5pt; color: #334155; margin-bottom: 12px; line-height: 1.55;">
+              This <strong style="color: #0f172a;">${escapeHtml(docTitle)}</strong> (the <em>"Agreement"</em>) is entered into and made effective as of <strong style="color: #0f172a;">${formatReadable(effectiveDate)}</strong> (the <em>"Effective Date"</em>), by and between:
+            </p>
+
+            <!-- 3. PARTIES TWO-COLUMN BOX -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="width: 100%; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 18px;">
+              <tr>
+                <!-- Party 1 (Provider) -->
+                <td style="width: 50%; padding: 14px 16px; vertical-align: top;">
+                  <div style="font-size: 8.5pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.08em; color: #2563eb; margin-bottom: 4px;">Service Provider (First Party)</div>
+                  <div style="font-size: 11pt; font-weight: bold; color: #0f172a; margin-bottom: 3px;">${escapeHtml(p1Company)}</div>
+                  <div style="font-size: 9pt; font-family: monospace; color: #64748b; margin-bottom: 3px;">Tax / Reg: ${escapeHtml(p1Tax)}</div>
+                  <div style="font-size: 9pt; color: #475569; margin-bottom: 3px;">${escapeHtml(p1Address)}</div>
+                  <div style="font-size: 9pt; color: #64748b;">Contact: <span style="color: #0f172a;">${escapeHtml(p1Email)}</span></div>
+                </td>
+                <!-- Party 2 (Client) -->
+                <td style="width: 50%; padding: 14px 16px; vertical-align: top; border-left: 1px solid #e2e8f0;">
+                  <div style="font-size: 8.5pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.08em; color: #059669; margin-bottom: 4px;">Client (Second Party)</div>
+                  <div style="font-size: 11pt; font-weight: bold; color: #0f172a; margin-bottom: 3px;">${escapeHtml(p2Company)}</div>
+                  <div style="font-size: 9pt; font-family: monospace; color: #64748b; margin-bottom: 3px;">Tax / Reg: ${escapeHtml(p2Tax)}</div>
+                  <div style="font-size: 9pt; color: #475569; margin-bottom: 3px;">${escapeHtml(p2Address)}</div>
+                  <div style="font-size: 9pt; color: #64748b;">Contact: <span style="color: #0f172a;">${escapeHtml(p2Email)}</span></div>
+                </td>
+              </tr>
+            </table>
+
+            <p style="font-size: 8.5pt; font-style: italic; color: #64748b; margin-bottom: 16px;">
+              Service Provider and Client may hereinafter individually be referred to as a <em>"Party"</em> and collectively as the <em>"Parties"</em>.
+            </p>
+
+            <!-- 4. RECITALS -->
+            <div style="margin-bottom: 18px;">
+              <h2 style="font-size: 10pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.08em; color: #0f172a; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px;">Recitals</h2>
+              <div style="border-left: 3px solid #cbd5e1; padding-left: 14px;">
+                <p style="font-size: 9.5pt; color: #334155; margin-bottom: 6px;">
+                  <strong>WHEREAS</strong>, Service Provider specializes in professional technology and business services and possesses the requisite technical expertise, personnel, and facilities to execute the contemplated deliverables;
+                </p>
+                <p style="font-size: 9.5pt; color: #334155; margin-bottom: 6px;">
+                  <strong>WHEREAS</strong>, Client desires to retain Service Provider to render professional services, and Service Provider agrees to perform such services under the terms, covenants, and considerations set forth herein;
+                </p>
+                <p style="font-size: 9.5pt; color: #334155; margin-bottom: 0;">
+                  <strong>NOW, THEREFORE</strong>, in consideration of the mutual covenants, representations, warranties, and valuable considerations contained herein, the Parties agree as follows:
+                </p>
+              </div>
+            </div>
+
+            <!-- 5. SCOPE OF WORK & DELIVERABLES -->
+            <div style="margin-bottom: 18px;">
+              <h2 style="font-size: 10pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.08em; color: #0f172a; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px;">1. Engagement Scope & Deliverables</h2>
+              <p style="font-size: 9.5pt; color: #334155; margin-bottom: 10px;">
+                ${escapeHtml(scopeSummary)}
+              </p>
+              <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px 16px;">
+                <div style="font-size: 8.5pt; font-weight: bold; text-transform: uppercase; color: #64748b; margin-bottom: 6px; letter-spacing: 0.05em;">Designated Deliverables:</div>
+                ${deliverablesHtml}
+              </div>
+            </div>
+
+            <!-- 6. CONSIDERATION & PAYMENT MILESTONES -->
+            <div style="margin-bottom: 20px;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width: 100%; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px;">
+                <tr>
+                  <td><h2 style="font-size: 10pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.08em; color: #0f172a; margin: 0;">2. Consideration & Payment Milestones</h2></td>
+                  <td style="text-align: right;"><span style="font-size: 8.5pt; font-family: monospace; font-weight: bold; color: #7c3aed;">${escapeHtml(paymentTerms)}</span></td>
+                </tr>
+              </table>
+
+              <p style="font-size: 9.5pt; color: #334155; margin-bottom: 10px;">
+                In full consideration for the timely delivery of acceptable services, Client shall pay Service Provider the aggregate contract sum according to the following schedule of deliverables and milestones:
+              </p>
+
+              <!-- Milestones Table -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="width: 100%; border: 1px solid #cbd5e1; border-collapse: collapse; margin-bottom: 8px;">
+                <thead>
+                  <tr style="background-color: #f1f5f9;">
+                    <th style="padding: 8px 10px; border: 1px solid #cbd5e1; width: 35px; text-align: center; font-size: 9pt; color: #334155; font-weight: bold;">#</th>
+                    <th style="padding: 8px 10px; border: 1px solid #cbd5e1; text-align: left; font-size: 9pt; color: #334155; font-weight: bold;">Milestone & Deliverable</th>
+                    <th style="padding: 8px 10px; border: 1px solid #cbd5e1; width: 100px; text-align: center; font-size: 9pt; color: #334155; font-weight: bold;">Target Date</th>
+                    <th style="padding: 8px 10px; border: 1px solid #cbd5e1; width: 100px; text-align: right; font-size: 9pt; color: #334155; font-weight: bold;">Amount</th>
+                    <th style="padding: 8px 10px; border: 1px solid #cbd5e1; width: 80px; text-align: center; font-size: 9pt; color: #334155; font-weight: bold;">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${milestonesRows}
+                </tbody>
+                <tfoot>
+                  <tr style="background-color: #f8fafc; font-weight: bold; border-top: 2px solid #0f172a;">
+                    <td colspan="3" style="padding: 9px 12px; border: 1px solid #cbd5e1; text-align: right; font-size: 9pt; text-transform: uppercase; letter-spacing: 0.05em; color: #0f172a;">Total Contract Value:</td>
+                    <td style="padding: 9px 12px; border: 1px solid #cbd5e1; text-align: right; font-size: 11pt; font-family: monospace; font-weight: 900; color: #0f172a;">${totalAmount}</td>
+                    <td style="padding: 9px 12px; border: 1px solid #cbd5e1;"></td>
+                  </tr>
+                </tfoot>
+              </table>
+              <div style="font-size: 8.5pt; font-style: italic; color: #64748b;">
+                Invoices shall be rendered upon completion and written acceptance of each milestone. Late payments exceeding fifteen (15) days past due date may accrue interest at the statutory rate of 1.5% per month.
+              </div>
+            </div>
+
+            <!-- 7. CLAUSES -->
+            <div style="margin-bottom: 24px;">
+              ${clausesHtml}
+            </div>
+
+            <!-- 8. EXECUTION & SIGNATURES -->
+            <div style="border-top: 2px solid #0f172a; padding-top: 16px; margin-top: 24px;">
+              <p style="font-size: 9.5pt; color: #334155; margin-bottom: 20px;">
+                <strong>IN WITNESS WHEREOF</strong>, the Parties hereto have caused this Agreement to be executed by their duly authorized representatives as of the Effective Date written above.
+              </p>
+
+              <!-- Signature Blocks Table -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width: 100%;">
+                <tr>
+                  <!-- First Party Signature -->
+                  <td style="width: 48%; vertical-align: top; padding-right: 15px;">
+                    <div style="font-size: 8.5pt; font-weight: bold; text-transform: uppercase; color: #64748b; margin-bottom: 12px; letter-spacing: 0.06em;">For &amp; On Behalf Of Service Provider:</div>
+                    <div style="border-bottom: 1.5px solid #0f172a; padding-bottom: 4px; margin-bottom: 8px;">
+                      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                          <td style="font-family: Georgia, serif; font-style: italic; font-size: 14pt; color: #1e3a8a;">${escapeHtml(p1Signer)}</td>
+                          <td style="text-align: right; font-size: 7.5pt; font-family: monospace; color: #94a3b8;">Authorized Signature</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div style="font-size: 9pt; color: #1e293b; line-height: 1.4;">
+                      <div>Name: <strong style="color: #0f172a;">${escapeHtml(p1Signer)}</strong></div>
+                      <div>Title: ${escapeHtml(p1Title)}</div>
+                      <div>Entity: ${escapeHtml(p1Company)}</div>
+                      <div>Date: ${formatReadable(docDate)}</div>
+                    </div>
+                  </td>
+
+                  <td style="width: 4%;"></td>
+
+                  <!-- Second Party Signature -->
+                  <td style="width: 48%; vertical-align: top; padding-left: 15px;">
+                    <div style="font-size: 8.5pt; font-weight: bold; text-transform: uppercase; color: #64748b; margin-bottom: 12px; letter-spacing: 0.06em;">For &amp; On Behalf Of Client:</div>
+                    <div style="border-bottom: 1.5px solid #0f172a; padding-bottom: 4px; margin-bottom: 8px;">
+                      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                          <td style="font-family: Georgia, serif; font-style: italic; font-size: 14pt; color: #065f46;">${escapeHtml(p2Signer)}</td>
+                          <td style="text-align: right; font-size: 7.5pt; font-family: monospace; color: #94a3b8;">Authorized Signature</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div style="font-size: 9pt; color: #1e293b; line-height: 1.4;">
+                      <div>Name: <strong style="color: #0f172a;">${escapeHtml(p2Signer)}</strong></div>
+                      <div>Title: ${escapeHtml(p2Title)}</div>
+                      <div>Entity: ${escapeHtml(p2Company)}</div>
+                      <div>Date: ${formatReadable(docDate)}</div>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Digital Verification Seal Box in Word -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="width: 100%; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-top: 24px; padding: 10px 14px;">
+                <tr>
+                  <td style="width: 60%; vertical-align: middle;">
+                    <div style="font-size: 8.5pt; font-weight: bold; text-transform: uppercase; color: #0f172a; letter-spacing: 0.05em;">Filesque Smart Verification Hash</div>
+                    <div style="font-size: 8pt; font-family: monospace; color: #64748b;">SHA-256: 0x8f4c2e91a0b3f5d720c8e4a1b9d0f3</div>
+                  </td>
+                  <td style="width: 40%; text-align: right; vertical-align: middle; font-size: 8pt; font-family: monospace; color: #64748b;">
+                    Security Protocol: <strong style="color: #0f172a;">FSQ-LEGAL-ENFORCE-v2</strong>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Document Footer in Word -->
+              <div style="border-top: 1px solid #e2e8f0; margin-top: 20px; padding-top: 8px; font-size: 8pt; color: #94a3b8; text-align: center;">
+                Generated via Filesque Smart Agreement Studio | Confidential Corporate Instrument | Ref: ${escapeHtml(docRef)}
+              </div>
+
+            </div>
+
+          </body>
+          </html>
+        `;
+
+        const blob = new Blob(['\ufeff' + wordDocument], { type: 'application/msword' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `${docRef}_${docTitle.replace(/[^a-zA-Z0-9]/g, '_')}.doc`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch(err) {
+        console.error(err);
+        alert("Failed to export Word file: " + err.message);
+      }
+    }
+
+    // Utility helper
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+</html>
