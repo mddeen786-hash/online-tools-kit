@@ -344,12 +344,18 @@
       <p class="text-gray-500 mb-6 text-sm sm:text-base">Upload a Markdown file or write text to generate publication-ready PDF documents instantly.</p>
 
       <!-- Mode Selector Tabs (Upload File vs Type Markdown) -->
-      <div class="flex items-center justify-center gap-3 mb-8">
+      <div class="flex items-center justify-center gap-3 mb-8 flex-wrap">
         <button type="button" id="tabUploadBtn" onclick="switchMode('upload')" class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-xs flex items-center gap-2 bg-red-600 text-white cursor-pointer">
           <span>📁</span> <span>Upload Markdown File</span>
         </button>
         <button type="button" id="tabTypeBtn" onclick="switchMode('editor')" class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 cursor-pointer flex items-center gap-2">
           <span>✍️</span> <span>Write / Paste Markdown</span>
+        </button>
+        <button type="button" onclick="loadSampleText()" class="px-4 py-2.5 rounded-xl font-bold text-sm transition-all text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200/90 cursor-pointer flex items-center gap-1.5 shadow-2xs" title="Load sample Markdown data">
+          <span>✨</span> <span>Sample Data</span>
+        </button>
+        <button type="button" onclick="clearAllDocument()" class="px-4 py-2.5 rounded-xl font-bold text-sm transition-all text-red-600 hover:bg-red-50 border border-red-200/90 cursor-pointer flex items-center gap-1.5 shadow-2xs" title="Clear all content and reset">
+          <span>🗑️</span> <span>Clear All</span>
         </button>
       </div>
 
@@ -394,9 +400,14 @@
             <button type="button" onclick="insertSyntax('- ')" class="px-2.5 py-1 text-xs font-bold bg-white border border-slate-200 rounded hover:bg-slate-100">• List</button>
             <button type="button" onclick="insertTable()" class="px-2.5 py-1 text-xs font-bold bg-white border border-slate-200 rounded hover:bg-slate-100">📊 Table</button>
           </div>
-          <button type="button" onclick="loadSampleText()" class="text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1 rounded-lg transition-colors">
-            ↻ Load Sample
-          </button>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="clearAllDocument()" class="text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200/80 px-3 py-1 rounded-lg transition-colors flex items-center gap-1 cursor-pointer" title="Wipe editor and preview clean">
+              🗑️ Clear All
+            </button>
+            <button type="button" onclick="loadSampleText()" class="text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 px-3 py-1 rounded-lg transition-colors flex items-center gap-1 cursor-pointer" title="Load sample starter markdown">
+              ↻ Load Sample
+            </button>
+          </div>
         </div>
 
         <!-- Markdown Textarea -->
@@ -464,15 +475,18 @@
         <div class="flex flex-wrap items-center justify-between gap-4">
           
           <!-- Secondary Actions -->
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 flex-wrap">
+            <button type="button" onclick="loadSampleText()" class="px-3.5 py-2 text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs" title="Load sample document">
+              <span>✨</span> <span>Sample Data</span>
+            </button>
             <button type="button" onclick="copyMarkdown()" class="px-3.5 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all">
               📋 Copy Markdown
             </button>
             <button type="button" onclick="downloadRawMd()" class="px-3.5 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all">
               💾 Save .md
             </button>
-            <button type="button" onclick="resetDocument()" class="px-3.5 py-2 text-xs font-bold text-rose-600 hover:bg-rose-50 rounded-xl transition-all">
-              🗑️ Reset
+            <button type="button" onclick="clearAllDocument()" class="px-3.5 py-2 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-all cursor-pointer flex items-center gap-1" title="Clear all content and reset">
+              🗑️ Clear All
             </button>
           </div>
 
@@ -564,7 +578,7 @@ function exportDocument() {
 `;
 
     // State
-    let currentMarkdown = defaultSample;
+    let currentMarkdown = "";
     let currentFileName = "markdown-document";
     let isProcessing = false;
 
@@ -607,8 +621,7 @@ function exportDocument() {
 
     // Initialize
     window.addEventListener('DOMContentLoaded', () => {
-      editor.value = currentMarkdown;
-      renderMarkdownText(currentMarkdown);
+      clearAllDocument(true); // Always start 100% clean/blank by default
       setupDragDrop();
 
       editor.addEventListener('input', () => {
@@ -759,19 +772,37 @@ function exportDocument() {
     function loadSampleText() {
       currentMarkdown = defaultSample;
       editor.value = currentMarkdown;
-      currentFileName = "markdown-document";
-      fileNameDisplay.innerText = "Select Markdown (.md or .txt) File";
+      currentFileName = "sample-document";
+      fileNameDisplay.innerText = "sample-document.md";
       renderMarkdownText(currentMarkdown);
-      showToast('Sample document loaded.', 'info');
+      switchMode('editor');
+      showToast('Sample document loaded. 📄', 'success');
+    }
+
+    function clearAllDocument(silent = false) {
+      currentMarkdown = "";
+      if (editor) editor.value = "";
+      if (fileInput) fileInput.value = "";
+      currentFileName = "markdown-document";
+      if (fileNameDisplay) fileNameDisplay.innerText = "Select Markdown (.md or .txt) File";
+      
+      // Reset customization options to clean defaults
+      if (themeSelect) {
+        themeSelect.value = "default";
+        updatePreviewTheme();
+      }
+      if (paperSelect) paperSelect.value = "a4";
+      if (marginSelect) marginSelect.value = "10";
+
+      renderMarkdownText("");
+
+      if (!silent) {
+        showToast('All content cleared & reset completely. ✨', 'info');
+      }
     }
 
     function resetDocument() {
-      currentMarkdown = "";
-      editor.value = "";
-      currentFileName = "markdown-document";
-      fileNameDisplay.innerText = "Select Markdown (.md or .txt) File";
-      renderMarkdownText("");
-      showToast('Document reset.', 'info');
+      clearAllDocument();
     }
 
     function copyMarkdown() {
