@@ -204,7 +204,7 @@
 </div>
 
     <!-- Workspace Area -->
-    <div class="w-full max-w-2xl px-4 mt-36 mb-24">
+    <div class="w-full max-w-4xl px-4 mt-36 mb-24 transition-all duration-300">
         <a href="index.html" class="text-sm font-semibold text-gray-500 hover:text-rose-500 mb-4 inline-block">← Back to Dashboard</a>
         
         <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 text-center">
@@ -222,10 +222,48 @@
                 <input type="file" id="file-input" accept="image/*" multiple class="hidden">
             </div>
 
-            <!-- Queue Section -->
-            <div id="queue-section" class="mt-6 text-left hidden">
-                <p class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Selected Images Queue:</p>
-                <div id="file-list" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+            <!-- Queue Section with Visual Thumbnail Preview Grid, Reordering & Rotation -->
+            <div id="queue-section" class="mt-8 text-left hidden">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-200">
+                    <div>
+                        <h3 class="text-sm font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                            <span>🖼️ Selected Images</span>
+                            <span id="queue-badge" class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Drag cards to reorder or use ◀ ▶ buttons. Click ↺ ↻ to rotate pages.</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <!-- Sort Control -->
+                        <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200 shadow-2xs">
+                            <span class="text-[11px] font-bold text-slate-600 px-1 flex items-center gap-1">
+                                <span>⇅</span> <span>Sort:</span>
+                            </span>
+                            <select id="sort-select" onchange="sortImages(this.value)" class="text-xs font-bold bg-white text-slate-800 border border-slate-200 rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer shadow-2xs">
+                                <option value="" disabled selected>Choose Sort...</option>
+                                <option value="name-asc">🔤 Name (A → Z / 1 → 9)</option>
+                                <option value="name-desc">🔤 Name (Z → A / 9 → 1)</option>
+                                <option value="date-asc">📅 Date (Oldest First)</option>
+                                <option value="date-desc">📅 Date (Newest First)</option>
+                                <option value="size-asc">⚖️ Size (Smallest First)</option>
+                                <option value="size-desc">⚖️ Size (Largest First)</option>
+                                <option value="reverse">🔄 Flip / Reverse Order</option>
+                            </select>
+                        </div>
+
+                        <button type="button" onclick="rotateAll(90)" class="text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 cursor-pointer">
+                            <span>↻</span> <span>Rotate All</span>
+                        </button>
+                        <button type="button" id="add-more-btn" class="text-xs font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 cursor-pointer">
+                            <span>+</span> <span>Add More</span>
+                        </button>
+                        <button type="button" onclick="clearAllFiles()" class="text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 cursor-pointer">
+                            <span>🗑️</span> <span>Clear All</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Visual Grid Container for Image Cards -->
+                <div id="file-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[580px] overflow-y-auto pr-1 pb-2"></div>
             </div>
 
             <!-- Convert Button -->
@@ -242,16 +280,27 @@
         const { jsPDF } = window.jspdf;
         const fileInput = document.getElementById('file-input');
         const browseBtn = document.getElementById('browse-btn');
+        const addMoreBtn = document.getElementById('add-more-btn');
         const dropZone = document.getElementById('drop-zone');
         const queueSection = document.getElementById('queue-section');
+        const queueBadge = document.getElementById('queue-badge');
         const fileListContainer = document.getElementById('file-list');
         const actionSection = document.getElementById('action-section');
         const convertBtn = document.getElementById('convert-btn');
         const statusMsg = document.getElementById('status-msg');
 
         let selectedFiles = [];
+        let draggedIndex = null;
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu) menu.classList.toggle('hidden');
+        }
 
         browseBtn.addEventListener('click', () => fileInput.click());
+        if (addMoreBtn) {
+            addMoreBtn.addEventListener('click', () => fileInput.click());
+        }
 
         dropZone.addEventListener('dragover', (e) => {
             e.preventDefault();
@@ -265,23 +314,39 @@
         dropZone.addEventListener('drop', (e) => {
             e.preventDefault();
             dropZone.classList.remove('border-emerald-500', 'bg-emerald-50/20');
-            if (e.dataTransfer.files.length > 0) {
+            if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
                 handleFiles(e.dataTransfer.files);
             }
         });
 
         fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
+            if (e.target.files && e.target.files.length > 0) {
                 handleFiles(e.target.files);
+                fileInput.value = ''; // Reset so user can re-select same images
             }
         });
 
-        function handleFiles(files) {
-            for (let file of files) {
-                if (file.type.startsWith('image/')) {
-                    selectedFiles.push(file);
+        async function handleFiles(files) {
+            const validFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
+            if (validFiles.length === 0) return;
+
+            statusMsg.textContent = "⏳ Loading image previews...";
+            for (let file of validFiles) {
+                try {
+                    const dataUrl = await readFileAsDataURL(file);
+                    selectedFiles.push({
+                        id: 'img_' + Date.now() + '_' + Math.random().toString(36).substr(2, 7),
+                        file: file,
+                        name: file.name,
+                        size: file.size,
+                        dataUrl: dataUrl,
+                        rotation: 0
+                    });
+                } catch (err) {
+                    console.error("Failed to read file:", file.name, err);
                 }
             }
+            statusMsg.textContent = "";
             updateQueueUI();
         }
 
@@ -289,27 +354,233 @@
             if (selectedFiles.length > 0) {
                 queueSection.classList.remove('hidden');
                 actionSection.classList.remove('hidden');
+                if (queueBadge) queueBadge.textContent = selectedFiles.length;
                 fileListContainer.innerHTML = '';
 
-                selectedFiles.forEach((file, index) => {
-                    const item = document.createElement('div');
-                    item.className = 'flex justify-between items-center bg-slate-50 border border-gray-200 p-2.5 rounded-lg text-xs font-medium text-slate-700';
-                    item.innerHTML = `
-                        <span>${index + 1}. ${file.name}</span>
-                        <button onclick="removeFile(${index})" class="text-red-500 hover:text-red-700 font-bold px-2 cursor-pointer">✕</button>
+                selectedFiles.forEach((item, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'image-card relative bg-slate-50 hover:bg-white border-2 border-slate-200 hover:border-emerald-500 rounded-xl p-3 shadow-xs hover:shadow-md transition-all flex flex-col justify-between group cursor-grab active:cursor-grabbing select-none';
+                    card.draggable = true;
+                    card.setAttribute('data-index', index);
+
+                    const rotation = ((item.rotation % 360) + 360) % 360;
+
+                    card.innerHTML = `
+                        <!-- Card Header: Page Badge & Delete -->
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="bg-slate-900 text-white text-[11px] font-black px-2 py-0.5 rounded-md shadow-2xs flex items-center gap-1">
+                                <span>📄</span>
+                                <span>Page ${index + 1}</span>
+                                ${rotation !== 0 ? `<span class="bg-emerald-500 text-white text-[9px] px-1 rounded ml-1 font-bold">${rotation}°</span>` : ''}
+                            </span>
+                            <button type="button" onclick="removeFile(${index})" title="Remove Image" class="w-6 h-6 rounded-full bg-rose-50 hover:bg-rose-600 text-rose-500 hover:text-white flex items-center justify-center text-xs font-bold transition-all cursor-pointer">
+                                ✕
+                            </button>
+                        </div>
+
+                        <!-- Image Thumbnail Box with Rotation transform -->
+                        <div class="relative w-full h-36 bg-slate-200/50 rounded-lg overflow-hidden flex items-center justify-center p-1 border border-slate-200">
+                            <img src="${item.dataUrl}" 
+                                 alt="${escapeHtml(item.name)}" 
+                                 class="max-w-full max-h-full object-contain transition-transform duration-300 pointer-events-none drop-shadow-xs" 
+                                 style="transform: rotate(${rotation}deg);" />
+                        </div>
+
+                        <!-- Image Info -->
+                        <div class="mt-2 text-center">
+                            <p class="text-xs font-bold text-slate-800 truncate" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</p>
+                            <p class="text-[10px] text-slate-400 font-medium">${formatFileSize(item.size)}</p>
+                        </div>
+
+                        <!-- Card Action Buttons: Move Left/Right & Rotate -->
+                        <div class="mt-3 pt-2 border-t border-slate-200/80 flex items-center justify-between gap-1">
+                            <div class="flex items-center gap-1">
+                                <button type="button" 
+                                        onclick="moveFile(${index}, -1)" 
+                                        ${index === 0 ? 'disabled' : ''} 
+                                        title="Move Backward" 
+                                        class="p-1.5 rounded-lg text-xs font-bold ${index === 0 ? 'text-slate-300 cursor-not-allowed bg-slate-100' : 'bg-white hover:bg-slate-900 text-slate-700 hover:text-white border border-slate-200 cursor-pointer shadow-2xs transition-all'}">
+                                    ◀
+                                </button>
+                                <button type="button" 
+                                        onclick="moveFile(${index}, 1)" 
+                                        ${index === selectedFiles.length - 1 ? 'disabled' : ''} 
+                                        title="Move Forward" 
+                                        class="p-1.5 rounded-lg text-xs font-bold ${index === selectedFiles.length - 1 ? 'text-slate-300 cursor-not-allowed bg-slate-100' : 'bg-white hover:bg-slate-900 text-slate-700 hover:text-white border border-slate-200 cursor-pointer shadow-2xs transition-all'}">
+                                    ▶
+                                </button>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <button type="button" 
+                                        onclick="rotateFile(${index}, -90)" 
+                                        title="Rotate 90° Counter-Clockwise" 
+                                        class="px-2 py-1 bg-white hover:bg-emerald-600 text-slate-700 hover:text-white border border-slate-200 rounded-lg text-xs font-bold shadow-2xs transition-all flex items-center gap-0.5 cursor-pointer">
+                                    <span>↺</span>
+                                    <span class="text-[10px]">-90°</span>
+                                </button>
+                                <button type="button" 
+                                        onclick="rotateFile(${index}, 90)" 
+                                        title="Rotate 90° Clockwise" 
+                                        class="px-2 py-1 bg-white hover:bg-emerald-600 text-slate-700 hover:text-white border border-slate-200 rounded-lg text-xs font-bold shadow-2xs transition-all flex items-center gap-0.5 cursor-pointer">
+                                    <span>↻</span>
+                                    <span class="text-[10px]">+90°</span>
+                                </button>
+                            </div>
+                        </div>
                     `;
-                    fileListContainer.appendChild(item);
+                    fileListContainer.appendChild(card);
                 });
+
+                setupDragAndDrop();
             } else {
                 queueSection.classList.add('hidden');
                 actionSection.classList.add('hidden');
+                if (queueBadge) queueBadge.textContent = '0';
             }
+        }
+
+        function setupDragAndDrop() {
+            const cards = fileListContainer.querySelectorAll('.image-card');
+            cards.forEach(card => {
+                card.addEventListener('dragstart', (e) => {
+                    draggedIndex = parseInt(card.getAttribute('data-index'), 10);
+                    card.classList.add('opacity-40', 'scale-95', 'ring-2', 'ring-emerald-500');
+                    if (e.dataTransfer) {
+                        e.dataTransfer.effectAllowed = 'move';
+                        e.dataTransfer.setData('text/plain', String(draggedIndex));
+                    }
+                });
+
+                card.addEventListener('dragend', () => {
+                    card.classList.remove('opacity-40', 'scale-95', 'ring-2', 'ring-emerald-500');
+                    draggedIndex = null;
+                    cards.forEach(c => c.classList.remove('ring-2', 'ring-emerald-400', 'bg-emerald-50'));
+                });
+
+                card.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    if (e.dataTransfer) {
+                        e.dataTransfer.dropEffect = 'move';
+                    }
+                    card.classList.add('ring-2', 'ring-emerald-400', 'bg-emerald-50');
+                });
+
+                card.addEventListener('dragleave', () => {
+                    card.classList.remove('ring-2', 'ring-emerald-400', 'bg-emerald-50');
+                });
+
+                card.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    card.classList.remove('ring-2', 'ring-emerald-400', 'bg-emerald-50');
+                    const targetIndex = parseInt(card.getAttribute('data-index'), 10);
+                    if (draggedIndex !== null && !isNaN(draggedIndex) && draggedIndex !== targetIndex) {
+                        const [movedItem] = selectedFiles.splice(draggedIndex, 1);
+                        selectedFiles.splice(targetIndex, 0, movedItem);
+                        updateQueueUI();
+                    }
+                });
+            });
         }
 
         window.removeFile = function(index) {
             selectedFiles.splice(index, 1);
             updateQueueUI();
         };
+
+        window.moveFile = function(index, direction) {
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= selectedFiles.length) return;
+            const [movedItem] = selectedFiles.splice(index, 1);
+            selectedFiles.splice(newIndex, 0, movedItem);
+            updateQueueUI();
+        };
+
+        window.rotateFile = function(index, degrees) {
+            if (selectedFiles[index]) {
+                selectedFiles[index].rotation = ((selectedFiles[index].rotation + degrees) % 360 + 360) % 360;
+                updateQueueUI();
+            }
+        };
+
+        window.rotateAll = function(degrees) {
+            selectedFiles.forEach(item => {
+                item.rotation = ((item.rotation + degrees) % 360 + 360) % 360;
+            });
+            updateQueueUI();
+        };
+
+        
+        window.sortImages = function(criteria) {
+            if (!criteria || selectedFiles.length < 2) return;
+
+            switch (criteria) {
+                case 'name-asc':
+                    selectedFiles.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
+                    break;
+                case 'name-desc':
+                    selectedFiles.sort((a, b) => b.name.localeCompare(a.name, undefined, { numeric: true, sensitivity: 'base' }));
+                    break;
+                case 'date-asc':
+                    selectedFiles.sort((a, b) => ((a.file && a.file.lastModified) || 0) - ((b.file && b.file.lastModified) || 0));
+                    break;
+                case 'date-desc':
+                    selectedFiles.sort((a, b) => ((b.file && b.file.lastModified) || 0) - ((a.file && a.file.lastModified) || 0));
+                    break;
+                case 'size-asc':
+                    selectedFiles.sort((a, b) => (a.size || 0) - (b.size || 0));
+                    break;
+                case 'size-desc':
+                    selectedFiles.sort((a, b) => (b.size || 0) - (a.size || 0));
+                    break;
+                case 'reverse':
+                    selectedFiles.reverse();
+                    break;
+            }
+
+            updateQueueUI();
+
+            const sortSelect = document.getElementById('sort-select');
+            if (sortSelect) {
+                const label = sortSelect.options[sortSelect.selectedIndex]?.text || criteria;
+                statusMsg.textContent = `✨ Sorted by: ${label}`;
+                setTimeout(() => {
+                    if (statusMsg.textContent.startsWith('✨')) statusMsg.textContent = '';
+                }, 3000);
+            }
+        };
+
+        window.clearAllFiles = function() {
+            selectedFiles = [];
+            fileInput.value = '';
+            statusMsg.textContent = '';
+            updateQueueUI();
+        };
+
+        function getRotatedImageData(dataUrl, rotation) {
+            return new Promise((resolve, reject) => {
+                rotation = ((rotation % 360) + 360) % 360;
+                if (rotation === 0) {
+                    return resolve(dataUrl);
+                }
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const rad = (rotation * Math.PI) / 180;
+                    const is90or270 = rotation === 90 || rotation === 270;
+
+                    canvas.width = is90or270 ? img.height : img.width;
+                    canvas.height = is90or270 ? img.width : img.height;
+
+                    ctx.translate(canvas.width / 2, canvas.height / 2);
+                    ctx.rotate(rad);
+                    ctx.drawImage(img, -img.width / 2, -img.height / 2);
+                    resolve(canvas.toDataURL('image/jpeg', 0.95));
+                };
+                img.onerror = reject;
+                img.src = dataUrl;
+            });
+        }
 
         convertBtn.addEventListener('click', async () => {
             if (selectedFiles.length === 0) return;
@@ -326,18 +597,19 @@
                 });
 
                 for (let i = 0; i < selectedFiles.length; i++) {
-                    const file = selectedFiles[i];
-                    const dataUrl = await readFileAsDataURL(file);
-                    
-                    const img = await loadImage(dataUrl);
-                    
+                    const item = selectedFiles[i];
+                    statusMsg.textContent = `⏳ Processing page ${i + 1} of ${selectedFiles.length}...`;
+
+                    const processedDataUrl = await getRotatedImageData(item.dataUrl, item.rotation);
+                    const img = await loadImage(processedDataUrl);
+
                     if (i > 0) {
                         pdf.addPage();
                     }
 
                     const pageWidth = pdf.internal.pageSize.getWidth();
                     const pageHeight = pdf.internal.pageSize.getHeight();
-                    
+
                     let imgWidth = pageWidth - 20; // 10mm margins
                     let imgHeight = (img.height * imgWidth) / img.width;
 
@@ -349,7 +621,7 @@
                     let x = (pageWidth - imgWidth) / 2;
                     let y = (pageHeight - imgHeight) / 2;
 
-                    pdf.addImage(dataUrl, 'JPEG', x, y, imgWidth, imgHeight);
+                    pdf.addImage(processedDataUrl, 'JPEG', x, y, imgWidth, imgHeight);
                 }
 
                 pdf.save("converted-images.pdf");
@@ -380,6 +652,24 @@
                 img.onerror = reject;
                 img.src = src;
             });
+        }
+
+        function formatFileSize(bytes) {
+            if (!bytes || bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
         }
     </script>
 
