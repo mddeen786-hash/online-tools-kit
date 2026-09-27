@@ -1527,8 +1527,37 @@ async function imageConverterConvert(inputPath, outputPath, config = {}) {
 // ========== Image to PDF Logic ==========
 async function imageToPdfConvert(input, outputPath, config = {}) {
   try {
-    let inputs = Array.isArray(input) ? input : [input];
+    let inputs = Array.isArray(input) ? [...input] : [input];
+
+    const order = config.sortOrder || config.sort;
+    if (order && inputs.length > 1) {
+      if (order === 'az' || order === 'name-asc') {
+        inputs.sort((a, b) => path.basename(a).localeCompare(path.basename(b), undefined, { numeric: true, sensitivity: 'base' }));
+      } else if (order === 'za' || order === 'name-desc') {
+        inputs.sort((a, b) => path.basename(b).localeCompare(path.basename(a), undefined, { numeric: true, sensitivity: 'base' }));
+      } else if (order === 'size-asc') {
+        inputs.sort((a, b) => {
+          try { return fs.statSync(a).size - fs.statSync(b).size; } catch(e) { return 0; }
+        });
+      } else if (order === 'size-desc') {
+        inputs.sort((a, b) => {
+          try { return fs.statSync(b).size - fs.statSync(a).size; } catch(e) { return 0; }
+        });
+      } else if (order === 'date-asc') {
+        inputs.sort((a, b) => {
+          try { return fs.statSync(a).mtimeMs - fs.statSync(b).mtimeMs; } catch(e) { return 0; }
+        });
+      } else if (order === 'date-desc') {
+        inputs.sort((a, b) => {
+          try { return fs.statSync(b).mtimeMs - fs.statSync(a).mtimeMs; } catch(e) { return 0; }
+        });
+      } else if (order === 'reverse') {
+        inputs.reverse();
+      }
+    }
+
     const pdfDoc = await PDFDocument.create();
+    const rotateDeg = parseInt(config.rotateDegree || config.rotate || 0, 10);
     
     for (let i = 0; i < inputs.length; i++) {
       const file = inputs[i];
@@ -1536,9 +1565,15 @@ async function imageToPdfConvert(input, outputPath, config = {}) {
       let finalImgBuffer = imgBuffer;
 
       if (sharp) {
-         const metadata = await sharp(imgBuffer).metadata();
+         let imgPipeline = sharp(imgBuffer);
+         if (rotateDeg && rotateDeg % 360 !== 0) {
+             imgPipeline = imgPipeline.rotate(rotateDeg);
+         }
+         const metadata = await imgPipeline.metadata();
          if (metadata.format !== 'jpeg' && metadata.format !== 'png') {
-             finalImgBuffer = await sharp(imgBuffer).jpeg({ quality: 95 }).toBuffer();
+             finalImgBuffer = await imgPipeline.jpeg({ quality: 95 }).toBuffer();
+         } else if (rotateDeg && rotateDeg % 360 !== 0) {
+             finalImgBuffer = await imgPipeline.toBuffer();
          }
       }
 
@@ -2177,10 +2212,21 @@ app.post('/api/workflow/execute/:id', async (req, res) => {
     
     const firstStep = workflow.steps[0];
     if (firstStep && (firstStep.toolId === 'merge-pdf' || firstStep.toolId === 'image-to-pdf')) {
-       if (firstStep.sortOrder === 'az') {
-         uploadedFiles.sort((a, b) => a.name.localeCompare(b.name));
-       } else if (firstStep.sortOrder === 'za') {
-         uploadedFiles.sort((a, b) => b.name.localeCompare(a.name));
+       const order = firstStep.sortOrder || 'upload';
+       if (order === 'az' || order === 'name-asc') {
+         uploadedFiles.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
+       } else if (order === 'za' || order === 'name-desc') {
+         uploadedFiles.sort((a, b) => b.name.localeCompare(a.name, undefined, { numeric: true, sensitivity: 'base' }));
+       } else if (order === 'date-asc') {
+         uploadedFiles.sort((a, b) => ((a.lastModified || a.mtime || 0) - (b.lastModified || b.mtime || 0)));
+       } else if (order === 'date-desc') {
+         uploadedFiles.sort((a, b) => ((b.lastModified || b.mtime || 0) - (a.lastModified || a.mtime || 0)));
+       } else if (order === 'size-asc') {
+         uploadedFiles.sort((a, b) => ((a.size || 0) - (b.size || 0)));
+       } else if (order === 'size-desc') {
+         uploadedFiles.sort((a, b) => ((b.size || 0) - (a.size || 0)));
+       } else if (order === 'reverse') {
+         uploadedFiles.reverse();
        }
     }
 
@@ -2348,7 +2394,7 @@ app.get('/workflow-builder', (req, res) => {
     '        "</select>" +' +
     '        "<input type=\'text\' onkeyup=\'updateStepConfig(" + i + ", \\\"range\\\", this.value)\' value=\'" + rangeVal + "\' placeholder=\'e.g. 1-3, 5\' style=\'padding:4px 8px; border-radius:6px; border:1px solid #94a3b8; font-size:13px; width:110px; outline:none; " + displayRange + "\'>" + ' +
     '      "</div>";' +
-    '    } else if (steps[i].id === "merge-pdf" || steps[i].id === "image-to-pdf") {' +
+    '    } else if (steps[i].id === "merge-pdf") {' +
     '      let sOrder = steps[i].sortOrder || "upload";' +
     '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; background:#e2e8f0; padding:6px 12px; border-radius:8px; border:1px solid #cbd5e1;\'>" +' +
     '        "<span style=\'font-size:13px; font-weight:bold; color:#475569;\'>Combine Order:</span>" +' +
@@ -2357,6 +2403,33 @@ app.get('/workflow-builder', (req, res) => {
     '          "<option value=\\\"az\\\" " + (sOrder === "az" ? "selected" : "") + ">Alphabetical (A-Z)</option>" +' +
     '          "<option value=\\\"za\\\" " + (sOrder === "za" ? "selected" : "") + ">Alphabetical (Z-A)</option>" +' +
     '        "</select>" +' +
+    '      "</div>";' +
+    '    } else if (steps[i].id === "image-to-pdf") {' +
+    '      let sOrder = steps[i].sortOrder || "upload";' +
+    '      let rDeg = steps[i].rotateDegree || "0";' +
+    '      toggleHtml = "<div style=\'margin-left:auto; display:flex; align-items:center; gap:8px; flex-wrap:wrap;\'>" +' +
+    '        "<div style=\'display:flex; align-items:center; gap:6px; background:#e2e8f0; padding:6px 10px; border-radius:8px; border:1px solid #cbd5e1;\'>" +' +
+    '          "<span style=\'font-size:12px; font-weight:bold; color:#475569;\'>Sort:</span>" +' +
+    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"sortOrder\\\", this.value)\' style=\'padding:4px 6px; border-radius:6px; border:1px solid #94a3b8; font-size:12px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '            "<option value=\\\"upload\\\" " + (sOrder === "upload" ? "selected" : "") + ">As Uploaded</option>" +' +
+    '            "<option value=\\\"name-asc\\\" " + (sOrder === "name-asc" || sOrder === "az" ? "selected" : "") + ">Name (A-Z / 1-9)</option>" +' +
+    '            "<option value=\\\"name-desc\\\" " + (sOrder === "name-desc" || sOrder === "za" ? "selected" : "") + ">Name (Z-A / 9-1)</option>" +' +
+    '            "<option value=\\\"date-asc\\\" " + (sOrder === "date-asc" ? "selected" : "") + ">Date (Oldest First)</option>" +' +
+    '            "<option value=\\\"date-desc\\\" " + (sOrder === "date-desc" ? "selected" : "") + ">Date (Newest First)</option>" +' +
+    '            "<option value=\\\"size-asc\\\" " + (sOrder === "size-asc" ? "selected" : "") + ">Size (Smallest First)</option>" +' +
+    '            "<option value=\\\"size-desc\\\" " + (sOrder === "size-desc" ? "selected" : "") + ">Size (Largest First)</option>" +' +
+    '            "<option value=\\\"reverse\\\" " + (sOrder === "reverse" ? "selected" : "") + ">Reverse Order</option>" +' +
+    '          "</select>" +' +
+    '        "</div>" +' +
+    '        "<div style=\'display:flex; align-items:center; gap:6px; background:#e2e8f0; padding:6px 10px; border-radius:8px; border:1px solid #cbd5e1;\'>" +' +
+    '          "<span style=\'font-size:12px; font-weight:bold; color:#475569;\'>Rotate:</span>" +' +
+    '          "<select onchange=\'updateStepConfig(" + i + ", \\\"rotateDegree\\\", this.value)\' style=\'padding:4px 6px; border-radius:6px; border:1px solid #94a3b8; font-size:12px; font-weight:bold; cursor:pointer; outline:none; background:white; color:#0f172a;\'>" +' +
+    '            "<option value=\\\"0\\\" " + (rDeg === "0" ? "selected" : "") + ">0° (Normal)</option>" +' +
+    '            "<option value=\\\"90\\\" " + (rDeg === "90" ? "selected" : "") + ">90° Clockwise</option>" +' +
+    '            "<option value=\\\"180\\\" " + (rDeg === "180" ? "selected" : "") + ">180°</option>" +' +
+    '            "<option value=\\\"270\\\" " + (rDeg === "270" ? "selected" : "") + ">270° (Counter-CW)</option>" +' +
+    '          "</select>" +' +
+    '        "</div>" +' +
     '      "</div>";' +
     '    } else if (steps[i].id === "pdf-organizer") {' +
     '      let pOrder = steps[i].pageOrder || "";' +
