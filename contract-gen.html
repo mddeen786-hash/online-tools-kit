@@ -285,7 +285,7 @@
   <header id="app-top-header" class="no-print sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-8 py-3 shadow-xs">
     <div class="max-w-[1700px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
       
-      <!-- Brand Logo (7xl) with Animated Blinking Dot & Studio Identity -->
+      <!-- Brand Logo (7xl) -->
       <div class="flex items-center space-x-3.5 shrink-0">
         <a href="index.html" class="cursor-pointer flex items-center space-x-1.5 group shrink-0" title="Filesque Home">
           <span class="text-4xl sm:text-7xl font-black tracking-tighter text-[#0f172a] flex items-center leading-none">
@@ -293,20 +293,12 @@
           </span>
           <span class="w-3.5 h-3.5 rounded-full bg-[#fca5a5] ml-1 inline-block shrink-0 animate-pulse animate-blink shadow-xs"></span>
         </a>
-        <div class="h-8 w-px bg-slate-200 hidden sm:block"></div>
-        <div class="flex items-center space-x-2">
-          <span class="px-2.5 py-1 rounded-md bg-purple-50 text-purple-700 border border-purple-200/80 text-[11px] font-extrabold uppercase tracking-wider flex items-center gap-1.5 shadow-2xs">
-            <i data-lucide="scale" class="w-3.5 h-3.5 text-purple-600"></i>
-            Legal Studio
-          </span>
-          <span class="text-xs font-semibold text-slate-500 hidden xl:inline">Smart Business Contract & Agreement Generator</span>
-        </div>
       </div>
 
-      <!-- Right Side Controls: Template Panel & Action Buttons Moved Right -->
-      <div class="flex flex-wrap items-center justify-end gap-3 sm:gap-4 md:ml-auto">
+      <!-- Right Side Controls: Template Selector & Action Buttons -->
+      <div class="flex items-center flex-wrap gap-2 md:gap-3 md:ml-auto">
         
-        <!-- Quick Template Selector in Navbar (Shifted Right) -->
+        <!-- Quick Template Selector in Navbar (Placed right before Sample Data) -->
         <div class="flex items-center space-x-2 bg-slate-100/90 p-1.5 rounded-xl border border-slate-200/90 shadow-2xs">
           <label for="quick-template-select" class="text-xs font-bold text-slate-600 px-2 flex items-center gap-1.5 select-none">
             <i data-lucide="file-text" class="w-3.5 h-3.5 text-slate-500"></i>
@@ -322,24 +314,25 @@
           </select>
         </div>
 
-        <!-- Action Buttons (Shifted Right) -->
-        <div class="flex items-center flex-wrap gap-2">
-          <button onclick="loadSampleData()" class="px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs" title="Fill with realistic sample data">
-            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
-            <span>Sample Data</span>
-          </button>
+        <button onclick="loadSampleData()" class="px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs" title="Fill with realistic sample data">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
+          <span>Sample Data</span>
+        </button>
 
-          <button onclick="exportToWord()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 transition flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs" title="Export formal contract to Microsoft Word (.doc)">
-            <i data-lucide="file-down" class="w-3.5 h-3.5 text-blue-600"></i>
-            <span>Word (.doc)</span>
-          </button>
+        <button onclick="exportToWord()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 transition flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs" title="Export formal contract to Microsoft Word (.doc)">
+          <i data-lucide="file-down" class="w-3.5 h-3.5 text-blue-600"></i>
+          <span>Word (.doc)</span>
+        </button>
 
-          <button onclick="window.print()" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white shadow-md hover:shadow-lg transition flex items-center gap-2 transform active:scale-95 cursor-pointer" title="Print or save as official PDF">
-            <i data-lucide="printer" class="w-4 h-4"></i>
-            <span>Download / Print PDF</span>
-          </button>
-        </div>
+        <button onclick="window.print()" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white shadow-md hover:shadow-lg transition flex items-center gap-2 transform active:scale-95 cursor-pointer" title="Print or save as official PDF">
+          <i data-lucide="printer" class="w-4 h-4"></i>
+          <span>Download / Print PDF</span>
+        </button>
 
+        <a href="index.html" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs whitespace-nowrap" title="Return to Dashboard">
+          <i data-lucide="arrow-left" class="w-3.5 h-3.5 text-slate-500"></i>
+          <span>Back to Dashboard</span>
+        </a>
       </div>
 
     </div>
@@ -1367,6 +1360,7 @@
     let currentContractData = null;
     let currentClauses = [];
     let currentMilestones = [];
+    let isFormCleared = true;
 
     // --- INITIALIZATION ---
     window.addEventListener('DOMContentLoaded', () => {
@@ -1377,8 +1371,18 @@
 
     // --- TEMPLATE SWITCHER ---
     function onTemplateChange(key) {
-      loadTemplate(key);
       document.getElementById('quick-template-select').value = key;
+      if (isFormCleared) {
+        // Form is cleared: Keep all inputs, parties, scope & milestones 100% empty, do NOT fetch sample data!
+        clearAllForm(true, true);
+        const tag = document.getElementById('preview-template-tag');
+        if (tag && TEMPLATES[key]) {
+          tag.textContent = TEMPLATES[key].name;
+          tag.className = 'text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 border border-purple-200';
+        }
+      } else {
+        loadTemplate(key);
+      }
     }
 
     function loadTemplate(key) {
@@ -1854,6 +1858,7 @@
 
     // --- SAMPLE DATA & CLEAR ---
     function loadSampleData() {
+      isFormCleared = false;
       let key = document.getElementById('quick-template-select').value;
       if (!key || !TEMPLATES[key]) {
         key = 'freelance';
@@ -1865,6 +1870,7 @@
 
     function clearAllForm(force = false, silent = false) {
       if (force || confirm("Pura form clean karna chahte hain? Sabhi inputs, parties, scope, milestones aur legal clauses completely wipe ho jayenge.")) {
+        isFormCleared = true;
         // 1. Clear Document info
         const setVal = (id, val) => {
           const el = document.getElementById(id);
