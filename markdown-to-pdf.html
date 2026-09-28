@@ -331,116 +331,113 @@
   <!-- ========================================================
        MAIN WORKSPACE WINDOW (Exact Filesques Tool Container)
        ======================================================== -->
-  <main class="w-full max-w-5xl px-4 mt-32 mb-12 mx-auto flex-1">
-    <a href="index.html" class="text-sm font-semibold text-gray-500 hover:text-rose-500 mb-4 inline-flex items-center gap-1">
-      <span>←</span> <span>Back to Dashboard</span>
+  <main class="w-full max-w-7xl px-4 sm:px-6 mt-28 mb-16 mx-auto flex-1">
+    
+    <!-- Top Back to Dashboard Link -->
+    <a href="index.html" class="text-sm font-semibold text-slate-500 hover:text-red-600 mb-6 inline-flex items-center gap-1.5 transition-colors">
+      <span class="text-base">←</span> <span>Back to Dashboard</span>
     </a>
 
-    <!-- Primary Tool Card -->
-    <div class="bg-white p-6 sm:p-10 rounded-3xl shadow-xl border border-gray-100 text-center">
+    <!-- Primary Studio Wrapper -->
+    <div class="bg-white p-6 sm:p-10 rounded-3xl shadow-xl border border-slate-100 text-center">
       
-      <!-- Tool Title & Subtitle -->
-      <h1 class="text-3xl sm:text-4xl font-black text-slate-900 mb-2">Convert Markdown to PDF</h1>
-      <p class="text-gray-500 mb-6 text-sm sm:text-base">Upload a Markdown file or write text to generate publication-ready PDF documents instantly.</p>
+      <!-- Studio Header -->
+      <h1 class="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight mb-2">Convert Markdown to PDF</h1>
+      <p class="text-slate-500 mb-8 text-sm sm:text-base max-w-2xl mx-auto">
+        Professional dual-mode studio. Upload existing Markdown files or write live with independent inputs, sample data, and output previews.
+      </p>
 
-      <!-- Mode Selector Tabs (Upload File vs Type Markdown) -->
-      <div class="flex items-center justify-center gap-3 mb-8 flex-wrap">
-        <button type="button" id="tabUploadBtn" onclick="switchMode('upload')" class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-xs flex items-center gap-2 bg-red-600 text-white cursor-pointer">
-          <span>📁</span> <span>Upload Markdown File</span>
+      <!-- Main Studio Switcher Tabs -->
+      <div class="flex items-center justify-center gap-3 sm:gap-4 mb-10 flex-wrap">
+        <button type="button" id="tabUploadBtn" onclick="switchStudioTab('upload')" class="px-6 py-3 rounded-2xl font-black text-sm transition-all shadow-md flex items-center gap-2.5 bg-red-600 text-white cursor-pointer active:scale-95">
+          <span class="text-lg">📁</span> <span>Upload File Studio</span>
         </button>
-        <button type="button" id="tabTypeBtn" onclick="switchMode('editor')" class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 cursor-pointer flex items-center gap-2">
-          <span>✍️</span> <span>Write / Paste Markdown</span>
-        </button>
-        <button type="button" onclick="loadSampleText()" class="px-4 py-2.5 rounded-xl font-bold text-sm transition-all text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200/90 cursor-pointer flex items-center gap-1.5 shadow-2xs" title="Load sample Markdown data">
-          <span>✨</span> <span>Sample Data</span>
-        </button>
-        <button type="button" onclick="clearAllDocument()" class="px-4 py-2.5 rounded-xl font-bold text-sm transition-all text-red-600 hover:bg-red-50 border border-red-200/90 cursor-pointer flex items-center gap-1.5 shadow-2xs" title="Clear all content and reset">
-          <span>🗑️</span> <span>Clear All</span>
+        <button type="button" id="tabWriteBtn" onclick="switchStudioTab('write')" class="px-6 py-3 rounded-2xl font-black text-sm transition-all text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 cursor-pointer flex items-center gap-2.5 active:scale-95">
+          <span class="text-lg">✍️</span> <span>Write / Paste Studio</span>
         </button>
       </div>
 
-      <!-- ==========================================
-           MODE 1: PROMINENT UPLOAD BOX (Default)
-           ========================================== -->
-      <div id="uploadView" class="space-y-6">
-        <div id="drop-zone" class="border-3 border-dashed border-gray-300 hover:border-red-400 rounded-2xl p-10 sm:p-14 bg-gray-50/80 hover:bg-red-50/20 text-center transition-all cursor-pointer">
-          <span class="text-6xl block mb-4">📑📄✨</span>
-          <p id="file-name-display" class="text-gray-800 font-extrabold text-xl mb-1">Select Markdown (.md or .txt) File</p>
-          <p class="text-gray-400 text-sm mb-6">or drag & drop your document here</p>
-          
-          <!-- BIG OBVIOUS UPLOAD BUTTON -->
-          <button type="button" id="browse-btn" onclick="document.getElementById('file-input').click()" class="bg-red-600 hover:bg-red-700 active:scale-98 text-white font-extrabold px-10 py-4 rounded-xl shadow-lg shadow-red-500/25 transition-all text-base cursor-pointer inline-flex items-center gap-2.5">
-            <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20"><path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H4zm5 3a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1zm-2 5a1 1 0 011-1h6a1 1 0 110 2H8a1 1 0 01-1-1zm0 3a1 1 0 011-1h6a1 1 0 110 2H8a1 1 0 01-1-1z"/></svg>
-            <span>Select Markdown File</span>
-          </button>
-          <input type="file" id="file-input" accept=".md,.txt" onchange="handleFileInput(this.files)" class="hidden">
-        </div>
-
-        <!-- Privacy Assurance Tag -->
-        <p class="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 py-2 px-4 rounded-xl inline-flex items-center gap-2">
-          <span>🔒</span> <span>100% Client-Side. Your file stays strictly on your computer and is never uploaded.</span>
-        </p>
-      </div>
-
-      <!-- ==========================================
-           MODE 2: INTERACTIVE EDITOR
-           ========================================== -->
-      <div id="editorView" class="hidden text-left space-y-4">
+      <!-- =========================================================================
+           SECTION 1: UPLOAD FILE STUDIO (100% ISOLATED LOGIC, PREVIEWS & FUNCTIONS)
+           ========================================================================= -->
+      <div id="section-upload" class="space-y-8 text-left">
         
-        <!-- Quick Toolbar -->
-        <div class="bg-slate-50 border border-slate-200 p-2.5 rounded-xl flex flex-wrap items-center justify-between gap-2">
-          <div class="flex items-center gap-1.5 flex-wrap">
-            <span class="text-xs font-black text-slate-500 uppercase mr-1">Toolbar</span>
-            <button type="button" onclick="insertSyntax('# ')" class="px-2.5 py-1 text-xs font-bold bg-white border border-slate-200 rounded hover:bg-slate-100">H1</button>
-            <button type="button" onclick="insertSyntax('## ')" class="px-2.5 py-1 text-xs font-bold bg-white border border-slate-200 rounded hover:bg-slate-100">H2</button>
-            <button type="button" onclick="insertSyntax('**', '**')" class="px-2.5 py-1 text-xs font-bold bg-white border border-slate-200 rounded hover:bg-slate-100">Bold</button>
-            <button type="button" onclick="insertSyntax('*', '*')" class="px-2.5 py-1 text-xs font-bold bg-white border border-slate-200 rounded hover:bg-slate-100 italic">Italic</button>
-            <button type="button" onclick="insertSyntax('`', '`')" class="px-2.5 py-1 text-xs font-bold bg-white border border-slate-200 rounded hover:bg-slate-100 font-mono-code">Code</button>
-            <button type="button" onclick="insertSyntax('> ')" class="px-2.5 py-1 text-xs font-bold bg-white border border-slate-200 rounded hover:bg-slate-100">Quote</button>
-            <button type="button" onclick="insertSyntax('- ')" class="px-2.5 py-1 text-xs font-bold bg-white border border-slate-200 rounded hover:bg-slate-100">• List</button>
-            <button type="button" onclick="insertTable()" class="px-2.5 py-1 text-xs font-bold bg-white border border-slate-200 rounded hover:bg-slate-100">📊 Table</button>
-          </div>
-          <div class="flex items-center gap-2">
-            <button type="button" onclick="clearAllDocument()" class="text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200/80 px-3 py-1 rounded-lg transition-colors flex items-center gap-1 cursor-pointer" title="Wipe editor and preview clean">
-              🗑️ Clear All
-            </button>
-            <button type="button" onclick="loadSampleText()" class="text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 px-3 py-1 rounded-lg transition-colors flex items-center gap-1 cursor-pointer" title="Load sample starter markdown">
-              ↻ Load Sample
-            </button>
-          </div>
-        </div>
-
-        <!-- Markdown Textarea -->
-        <textarea id="markdown-editor" spellcheck="false" placeholder="Write or paste your Markdown here..." 
-          class="w-full h-72 p-4 font-mono-code text-sm text-slate-800 bg-white border border-slate-300 rounded-2xl resize-y outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 leading-relaxed"></textarea>
-      </div>
-
-      <!-- ==========================================
-           PROCESSING, PREVIEW & DOWNLOAD CONTROLS
-           (Visible when document has content)
-           ========================================== -->
-      <div id="documentControls" class="mt-8 pt-8 border-t border-slate-200 text-left space-y-6">
-        
-        <!-- File Info & Setting Bar -->
-        <div class="bg-slate-50 border border-slate-200 p-4 sm:p-5 rounded-2xl flex flex-wrap items-center justify-between gap-4">
-          
-          <!-- Loaded Document Badge -->
+        <!-- Upload Studio Header & Control Bar -->
+        <div class="bg-slate-50 border border-slate-200/80 p-4 sm:p-5 rounded-2xl flex flex-wrap items-center justify-between gap-4">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center font-bold text-lg">
-              📄
+              📁
             </div>
             <div>
-              <div id="activeDocTitle" class="font-extrabold text-slate-900 text-sm sm:text-base">Document Ready</div>
-              <div id="activeDocMeta" class="text-xs font-semibold text-slate-500">Ready for conversion</div>
+              <div class="font-black text-slate-900 text-base">Upload Markdown Mode</div>
+              <div id="up_statusBadge" class="text-xs font-semibold text-slate-500">No file uploaded yet • Clean state</div>
             </div>
+          </div>
+
+          <!-- Independent Upload Studio Actions -->
+          <div class="flex items-center gap-2.5 flex-wrap">
+            <button type="button" onclick="up_loadSample()" class="px-4 py-2 rounded-xl text-xs font-extrabold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer active:scale-95" title="Load sample markdown file for upload mode">
+              <span>✨</span> <span>Sample Data</span>
+            </button>
+            <button type="button" onclick="up_clearAll()" class="px-4 py-2 rounded-xl text-xs font-extrabold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer active:scale-95" title="Clear uploaded file and previews">
+              <span>🗑️</span> <span>Clear All</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Drop Zone & File Selector -->
+        <div id="up_dropZone" class="border-3 border-dashed border-slate-300 hover:border-red-400 rounded-3xl p-8 sm:p-12 bg-slate-50/70 hover:bg-red-50/20 text-center transition-all cursor-pointer">
+          <span class="text-5xl block mb-3">📑📄✨</span>
+          <p id="up_fileNameDisplay" class="text-slate-800 font-extrabold text-lg sm:text-xl mb-1">Select Markdown (.md or .txt) File</p>
+          <p class="text-slate-400 text-xs sm:text-sm mb-5">or drag & drop your document directly here</p>
+          
+          <button type="button" onclick="document.getElementById('up_fileInput').click()" class="bg-red-600 hover:bg-red-700 active:scale-98 text-white font-black px-8 py-3.5 rounded-xl shadow-lg shadow-red-500/25 transition-all text-sm sm:text-base cursor-pointer inline-flex items-center gap-2">
+            <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20"><path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H4zm5 3a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1zm-2 5a1 1 0 011-1h6a1 1 0 110 2H8a1 1 0 01-1-1zm0 3a1 1 0 011-1h6a1 1 0 110 2H8a1 1 0 01-1-1z"/></svg>
+            <span>Browse Markdown File</span>
+          </button>
+          <input type="file" id="up_fileInput" accept=".md,.txt,.markdown" onchange="up_handleFileInput(this.files)" class="hidden">
+        </div>
+
+        <!-- Upload File Info Card (Visible when file is loaded) -->
+        <div id="up_fileInfoCard" class="hidden bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-lg">
+              ✅
+            </div>
+            <div>
+              <div id="up_loadedDocTitle" class="font-extrabold text-slate-900 text-sm sm:text-base">Document Loaded</div>
+              <div id="up_loadedDocMeta" class="text-xs font-semibold text-slate-500">0 words • 0 characters</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="document.getElementById('up_fileInput').click()" class="text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3.5 py-2 rounded-xl transition cursor-pointer">
+              🔄 Change File
+            </button>
+          </div>
+        </div>
+
+        <!-- Customization Settings & View Switcher Bar (Upload Mode) -->
+        <div class="bg-slate-50 border border-slate-200/90 p-4 sm:p-5 rounded-2xl flex flex-wrap items-center justify-between gap-4">
+          
+          <!-- View Toggles: Split View vs Input Only vs Output Only -->
+          <div class="flex items-center gap-1.5 bg-slate-200/80 p-1 rounded-xl">
+            <button type="button" id="up_btnViewSplit" onclick="up_setViewMode('split')" class="px-3 py-1.5 rounded-lg text-xs font-black bg-white text-slate-900 shadow-2xs transition cursor-pointer">
+              🔀 Split View
+            </button>
+            <button type="button" id="up_btnViewInput" onclick="up_setViewMode('input')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition cursor-pointer">
+              📝 Input Preview
+            </button>
+            <button type="button" id="up_btnViewOutput" onclick="up_setViewMode('output')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition cursor-pointer">
+              📄 Output Preview
+            </button>
           </div>
 
           <!-- Document Customization Dropdowns -->
-          <div class="flex flex-wrap items-center gap-3 text-xs font-bold text-slate-700">
+          <div class="flex flex-wrap items-center gap-2.5 text-xs font-bold text-slate-700">
             <!-- Theme -->
-            <div class="flex items-center gap-1.5 bg-white border border-slate-200 px-3 py-2 rounded-xl">
+            <div class="flex items-center gap-1.5 bg-white border border-slate-200 px-3 py-2 rounded-xl shadow-2xs">
               <span class="text-slate-400">Theme:</span>
-              <select id="themeSelect" onchange="updatePreviewTheme()" class="bg-transparent font-bold outline-none cursor-pointer text-slate-800">
+              <select id="up_themeSelect" onchange="up_updateTheme()" class="bg-transparent font-bold outline-none cursor-pointer text-slate-800">
                 <option value="default">Default Clean</option>
                 <option value="github-light">GitHub Light</option>
                 <option value="github-dark">GitHub Dark</option>
@@ -450,18 +447,18 @@
             </div>
 
             <!-- Paper -->
-            <div class="flex items-center gap-1.5 bg-white border border-slate-200 px-3 py-2 rounded-xl">
+            <div class="flex items-center gap-1.5 bg-white border border-slate-200 px-3 py-2 rounded-xl shadow-2xs">
               <span class="text-slate-400">Paper:</span>
-              <select id="paperSelect" class="bg-transparent font-bold outline-none cursor-pointer text-slate-800">
+              <select id="up_paperSelect" class="bg-transparent font-bold outline-none cursor-pointer text-slate-800">
                 <option value="a4" selected>A4</option>
                 <option value="letter">Letter</option>
               </select>
             </div>
 
             <!-- Margin -->
-            <div class="flex items-center gap-1.5 bg-white border border-slate-200 px-3 py-2 rounded-xl">
+            <div class="flex items-center gap-1.5 bg-white border border-slate-200 px-3 py-2 rounded-xl shadow-2xs">
               <span class="text-slate-400">Margin:</span>
-              <select id="marginSelect" class="bg-transparent font-bold outline-none cursor-pointer text-slate-800">
+              <select id="up_marginSelect" class="bg-transparent font-bold outline-none cursor-pointer text-slate-800">
                 <option value="10" selected>Normal (10mm)</option>
                 <option value="15">Moderate (15mm)</option>
                 <option value="20">Wide (20mm)</option>
@@ -471,55 +468,217 @@
           </div>
         </div>
 
-        <!-- Big Prominent CTA Actions -->
-        <div class="flex flex-wrap items-center justify-between gap-4">
+        <!-- =========================================================
+             DUAL PREVIEWS CONTAINER (UPLOAD MODE): INPUT & OUTPUT
+             ========================================================= -->
+        <div id="up_previewsGrid" class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
           
-          <!-- Secondary Actions -->
+          <!-- PANEL A: INPUT PREVIEW (Raw Markdown Content of Uploaded File) -->
+          <div id="up_inputPanel" class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden flex flex-col h-full">
+            <div class="bg-slate-100/90 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-black text-slate-800 uppercase tracking-wider">📝 Input Preview (Raw Source)</span>
+                <span id="up_inputLinesBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">0 lines</span>
+              </div>
+              <button type="button" onclick="up_copyRaw()" class="text-xs font-bold text-slate-700 hover:text-slate-900 bg-white border border-slate-200 px-2.5 py-1 rounded-lg transition active:scale-95 cursor-pointer">
+                📋 Copy Text
+              </button>
+            </div>
+            <div class="p-4 bg-slate-900 text-slate-100 flex-1 overflow-x-auto min-h-[380px] max-h-[550px] overflow-y-auto rounded-b-2xl font-mono-code text-xs leading-relaxed select-all">
+              <pre id="up_rawCodeViewer" class="whitespace-pre-wrap word-break-all text-slate-300">No Markdown uploaded. Upload a file above or click "✨ Sample Data" to preview raw input.</pre>
+            </div>
+          </div>
+
+          <!-- PANEL B: OUTPUT PREVIEW (Rendered PDF Document Sheet) -->
+          <div id="up_outputPanel" class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden flex flex-col h-full">
+            <div class="bg-slate-100/90 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-black text-slate-800 uppercase tracking-wider">📄 Output Preview (Formatted PDF)</span>
+                <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+              </div>
+              <span id="up_outputTag" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">Print Ready</span>
+            </div>
+            
+            <div class="p-4 sm:p-6 bg-slate-200/60 overflow-x-auto flex-1 min-h-[380px] max-h-[550px] overflow-y-auto rounded-b-2xl flex justify-center">
+              <div id="up_pdfRenderCanvas" class="bg-white border border-slate-300 shadow-lg p-6 sm:p-10 w-full max-w-[650px] min-h-[380px] rounded-lg transition-all text-left">
+                <div id="up_previewContainer" class="markdown-body">
+                  <p class="text-slate-400 italic text-center py-16">No document to preview. Upload a Markdown file above to see output.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Upload Studio CTA Actions -->
+        <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-200">
           <div class="flex items-center gap-2 flex-wrap">
-            <button type="button" onclick="loadSampleText()" class="px-3.5 py-2 text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs" title="Load sample document">
-              <span>✨</span> <span>Sample Data</span>
+            <button type="button" onclick="up_loadSample()" class="px-3.5 py-2 text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-xl transition shadow-2xs cursor-pointer active:scale-95">
+              ✨ Sample Data
             </button>
-            <button type="button" onclick="copyMarkdown()" class="px-3.5 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all">
+            <button type="button" onclick="up_copyRaw()" class="px-3.5 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition cursor-pointer">
               📋 Copy Markdown
             </button>
-            <button type="button" onclick="downloadRawMd()" class="px-3.5 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all">
+            <button type="button" onclick="up_downloadMd()" class="px-3.5 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition cursor-pointer">
               💾 Save .md
             </button>
-            <button type="button" onclick="clearAllDocument()" class="px-3.5 py-2 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-all cursor-pointer flex items-center gap-1" title="Clear all content and reset">
+            <button type="button" onclick="up_clearAll()" class="px-3.5 py-2 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition cursor-pointer">
               🗑️ Clear All
             </button>
           </div>
 
-          <!-- PRIMARY DOWNLOAD BUTTON (Large & Green, matching Filesques download style) -->
-          <button type="button" id="downloadPdfBtn" onclick="exportToPdf()" class="bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-black px-8 py-3.5 rounded-xl shadow-lg shadow-emerald-600/30 transition-all text-base cursor-pointer inline-flex items-center gap-2.5">
-            <span id="btnIcon">📥</span>
-            <span id="btnText">Download PDF Document</span>
+          <button type="button" id="up_downloadPdfBtn" onclick="up_exportPdf()" class="bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-black px-8 py-3.5 rounded-xl shadow-lg shadow-emerald-600/30 transition-all text-base cursor-pointer inline-flex items-center gap-2.5">
+            <span id="up_btnIcon">📥</span>
+            <span id="up_btnText">Download PDF Document</span>
           </button>
         </div>
 
-        <!-- Status Toast Banner -->
-        <div id="statusToast" class="hidden p-3.5 rounded-xl text-xs font-bold text-center"></div>
+      </div>
 
-        <!-- Document Preview Accordion / Frame -->
-        <div class="border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
-          <div class="bg-slate-100/80 px-5 py-3 border-b border-slate-200 flex items-center justify-between">
-            <span class="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-2">
-              <span>📄 Document Live Preview</span>
-              <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
-            </span>
-            <span class="text-[11px] font-bold text-slate-500">Searchable Text Output</span>
+      <!-- =========================================================================
+           SECTION 2: WRITE / PASTE STUDIO (100% ISOLATED LOGIC, PREVIEWS & FUNCTIONS)
+           ========================================================================= -->
+      <div id="section-write" class="hidden space-y-8 text-left">
+        
+        <!-- Write Studio Header & Control Bar -->
+        <div class="bg-slate-50 border border-slate-200/80 p-4 sm:p-5 rounded-2xl flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-lg">
+              ✍️
+            </div>
+            <div>
+              <div class="font-black text-slate-900 text-base">Write / Paste Markdown Mode</div>
+              <div id="wr_statusBadge" class="text-xs font-semibold text-slate-500">0 words • 0 characters • Clean editor</div>
+            </div>
           </div>
 
-          <!-- Printable Container with Paper Styling -->
-          <div class="p-6 sm:p-10 bg-slate-200/60 flex justify-center overflow-x-auto">
-            <div id="pdfRenderCanvas" class="bg-white border border-slate-300 shadow-xl p-8 sm:p-12 w-full max-w-[720px] min-h-[450px] rounded-lg transition-all">
-              <div id="previewContainer" class="markdown-body">
-                <!-- Dynamically populated via marked.js -->
-              </div>
+          <!-- Independent Write Studio Actions -->
+          <div class="flex items-center gap-2.5 flex-wrap">
+            <button type="button" onclick="wr_loadSample()" class="px-4 py-2 rounded-xl text-xs font-extrabold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer active:scale-95" title="Load sample markdown text into editor">
+              <span>✨</span> <span>Sample Data</span>
+            </button>
+            <button type="button" onclick="wr_clearAll()" class="px-4 py-2 rounded-xl text-xs font-extrabold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer active:scale-95" title="Wipe editor and preview clean">
+              <span>🗑️</span> <span>Clear All</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Markdown Formatting Quick Toolbar -->
+        <div class="bg-white border border-slate-200 p-3 rounded-2xl shadow-xs flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="text-xs font-black text-slate-400 uppercase tracking-wider mr-1">Toolbar</span>
+            <button type="button" onclick="wr_insertSyntax('# ')" class="px-2.5 py-1 text-xs font-bold bg-slate-100 hover:bg-slate-200 rounded-lg cursor-pointer">H1</button>
+            <button type="button" onclick="wr_insertSyntax('## ')" class="px-2.5 py-1 text-xs font-bold bg-slate-100 hover:bg-slate-200 rounded-lg cursor-pointer">H2</button>
+            <button type="button" onclick="wr_insertSyntax('### ')" class="px-2.5 py-1 text-xs font-bold bg-slate-100 hover:bg-slate-200 rounded-lg cursor-pointer">H3</button>
+            <button type="button" onclick="wr_insertSyntax('**', '**')" class="px-2.5 py-1 text-xs font-bold bg-slate-100 hover:bg-slate-200 rounded-lg font-black cursor-pointer">B</button>
+            <button type="button" onclick="wr_insertSyntax('*', '*')" class="px-2.5 py-1 text-xs font-bold bg-slate-100 hover:bg-slate-200 rounded-lg italic cursor-pointer">I</button>
+            <button type="button" onclick="wr_insertCodeBlock()" class="px-2.5 py-1 text-xs font-bold bg-slate-100 hover:bg-slate-200 rounded-lg font-mono-code cursor-pointer">Code</button>
+            <button type="button" onclick="wr_insertSyntax('> ')" class="px-2.5 py-1 text-xs font-bold bg-slate-100 hover:bg-slate-200 rounded-lg cursor-pointer">Quote</button>
+            <button type="button" onclick="wr_insertSyntax('- ')" class="px-2.5 py-1 text-xs font-bold bg-slate-100 hover:bg-slate-200 rounded-lg cursor-pointer">• List</button>
+            <button type="button" onclick="wr_insertTable()" class="px-2.5 py-1 text-xs font-bold bg-slate-100 hover:bg-slate-200 rounded-lg cursor-pointer">📊 Table</button>
+            <button type="button" onclick="wr_insertSyntax('\n---\n')" class="px-2.5 py-1 text-xs font-bold bg-slate-100 hover:bg-slate-200 rounded-lg cursor-pointer">Divider</button>
+          </div>
+
+          <!-- Document Customization Dropdowns -->
+          <div class="flex flex-wrap items-center gap-2.5 text-xs font-bold text-slate-700">
+            <!-- Theme -->
+            <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl">
+              <span class="text-slate-400">Theme:</span>
+              <select id="wr_themeSelect" onchange="wr_updateTheme()" class="bg-transparent font-bold outline-none cursor-pointer text-slate-800">
+                <option value="default">Default Clean</option>
+                <option value="github-light">GitHub Light</option>
+                <option value="github-dark">GitHub Dark</option>
+                <option value="academic-serif">Academic Serif</option>
+                <option value="professional">Professional</option>
+              </select>
+            </div>
+
+            <!-- Paper -->
+            <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl">
+              <span class="text-slate-400">Paper:</span>
+              <select id="wr_paperSelect" class="bg-transparent font-bold outline-none cursor-pointer text-slate-800">
+                <option value="a4" selected>A4</option>
+                <option value="letter">Letter</option>
+              </select>
+            </div>
+
+            <!-- Margin -->
+            <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl">
+              <span class="text-slate-400">Margin:</span>
+              <select id="wr_marginSelect" class="bg-transparent font-bold outline-none cursor-pointer text-slate-800">
+                <option value="10" selected>Normal (10mm)</option>
+                <option value="15">Moderate (15mm)</option>
+                <option value="20">Wide (20mm)</option>
+                <option value="30">Wide (30mm)</option>
+              </select>
             </div>
           </div>
         </div>
+
+        <!-- =========================================================
+             DUAL PREVIEWS CONTAINER (WRITE MODE): INPUT & OUTPUT
+             ========================================================= -->
+        <div id="wr_previewsGrid" class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+          
+          <!-- PANEL A: INPUT (Interactive Live Markdown Editor) -->
+          <div id="wr_inputPanel" class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden flex flex-col h-full">
+            <div class="bg-slate-100/90 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+              <span class="text-xs font-black text-slate-800 uppercase tracking-wider">✍️ Input: Markdown Editor</span>
+              <span id="wr_charCounter" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">0 characters</span>
+            </div>
+            <textarea id="wr_editorTextarea" oninput="wr_onEditorInput()" spellcheck="false" placeholder="Write or paste your Markdown text here... Type # for headings, - for lists, or click '✨ Sample Data' above." 
+              class="w-full min-h-[460px] p-5 font-mono-code text-sm text-slate-800 bg-white resize-y outline-none leading-relaxed border-none focus:ring-2 focus:ring-inset focus:ring-red-500"></textarea>
+          </div>
+
+          <!-- PANEL B: OUTPUT PREVIEW (Live Synchronized PDF Sheet) -->
+          <div id="wr_outputPanel" class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden flex flex-col h-full">
+            <div class="bg-slate-100/90 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-black text-slate-800 uppercase tracking-wider">📄 Output: Live Rendered PDF</span>
+                <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+              </div>
+              <span id="wr_outputTag" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200">Real-time Sync</span>
+            </div>
+            
+            <div class="p-4 sm:p-6 bg-slate-200/60 overflow-x-auto flex-1 min-h-[460px] max-h-[550px] overflow-y-auto rounded-b-2xl flex justify-center">
+              <div id="wr_pdfRenderCanvas" class="bg-white border border-slate-300 shadow-lg p-6 sm:p-10 w-full max-w-[650px] min-h-[460px] rounded-lg transition-all text-left">
+                <div id="wr_previewContainer" class="markdown-body">
+                  <p class="text-slate-400 italic text-center py-16">No content to preview. Type your Markdown in the editor to see live formatted output.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Write Studio CTA Actions -->
+        <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-200">
+          <div class="flex items-center gap-2 flex-wrap">
+            <button type="button" onclick="wr_loadSample()" class="px-3.5 py-2 text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-xl transition shadow-2xs cursor-pointer active:scale-95">
+              ✨ Sample Data
+            </button>
+            <button type="button" onclick="wr_copyRaw()" class="px-3.5 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition cursor-pointer">
+              📋 Copy Markdown
+            </button>
+            <button type="button" onclick="wr_downloadMd()" class="px-3.5 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition cursor-pointer">
+              💾 Save .md
+            </button>
+            <button type="button" onclick="wr_clearAll()" class="px-3.5 py-2 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition cursor-pointer">
+              🗑️ Clear All
+            </button>
+          </div>
+
+          <button type="button" id="wr_downloadPdfBtn" onclick="wr_exportPdf()" class="bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-black px-8 py-3.5 rounded-xl shadow-lg shadow-emerald-600/30 transition-all text-base cursor-pointer inline-flex items-center gap-2.5">
+            <span id="wr_btnIcon">📥</span>
+            <span id="wr_btnText">Download PDF Document</span>
+          </button>
+        </div>
+
       </div>
+
+      <!-- Shared Toast Notification -->
+      <div id="studioToast" class="hidden mt-6 p-4 rounded-2xl text-xs sm:text-sm font-bold text-center transition-all"></div>
+
     </div>
   </main>
 
@@ -546,357 +705,456 @@
   </aside>
 
   <script>
-    // Sample Starter Document
-    const defaultSample = `# Welcome to Filesque Markdown to PDF
+// =========================================================================
+// SAMPLE MARKDOWN DATA (Zero Syntax Errors)
+// =========================================================================
+var UPLOAD_SAMPLE_DATA = [
+  '# Technical Architecture & System Specifications',
+  '',
+  '**Document Reference**: FSQ-ARCH-2026-X • **Status**: Production Approved',
+  '',
+  '---',
+  '',
+  '## 1. Executive Summary',
+  'This document outlines the core architectural deliverables, security guidelines, and deployment specifications for client-side document processing.',
+  '',
+  '### Core Technical Pillars',
+  '- **100% Client-Side**: No files or document telemetry ever leave your device.',
+  '- **Vector Precision**: Crisp fonts and bordered tables rendered via browser canvas.',
+  '- **Sandboxed Storage**: Session isolation ensuring complete GDPR and corporate privacy compliance.',
+  '',
+  '---',
+  '',
+  '### 2. Module Performance Matrix',
+  '',
+  '| Module | Engine | Latency Benchmark | Status |',
+  '| :--- | :--- | :---: | :---: |',
+  '| Markdown Parser | marked.js GFM | < 20ms | Operational |',
+  '| HTML Sanitizer | DOMPurify Core | < 15ms | Operational |',
+  '| PDF Renderer | html2pdf & jsPDF | < 1.1s | High-Fidelity |',
+  '',
+  '```javascript',
+  '// Verification Routine',
+  'function verifySystemHealth() {',
+  '    console.log("Filesque Engine Status: Healthy");',
+  '    return true;',
+  '}',
+  '```',
+  '',
+  '> **Privacy Confirmation**: All documents are compiled strictly in volatile browser memory.'
+].join('\n');
 
-Convert your notes, specifications, and documents into clean, professional PDF files directly in your browser.
+var WRITE_SAMPLE_DATA = [
+  '# Strategic Roadmap & Quarterly Milestones',
+  '',
+  '## 1. Objectives & Overview',
+  'Welcome to the interactive Markdown editor. Write, format, and visualize your documents in real-time.',
+  '',
+  '### Key Strategic Pillars',
+  '1. **Accelerate Adoption**: Reach 500,000 monthly active users across document utilities.',
+  '2. **Design Excellence**: Provide crisp, publication-ready vector PDF outputs.',
+  '3. **Privacy First**: Ensure complete in-browser sandboxing for all corporate workflows.',
+  '',
+  '---',
+  '',
+  '### 2. Implementation Schedule',
+  '',
+  '| Initiative | Team Lead | Target Date | Priority |',
+  '| :--- | :--- | :---: | :---: |',
+  '| Markdown Engine | Core Engineering | Week 1 | High |',
+  '| Theme Palettes | UI/UX Design | Week 2 | Medium |',
+  '| Export Optimization | Performance Team | Week 3 | High |',
+  '',
+  '```bash',
+  '# Quick Run Command',
+  'npm run build:production',
+  '```',
+  '',
+  '*Drafted with precision in Filesque Markdown Studio.*'
+].join('\n');
 
-## Core Features
-- **100% Client-Side**: No files or data ever leave your computer.
-- **Tables & Lists**: Clean bordered tables and indented lists.
-- **Code Blocks**: Formatted monospace code with safe line wrapping.
-- **Custom Themes**: Select from Clean, GitHub, or Academic styles.
+// Isolated Upload State
+var up_state = { rawMarkdown: '', fileName: 'markdown-document', fileSize: 0, isProcessing: false, viewMode: 'split' };
 
----
+// Isolated Write State
+var wr_state = { rawMarkdown: '', fileName: 'markdown-document', isProcessing: false };
 
-### Sample Formatted Table
-
-| Feature | Supported | Description |
-| :--- | :---: | :--- |
-| **Searchable PDF** | ✅ Yes | Selectable text preservation |
-| **Table Layout** | ✅ Yes | Clean borders & padding |
-| **Privacy** | ✅ Yes | 100% local browser execution |
-
-\`\`\`javascript
-// Example Code Block
-function exportDocument() {
-    console.log("Exporting Markdown to PDF on Filesque...");
+var _mInstance = (typeof window !== 'undefined' && window.marked) ? window.marked : (typeof marked !== 'undefined' ? marked : null);
+if (_mInstance && _mInstance.setOptions) {
+  _mInstance.setOptions({ gfm: true, breaks: true, headerIds: true, mangle: false, sanitize: false });
 }
-\`\`\`
 
-> **Privacy Notice**: All PDF generation is processed in your web browser memory. No data is stored or logged.
-`;
-
-    // State
-    let currentMarkdown = "";
-    let currentFileName = "markdown-document";
-    let isProcessing = false;
-
-    // DOM references
-    const dropZone = document.getElementById('drop-zone');
-    const fileInput = document.getElementById('file-input');
-    const fileNameDisplay = document.getElementById('file-name-display');
-    const editor = document.getElementById('markdown-editor');
-    const preview = document.getElementById('previewContainer');
-    const renderCanvas = document.getElementById('pdfRenderCanvas');
-    const docControls = document.getElementById('documentControls');
-    const activeDocTitle = document.getElementById('activeDocTitle');
-    const activeDocMeta = document.getElementById('activeDocMeta');
-    const downloadPdfBtn = document.getElementById('downloadPdfBtn');
-    const btnIcon = document.getElementById('btnIcon');
-    const btnText = document.getElementById('btnText');
-    const statusToast = document.getElementById('statusToast');
-    const themeSelect = document.getElementById('themeSelect');
-    const paperSelect = document.getElementById('paperSelect');
-    const marginSelect = document.getElementById('marginSelect');
-    const uploadView = document.getElementById('uploadView');
-    const editorView = document.getElementById('editorView');
-    const tabUploadBtn = document.getElementById('tabUploadBtn');
-    const tabTypeBtn = document.getElementById('tabTypeBtn');
-
-    // Configure marked.js safely
-    marked.setOptions({
-      gfm: true,
-      breaks: true,
-      headerIds: true,
-      mangle: false,
-      sanitize: false // Sanitized strictly via DOMPurify
+function renderMarkdownSafe(text) {
+  if (!text) return '';
+  var m = (typeof window !== 'undefined' && window.marked) ? window.marked : (typeof marked !== 'undefined' ? marked : null);
+  var p = (typeof window !== 'undefined' && window.DOMPurify) ? window.DOMPurify : (typeof DOMPurify !== 'undefined' ? DOMPurify : null);
+  if (!m || !m.parse) return '<pre class="p-4 text-xs font-mono">' + text + '</pre>';
+  var rawHtml = m.parse(text);
+  if (p && p.sanitize) {
+    return p.sanitize(rawHtml, {
+      ADD_ATTR: ['target'],
+      FORBID_TAGS: ['script', 'iframe', 'object', 'embed'],
+      FORBID_ATTR: ['onerror', 'onload', 'onclick']
     });
+  }
+  return rawHtml;
+}
 
-    // Mobile nav toggle
-    function toggleMobileMenu() {
-      const menu = document.getElementById('mobile-menu');
-      menu.classList.toggle('hidden');
-    }
+function toggleMobileMenu() {
+  var menu = document.getElementById('mobile-menu');
+  if (menu) menu.classList.toggle('hidden');
+}
 
-    // Initialize
-    window.addEventListener('DOMContentLoaded', () => {
-      clearAllDocument(true); // Always start 100% clean/blank by default
-      setupDragDrop();
+window.addEventListener('DOMContentLoaded', function() {
+  up_clearAll(true);
+  wr_clearAll(true);
+  up_setupDragDrop();
+  var wrEditor = document.getElementById('wr_editorTextarea');
+  if (wrEditor) {
+    wrEditor.addEventListener('input', wr_onEditorInput);
+  }
+});
 
-      editor.addEventListener('input', () => {
-        currentMarkdown = editor.value;
-        renderMarkdownText(currentMarkdown);
-      });
+function wr_onEditorInput() {
+  var wrEditor = document.getElementById('wr_editorTextarea');
+  if (wrEditor) {
+    wr_state.rawMarkdown = wrEditor.value;
+    wr_renderOutput(wr_state.rawMarkdown);
+  }
+}
+
+function switchStudioTab(mode) {
+  var upSec = document.getElementById('section-upload');
+  var wrSec = document.getElementById('section-write');
+  var upTab = document.getElementById('tabUploadBtn');
+  var wrTab = document.getElementById('tabWriteBtn');
+  if (mode === 'upload') {
+    if (upSec) upSec.classList.remove('hidden');
+    if (wrSec) wrSec.classList.add('hidden');
+    if (upTab) upTab.className = 'px-6 py-3 rounded-2xl font-black text-sm transition-all shadow-md flex items-center gap-2.5 bg-red-600 text-white cursor-pointer active:scale-95';
+    if (wrTab) wrTab.className = 'px-6 py-3 rounded-2xl font-black text-sm transition-all text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 cursor-pointer flex items-center gap-2.5 active:scale-95';
+  } else {
+    if (upSec) upSec.classList.add('hidden');
+    if (wrSec) wrSec.classList.remove('hidden');
+    if (wrTab) wrTab.className = 'px-6 py-3 rounded-2xl font-black text-sm transition-all shadow-md flex items-center gap-2.5 bg-red-600 text-white cursor-pointer active:scale-95';
+    if (upTab) upTab.className = 'px-6 py-3 rounded-2xl font-black text-sm transition-all text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 cursor-pointer flex items-center gap-2.5 active:scale-95';
+    var wrEditor = document.getElementById('wr_editorTextarea');
+    if (wrEditor) wrEditor.focus();
+  }
+}
+
+// Upload Studio Functions
+function up_setupDragDrop() {
+  var dropZone = document.getElementById('up_dropZone');
+  if (!dropZone) return;
+  ['dragenter', 'dragover'].forEach(function(evt) {
+    dropZone.addEventListener(evt, function(e) {
+      e.preventDefault(); e.stopPropagation();
+      dropZone.classList.add('border-red-500', 'bg-red-50/40');
     });
+  });
+  ['dragleave', 'drop'].forEach(function(evt) {
+    dropZone.addEventListener(evt, function(e) {
+      e.preventDefault(); e.stopPropagation();
+      dropZone.classList.remove('border-red-500', 'bg-red-50/40');
+    });
+  });
+  dropZone.addEventListener('drop', function(e) {
+    var files = e.dataTransfer.files;
+    if (files && files.length > 0) up_handleFileInput(files);
+  });
+}
 
-    // Mode Switcher (Upload File vs Type Markdown)
-    function switchMode(mode) {
-      if (mode === 'upload') {
-        uploadView.classList.remove('hidden');
-        editorView.classList.add('hidden');
-        tabUploadBtn.className = "px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-xs flex items-center gap-2 bg-red-600 text-white cursor-pointer";
-        tabTypeBtn.className = "px-5 py-2.5 rounded-xl font-bold text-sm transition-all text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 cursor-pointer flex items-center gap-2";
-      } else {
-        uploadView.classList.add('hidden');
-        editorView.classList.remove('hidden');
-        tabTypeBtn.className = "px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-xs flex items-center gap-2 bg-red-600 text-white cursor-pointer";
-        tabUploadBtn.className = "px-5 py-2.5 rounded-xl font-bold text-sm transition-all text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 cursor-pointer flex items-center gap-2";
-        editor.focus();
-      }
+function up_handleFileInput(files) {
+  if (!files || files.length === 0) return;
+  var file = files[0];
+  var validExts = ['.md', '.txt', '.markdown'];
+  var ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+  if (!validExts.includes(ext)) {
+    showStudioToast('Please upload a valid Markdown file (.md, .txt, .markdown).', 'error');
+    return;
+  }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    up_state.rawMarkdown = e.target.result;
+    up_state.fileName = file.name.replace(/\.[^/.]+$/, '');
+    up_state.fileSize = file.size;
+    up_renderBothPreviews(up_state.rawMarkdown, file.name, file.size);
+    showStudioToast('Uploaded: ' + file.name + ' successfully! 📄', 'success');
+  };
+  reader.onerror = function() { showStudioToast('Failed to read uploaded file.', 'error'); };
+  reader.readAsText(file);
+}
+
+function up_loadSample() {
+  up_state.rawMarkdown = UPLOAD_SAMPLE_DATA;
+  up_state.fileName = 'project-specifications';
+  up_state.fileSize = new Blob([UPLOAD_SAMPLE_DATA]).size;
+  up_renderBothPreviews(up_state.rawMarkdown, 'project-specifications.md', up_state.fileSize);
+  showStudioToast('Sample File Loaded in Upload Studio! ✨', 'success');
+}
+
+function up_renderBothPreviews(text, fileName, sizeBytes) {
+  var codeViewer = document.getElementById('up_rawCodeViewer');
+  var previewContainer = document.getElementById('up_previewContainer');
+  var linesBadge = document.getElementById('up_inputLinesBadge');
+  var statusBadge = document.getElementById('up_statusBadge');
+  var infoCard = document.getElementById('up_fileInfoCard');
+  var docTitle = document.getElementById('up_loadedDocTitle');
+  var docMeta = document.getElementById('up_loadedDocMeta');
+  if (!text || !text.trim()) {
+    if (codeViewer) codeViewer.innerText = 'No Markdown uploaded. Upload a file above or click "✨ Sample Data" to preview raw input.';
+    if (previewContainer) previewContainer.innerHTML = '<p class="text-slate-400 italic text-center py-16">No document to preview. Upload a Markdown file above to see output.</p>';
+    if (linesBadge) linesBadge.innerText = '0 lines';
+    if (statusBadge) statusBadge.innerText = 'No file uploaded yet • Clean state';
+    if (infoCard) infoCard.classList.add('hidden');
+    return;
+  }
+  if (codeViewer) codeViewer.innerText = text;
+  var lines = text.split('\n').length;
+  if (linesBadge) linesBadge.innerText = lines + ' lines';
+  if (previewContainer) {
+    try {
+      var cleanHtml = renderMarkdownSafe(text);
+      previewContainer.innerHTML = cleanHtml;
+      previewContainer.querySelectorAll('h1, h2, h3, table, pre, blockquote').forEach(function(el) { el.classList.add('page-break-avoid'); });
+    } catch (err) {
+      console.error('Upload parse error:', err);
+      previewContainer.innerHTML = '<p class="text-red-500 font-bold text-center py-10">Error rendering Markdown output preview.</p>';
     }
+  }
+  var words = text.trim().split(/\s+/).length;
+  var sizeKB = ((sizeBytes || 0) / 1024).toFixed(1);
+  if (infoCard) infoCard.classList.remove('hidden');
+  if (docTitle) docTitle.innerText = fileName || 'markdown-document.md';
+  if (docMeta) docMeta.innerText = words + ' words • ' + text.length + ' characters • ' + sizeKB + ' KB';
+  if (statusBadge) statusBadge.innerText = (fileName || 'Document') + ' • Ready for PDF Export';
+}
 
-    // Render markdown to preview safely
-    function renderMarkdownText(text) {
-      if (!text || !text.trim()) {
-        preview.innerHTML = '<p class="text-slate-400 italic text-center py-8">No content to preview. Upload a Markdown file or type text above.</p>';
-        activeDocTitle.innerText = "Empty Document";
-        activeDocMeta.innerText = "0 words • 0 characters";
-        return;
-      }
+function up_setViewMode(mode) {
+  up_state.viewMode = mode;
+  var grid = document.getElementById('up_previewsGrid');
+  var inPanel = document.getElementById('up_inputPanel');
+  var outPanel = document.getElementById('up_outputPanel');
+  var btnSplit = document.getElementById('up_btnViewSplit');
+  var btnInput = document.getElementById('up_btnViewInput');
+  var btnOutput = document.getElementById('up_btnViewOutput');
+  [btnSplit, btnInput, btnOutput].forEach(function(b) {
+    if (b) b.className = 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition cursor-pointer';
+  });
+  if (mode === 'split') {
+    if (grid) grid.className = 'grid grid-cols-1 lg:grid-cols-2 gap-6 items-start';
+    if (inPanel) inPanel.classList.remove('hidden');
+    if (outPanel) outPanel.classList.remove('hidden');
+    if (btnSplit) btnSplit.className = 'px-3 py-1.5 rounded-lg text-xs font-black bg-white text-slate-900 shadow-2xs transition cursor-pointer';
+  } else if (mode === 'input') {
+    if (grid) grid.className = 'grid grid-cols-1 gap-6 items-start';
+    if (inPanel) inPanel.classList.remove('hidden');
+    if (outPanel) outPanel.classList.add('hidden');
+    if (btnInput) btnInput.className = 'px-3 py-1.5 rounded-lg text-xs font-black bg-white text-slate-900 shadow-2xs transition cursor-pointer';
+  } else if (mode === 'output') {
+    if (grid) grid.className = 'grid grid-cols-1 gap-6 items-start';
+    if (inPanel) inPanel.classList.add('hidden');
+    if (outPanel) outPanel.classList.remove('hidden');
+    if (btnOutput) btnOutput.className = 'px-3 py-1.5 rounded-lg text-xs font-black bg-white text-slate-900 shadow-2xs transition cursor-pointer';
+  }
+}
 
-      try {
-        const rawHtml = marked.parse(text);
-        const cleanHtml = DOMPurify.sanitize(rawHtml, {
-          ADD_ATTR: ['target'],
-          FORBID_TAGS: ['script', 'iframe', 'object', 'embed'],
-          FORBID_ATTR: ['onerror', 'onload', 'onclick']
-        });
-        preview.innerHTML = cleanHtml;
+function up_updateTheme() {
+  var select = document.getElementById('up_themeSelect');
+  var canvas = document.getElementById('up_pdfRenderCanvas');
+  if (!select || !canvas) return;
+  canvas.classList.remove('theme-github-light', 'theme-github-dark', 'theme-academic-serif', 'theme-professional');
+  if (select.value !== 'default') canvas.classList.add('theme-' + select.value);
+}
 
-        // Apply page-break-avoid to headings, tables, code blocks
-        preview.querySelectorAll('h1, h2, h3, table, pre, blockquote').forEach(el => {
-          el.classList.add('page-break-avoid');
-        });
+function up_copyRaw() {
+  if (!up_state.rawMarkdown.trim()) { showStudioToast('Nothing to copy in Upload Studio.', 'error'); return; }
+  navigator.clipboard.writeText(up_state.rawMarkdown).then(function() { showStudioToast('Uploaded raw Markdown copied! 📋', 'success'); });
+}
 
-        // Update title & metadata
-        const headingMatch = text.match(/^#\s+(.+)$/m);
-        const docName = headingMatch ? headingMatch[1].trim() : currentFileName;
-        activeDocTitle.innerText = docName;
-        const words = text.trim().split(/\s+/).length;
-        activeDocMeta.innerText = `${words} words • ${text.length} characters`;
+function up_downloadMd() {
+  if (!up_state.rawMarkdown.trim()) { showStudioToast('Upload document is empty.', 'error'); return; }
+  var blob = new Blob([up_state.rawMarkdown], { type: 'text/markdown;charset=utf-8' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = (up_state.fileName || 'uploaded-markdown') + '.md';
+  a.click(); URL.revokeObjectURL(a.href);
+  showStudioToast('Markdown file saved! 💾', 'success');
+}
 
-      } catch (err) {
-        console.error('Markdown parse error:', err);
-        preview.innerHTML = '<p class="text-red-500 font-bold">Error rendering Markdown preview.</p>';
-      }
+function up_clearAll(silent) {
+  up_state.rawMarkdown = ''; up_state.fileName = 'markdown-document'; up_state.fileSize = 0;
+  var fileIn = document.getElementById('up_fileInput');
+  if (fileIn) fileIn.value = '';
+  var themeSel = document.getElementById('up_themeSelect');
+  if (themeSel) { themeSel.value = 'default'; up_updateTheme(); }
+  var paperSel = document.getElementById('up_paperSelect');
+  if (paperSel) paperSel.value = 'a4';
+  var marginSel = document.getElementById('up_marginSelect');
+  if (marginSel) marginSel.value = '10';
+  up_renderBothPreviews('', '', 0);
+  if (!silent) showStudioToast('Upload Studio cleared completely. ✨', 'info');
+}
+
+function up_exportPdf() {
+  if (up_state.isProcessing) return;
+  if (!up_state.rawMarkdown.trim()) { showStudioToast('Please upload a file or load sample before exporting.', 'error'); return; }
+  up_state.isProcessing = true;
+  var btn = document.getElementById('up_downloadPdfBtn');
+  var icon = document.getElementById('up_btnIcon');
+  var text = document.getElementById('up_btnText');
+  if (btn) { btn.disabled = true; btn.classList.add('opacity-75', 'cursor-not-allowed'); }
+  if (icon) icon.innerText = '⏳';
+  if (text) text.innerText = 'Generating PDF...';
+  showStudioToast('Exporting Uploaded Markdown to PDF...', 'info');
+  var element = document.getElementById('up_previewContainer');
+  var paper = (document.getElementById('up_paperSelect') && document.getElementById('up_paperSelect').value) ? document.getElementById('up_paperSelect').value : 'a4';
+  var marginVal = (document.getElementById('up_marginSelect') && document.getElementById('up_marginSelect').value) ? parseInt(document.getElementById('up_marginSelect').value, 10) : 10;
+  var filename = (up_state.fileName || 'markdown-document') + '.pdf';
+  var opt = { margin: [marginVal, marginVal, marginVal, marginVal], filename: filename, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0 }, jsPDF: { unit: 'mm', format: paper, orientation: 'portrait' }, pagebreak: { mode: ['css', 'legacy'] } };
+  html2pdf().set(opt).from(element).save().then(function() { showStudioToast('PDF downloaded: ' + filename + ' 📥', 'success'); }).catch(function(err) { console.error('Upload PDF Error:', err); showStudioToast('Failed to generate PDF.', 'error'); }).finally(function() {
+    up_state.isProcessing = false;
+    if (btn) { btn.disabled = false; btn.classList.remove('opacity-75', 'cursor-not-allowed'); }
+    if (icon) icon.innerText = '📥';
+    if (text) text.innerText = 'Download PDF Document';
+  });
+}
+
+// Write Studio Functions
+function wr_loadSample() {
+  wr_state.rawMarkdown = WRITE_SAMPLE_DATA;
+  var editor = document.getElementById('wr_editorTextarea');
+  if (editor) editor.value = WRITE_SAMPLE_DATA;
+  wr_state.fileName = 'strategic-roadmap';
+  wr_renderOutput(WRITE_SAMPLE_DATA);
+  showStudioToast('Sample Data Loaded in Write Studio! ✨', 'success');
+}
+
+function wr_renderOutput(text) {
+  var preview = document.getElementById('wr_previewContainer');
+  var charCounter = document.getElementById('wr_charCounter');
+  var statusBadge = document.getElementById('wr_statusBadge');
+  if (!text || !text.trim()) {
+    if (preview) preview.innerHTML = '<p class="text-slate-400 italic text-center py-16">No content to preview. Type your Markdown in the editor to see live formatted output.</p>';
+    if (charCounter) charCounter.innerText = '0 characters';
+    if (statusBadge) statusBadge.innerText = '0 words • 0 characters • Clean editor';
+    return;
+  }
+  var words = text.trim().split(/\s+/).length;
+  if (charCounter) charCounter.innerText = text.length + ' characters';
+  if (statusBadge) statusBadge.innerText = words + ' words • ' + text.length + ' characters • Live synchronized';
+  if (preview) {
+    try {
+      var cleanHtml = renderMarkdownSafe(text);
+      preview.innerHTML = cleanHtml;
+      preview.querySelectorAll('h1, h2, h3, table, pre, blockquote').forEach(function(el) { el.classList.add('page-break-avoid'); });
+    } catch (err) {
+      console.error('Write parse error:', err);
+      preview.innerHTML = '<p class="text-red-500 font-bold text-center py-10">Error rendering Markdown preview.</p>';
     }
+  }
+}
 
-    // Handle File Input
-    function handleFileInput(files) {
-      if (!files || !files.length) return;
-      const file = files[0];
-      const valid = ['.md', '.txt'];
-      const ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+function wr_insertSyntax(prefix, suffix) {
+  var editor = document.getElementById('wr_editorTextarea');
+  if (!editor) return;
+  var s = suffix || '';
+  var start = editor.selectionStart;
+  var end = editor.selectionEnd;
+  var val = editor.value;
+  var selected = val.substring(start, end);
+  var replacement = prefix + selected + s;
+  editor.value = val.substring(0, start) + replacement + val.substring(end);
+  editor.focus();
+  editor.selectionStart = start + prefix.length;
+  editor.selectionEnd = start + prefix.length + selected.length;
+  wr_state.rawMarkdown = editor.value;
+  wr_renderOutput(wr_state.rawMarkdown);
+}
 
-      if (!valid.includes(ext)) {
-        showToast('Unsupported file type. Please upload a .md or .txt file.', 'error');
-        return;
-      }
+function wr_insertCodeBlock() {
+  wr_insertSyntax('\n```javascript\n', '\n```\n');
+}
 
-      if (file.size > 10 * 1024 * 1024) {
-        showToast('File size exceeds the 10 MB limit.', 'error');
-        return;
-      }
+function wr_insertTable() {
+  var tableText = '\n| Column 1 | Column 2 | Column 3 |\n| :--- | :---: | ---: |\n| Project A | Approved | $2,500 |\n| Project B | In Review | $4,800 |\n';
+  wr_insertSyntax(tableText, '');
+}
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        currentMarkdown = e.target.result;
-        editor.value = currentMarkdown;
-        currentFileName = file.name.replace(/\.[^/.]+$/, '');
-        fileNameDisplay.innerHTML = `<span class="text-emerald-600">✓ Loaded: ${file.name} (${(file.size / 1024).toFixed(1)} KB)</span>`;
-        renderMarkdownText(currentMarkdown);
-        showToast(`Loaded "${file.name}" successfully! Scroll down to download PDF.`, 'success');
-      };
-      reader.onerror = () => {
-        showToast('Could not read the uploaded file.', 'error');
-      };
-      reader.readAsText(file);
-    }
+function wr_updateTheme() {
+  var select = document.getElementById('wr_themeSelect');
+  var canvas = document.getElementById('wr_pdfRenderCanvas');
+  if (!select || !canvas) return;
+  canvas.classList.remove('theme-github-light', 'theme-github-dark', 'theme-academic-serif', 'theme-professional');
+  if (select.value !== 'default') canvas.classList.add('theme-' + select.value);
+}
 
-    // Drag and Drop
-    function setupDragDrop() {
-      ['dragenter', 'dragover'].forEach(eName => {
-        dropZone.addEventListener(eName, (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          dropZone.classList.add('border-red-500', 'bg-red-50/40');
-        });
-      });
+function wr_copyRaw() {
+  if (!wr_state.rawMarkdown.trim()) { showStudioToast('Nothing to copy in Write Studio.', 'error'); return; }
+  navigator.clipboard.writeText(wr_state.rawMarkdown).then(function() { showStudioToast('Markdown text copied! 📋', 'success'); });
+}
 
-      ['dragleave', 'drop'].forEach(eName => {
-        dropZone.addEventListener(eName, (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          dropZone.classList.remove('border-red-500', 'bg-red-50/40');
-        });
-      });
+function wr_downloadMd() {
+  if (!wr_state.rawMarkdown.trim()) { showStudioToast('Write document is empty.', 'error'); return; }
+  var blob = new Blob([wr_state.rawMarkdown], { type: 'text/markdown;charset=utf-8' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = (wr_state.fileName || 'markdown-document') + '.md';
+  a.click(); URL.revokeObjectURL(a.href);
+  showStudioToast('Markdown file saved! 💾', 'success');
+}
 
-      dropZone.addEventListener('drop', (e) => {
-        const dt = e.dataTransfer;
-        if (dt && dt.files && dt.files.length) {
-          handleFileInput(dt.files);
-        }
-      });
-    }
+function wr_clearAll(silent) {
+  wr_state.rawMarkdown = ''; wr_state.fileName = 'markdown-document';
+  var editor = document.getElementById('wr_editorTextarea');
+  if (editor) editor.value = '';
+  var themeSel = document.getElementById('wr_themeSelect');
+  if (themeSel) { themeSel.value = 'default'; wr_updateTheme(); }
+  var paperSel = document.getElementById('wr_paperSelect');
+  if (paperSel) paperSel.value = 'a4';
+  var marginSel = document.getElementById('wr_marginSelect');
+  if (marginSel) marginSel.value = '10';
+  wr_renderOutput('');
+  if (!silent) showStudioToast('Write Studio cleared completely. ✨', 'info');
+}
 
-    // Theme selector
-    function updatePreviewTheme() {
-      renderCanvas.classList.remove('theme-github-light', 'theme-github-dark', 'theme-academic-serif', 'theme-professional');
-      preview.classList.remove('theme-github-light', 'theme-github-dark', 'theme-academic-serif', 'theme-professional');
-      const val = themeSelect.value;
-      if (val !== 'default') {
-        renderCanvas.classList.add('theme-' + val);
-        preview.classList.add('theme-' + val);
-      }
-    }
+function wr_exportPdf() {
+  if (wr_state.isProcessing) return;
+  if (!wr_state.rawMarkdown.trim()) { showStudioToast('Please write Markdown or load sample before exporting.', 'error'); return; }
+  wr_state.isProcessing = true;
+  var btn = document.getElementById('wr_downloadPdfBtn');
+  var icon = document.getElementById('wr_btnIcon');
+  var text = document.getElementById('wr_btnText');
+  if (btn) { btn.disabled = true; btn.classList.add('opacity-75', 'cursor-not-allowed'); }
+  if (icon) icon.innerText = '⏳';
+  if (text) text.innerText = 'Generating PDF...';
+  showStudioToast('Exporting Written Markdown to PDF...', 'info');
+  var element = document.getElementById('wr_previewContainer');
+  var paper = (document.getElementById('wr_paperSelect') && document.getElementById('wr_paperSelect').value) ? document.getElementById('wr_paperSelect').value : 'a4';
+  var marginVal = (document.getElementById('wr_marginSelect') && document.getElementById('wr_marginSelect').value) ? parseInt(document.getElementById('wr_marginSelect').value, 10) : 10;
+  var filename = (wr_state.fileName || 'markdown-document') + '.pdf';
+  var opt = { margin: [marginVal, marginVal, marginVal, marginVal], filename: filename, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0 }, jsPDF: { unit: 'mm', format: paper, orientation: 'portrait' }, pagebreak: { mode: ['css', 'legacy'] } };
+  html2pdf().set(opt).from(element).save().then(function() { showStudioToast('PDF downloaded: ' + filename + ' 📥', 'success'); }).catch(function(err) { console.error('Write PDF Error:', err); showStudioToast('Failed to generate PDF.', 'error'); }).finally(function() {
+    wr_state.isProcessing = false;
+    if (btn) { btn.disabled = false; btn.classList.remove('opacity-75', 'cursor-not-allowed'); }
+    if (icon) icon.innerText = '📥';
+    if (text) text.innerText = 'Download PDF Document';
+  });
+}
 
-    // Quick syntax injection
-    function insertSyntax(before, after = '') {
-      const start = editor.selectionStart;
-      const end = editor.selectionEnd;
-      const text = editor.value;
-      const selected = text.substring(start, end);
-      editor.value = text.substring(0, start) + before + selected + after + text.substring(end);
-      editor.focus();
-      editor.setSelectionRange(start + before.length, start + before.length + selected.length);
-      currentMarkdown = editor.value;
-      renderMarkdownText(currentMarkdown);
-    }
-
-    function insertTable() {
-      const t = `\n| Column 1 | Column 2 | Column 3 |\n| :--- | :--- | :--- |\n| Item A | Data 1 | Data 2 |\n\n`;
-      insertSyntax(t);
-    }
-
-    function loadSampleText() {
-      currentMarkdown = defaultSample;
-      editor.value = currentMarkdown;
-      currentFileName = "sample-document";
-      fileNameDisplay.innerText = "sample-document.md";
-      renderMarkdownText(currentMarkdown);
-      switchMode('editor');
-      showToast('Sample document loaded. 📄', 'success');
-    }
-
-    function clearAllDocument(silent = false) {
-      currentMarkdown = "";
-      if (editor) editor.value = "";
-      if (fileInput) fileInput.value = "";
-      currentFileName = "markdown-document";
-      if (fileNameDisplay) fileNameDisplay.innerText = "Select Markdown (.md or .txt) File";
-      
-      // Reset customization options to clean defaults
-      if (themeSelect) {
-        themeSelect.value = "default";
-        updatePreviewTheme();
-      }
-      if (paperSelect) paperSelect.value = "a4";
-      if (marginSelect) marginSelect.value = "10";
-
-      renderMarkdownText("");
-
-      if (!silent) {
-        showToast('All content cleared & reset completely. ✨', 'info');
-      }
-    }
-
-    function resetDocument() {
-      clearAllDocument();
-    }
-
-    function copyMarkdown() {
-      if (!currentMarkdown.trim()) {
-        showToast('Nothing to copy.', 'error');
-        return;
-      }
-      navigator.clipboard.writeText(currentMarkdown).then(() => {
-        showToast('Markdown copied to clipboard! 📋', 'success');
-      });
-    }
-
-    function downloadRawMd() {
-      if (!currentMarkdown.trim()) {
-        showToast('Document is empty.', 'error');
-        return;
-      }
-      const blob = new Blob([currentMarkdown], { type: 'text/markdown;charset=utf-8' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `${currentFileName}.md`;
-      a.click();
-      URL.revokeObjectURL(a.href);
-      showToast('Markdown file saved! 💾', 'success');
-    }
-
-    // Production PDF Export via html2pdf
-    async function exportToPdf() {
-      if (isProcessing) return;
-      if (!currentMarkdown.trim()) {
-        showToast('Please upload or write Markdown before exporting.', 'error');
-        return;
-      }
-
-      isProcessing = true;
-      downloadPdfBtn.disabled = true;
-      downloadPdfBtn.classList.add('opacity-75', 'cursor-not-allowed');
-      btnIcon.innerText = '⏳';
-      btnText.innerText = 'Generating PDF...';
-      showToast('Generating full document PDF, please wait...', 'info');
-
-      try {
-        const element = document.getElementById('previewContainer');
-        const paper = (paperSelect && paperSelect.value) ? paperSelect.value : 'a4';
-        const marginVal = (marginSelect && marginSelect.value) ? parseInt(marginSelect.value, 10) : 10;
-        const filename = `${currentFileName || 'markdown-document'}.pdf`;
-
-        const opt = {
-          margin: [marginVal, marginVal, marginVal, marginVal],
-          filename: filename,
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: {
-            scale: 2,
-            useCORS: true,
-            logging: false,
-            scrollY: 0
-          },
-          jsPDF: {
-            unit: 'mm',
-            format: paper,
-            orientation: 'portrait'
-          },
-          pagebreak: {
-            mode: ['css', 'legacy']
-          }
-        };
-
-        await html2pdf().set(opt).from(element).save();
-        showToast(`PDF downloaded successfully: ${filename} 📥`, 'success');
-      } catch (err) {
-        console.error('PDF Export Error:', err);
-        showToast('Failed to generate PDF. Please try again.', 'error');
-      } finally {
-        isProcessing = false;
-        downloadPdfBtn.disabled = false;
-        downloadPdfBtn.classList.remove('opacity-75', 'cursor-not-allowed');
-        btnIcon.innerText = '📥';
-        btnText.innerText = 'Download PDF Document';
-      }
-    }
-
-    function showToast(msg, type = 'info') {
-      statusToast.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200', 'bg-red-50', 'text-red-800', 'border-red-200', 'bg-slate-100', 'text-slate-800', 'border-slate-300');
-      statusToast.classList.add('border');
-
-      if (type === 'success') {
-        statusToast.classList.add('bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
-      } else if (type === 'error') {
-        statusToast.classList.add('bg-red-50', 'text-red-800', 'border-red-200');
-      } else {
-        statusToast.classList.add('bg-slate-100', 'text-slate-800', 'border-slate-300');
-      }
-      statusToast.innerText = msg;
-    }
-  </script>
+function showStudioToast(msg, type) {
+  var toast = document.getElementById('studioToast');
+  if (!toast) return;
+  var t = type || 'info';
+  toast.className = 'mt-6 p-4 rounded-2xl text-xs sm:text-sm font-bold text-center transition-all block border shadow-xs';
+  if (t === 'success') { toast.classList.add('bg-emerald-50', 'text-emerald-800', 'border-emerald-200'); }
+  else if (t === 'error') { toast.classList.add('bg-rose-50', 'text-rose-800', 'border-rose-200'); }
+  else { toast.classList.add('bg-slate-100', 'text-slate-800', 'border-slate-300'); }
+  toast.innerText = msg;
+  clearTimeout(window.toastTimer);
+  window.toastTimer = setTimeout(function() { toast.classList.add('hidden'); }, 4000);
+}
+</script>
 </body>
 </html>
