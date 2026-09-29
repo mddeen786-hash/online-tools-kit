@@ -1,0 +1,20 @@
+
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ef4444" />
+      <stop offset="100%" stop-color="#b91c1c" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.25" />
+    </filter>
+  </defs>
+  <!-- Background squircle -->
+  <rect x="32" y="32" width="448" height="448" rx="96" fill="url(#grad)" filter="url(#shadow)" />
+  
+  <!-- Stylized F / Document Motif in Crisp White -->
+  <path d="M160 128 C160 119.163 167.163 112 176 112 H316 C324.837 112 332 119.163 332 128 V168 C332 176.837 324.837 184 316 184 H236 V224 H300 C308.837 224 316 231.163 316 240 V280 C316 288.837 308.837 296 300 296 H236 V384 C236 392.837 228.837 400 220 400 H176 C167.163 400 160 392.837 160 384 V128 Z" fill="#ffffff" />
+  
+  <!-- Subtle Amber Spark Accent -->
+  <circle cx="344" cy="360" r="28" fill="#fbbf24" />
+</svg>

@@ -1,16 +1,87 @@
 {
-  "name": "Filesque - Free PDF & Image Tools",
+  "name": "Filesque - All-in-One Online Tools",
   "short_name": "Filesque",
-  "description": "Free online PDF tools, image converter, and business utilities.",
+  "description": "Free enterprise online tools: PDF converter & editor, image utilities, developer code tools (JSON to Code, Code Formatter), and corporate invoicing suites.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#ffffff",
   "theme_color": "#dc2626",
+  "lang": "en",
+  "categories": [
+    "utilities",
+    "productivity",
+    "developer",
+    "business"
+  ],
   "icons": [
     {
       "src": "/favicon.ico",
       "sizes": "48x48",
       "type": "image/x-icon"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "PDF Core Tools",
+      "short_name": "PDF Tools",
+      "description": "Convert, merge, compress, and edit PDF files online",
+      "url": "/#pdf-section",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Developer Categories",
+      "short_name": "Dev Tools",
+      "description": "JSON to Code, Markdown to PDF, and Code Formatter",
+      "url": "/json-to-code.html",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Image Utilities",
+      "short_name": "Image Tools",
+      "description": "Compress, convert, and resize images instantly",
+      "url": "/#image-section",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Workflow Builder",
+      "short_name": "Workflow",
+      "description": "Enterprise document processing and automation workflows",
+      "url": "/workflow-builder.html",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }

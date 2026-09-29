@@ -1,6 +1,16 @@
 User-agent: *
 Allow: /
 
+# Protected internal assets and temp files
 Disallow: /temp/
+Disallow: /uploads/
+Disallow: /*.bak$
+Disallow: /*.bak_*$
+Disallow: /server.js
+Disallow: /server.py
+Disallow: /package.json
+Disallow: /package-lock.json
+Disallow: /lens.html
 
+# Sitemap Index
 Sitemap: https://filesques.onrender.com/sitemap.xml
