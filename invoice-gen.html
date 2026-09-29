@@ -76,7 +76,7 @@
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
-            body { 
+            html, body { 
                 background: #ffffff !important; 
                 padding: 0 !important; 
                 margin: 0 !important; 
@@ -90,6 +90,10 @@
                 padding: 0 !important;
                 background: #ffffff !important;
                 font-family: Arial, Helvetica, sans-serif !important;
+                page-break-inside: avoid !important;
+                page-break-after: avoid !important;
+                break-inside: avoid !important;
+                break-after: avoid !important;
             }
         }
     </style>
@@ -100,7 +104,128 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
         @keyframes dotBlink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.2; transform: scale(0.85); } }
         .animate-blink { animation: dotBlink 1.2s ease-in-out infinite; }
-    </style>
+    
+        /* High-Contrast Interactive Input Styling for Invoice Generator (Compact, Slim & Sleek) */
+        .inv-field {
+            background-color: #ffffff !important;
+            border: 1.5px solid #64748b !important;
+            border-radius: 6px;
+            padding: 3.5px 8px;
+            color: #0f172a !important;
+            font-size: 11.5px;
+            font-weight: 700;
+            transition: all 0.2s ease-in-out;
+            outline: none;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+        }
+        .inv-field:hover {
+            border-color: #334155 !important;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
+        }
+        .inv-field:focus {
+            background-color: #ffffff !important;
+            border-color: #dc2626 !important;
+            box-shadow: 0 0 0 2.5px rgba(220, 38, 38, 0.2) !important;
+        }
+        .inv-field::placeholder {
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .inv-field-sm {
+            background-color: #ffffff !important;
+            border: 1.5px solid #64748b !important;
+            border-radius: 5px;
+            padding: 2.5px 6px;
+            color: #0f172a !important;
+            font-size: 10.5px;
+            font-weight: 700;
+            transition: all 0.2s ease-in-out;
+            outline: none;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+        }
+        .inv-field-sm:hover {
+            border-color: #334155 !important;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+        }
+        .inv-field-sm:focus {
+            background-color: #ffffff !important;
+            border-color: #dc2626 !important;
+            box-shadow: 0 0 0 2.5px rgba(220, 38, 38, 0.2) !important;
+        }
+        .inv-field-sm::placeholder {
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .inv-field-lg {
+            background-color: #ffffff !important;
+            border: 2px solid #475569 !important;
+            border-radius: 6px;
+            padding: 4.5px 10px;
+            color: #0f172a !important;
+            font-size: 13px;
+            font-weight: 900;
+            transition: all 0.2s ease-in-out;
+            outline: none;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+        }
+        .inv-field-lg:hover {
+            border-color: #0f172a !important;
+            box-shadow: 0 2px 4px rgba(15, 23, 42, 0.1);
+        }
+        .inv-field-lg:focus {
+            background-color: #ffffff !important;
+            border-color: #dc2626 !important;
+            box-shadow: 0 0 0 2.5px rgba(220, 38, 38, 0.22) !important;
+        }
+        .inv-field-lg::placeholder {
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        /* Highlighted Box Cards - Sleek Compact Elevation */
+        .inv-box-business {
+            background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%) !important;
+            border: 1.5px solid #64748b !important;
+            border-top: 3.5px solid #0f172a !important;
+            box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08) !important;
+        }
+        .inv-box-meta {
+            background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%) !important;
+            border: 1.5px solid #64748b !important;
+            border-top: 3.5px solid #0f172a !important;
+            box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08) !important;
+        }
+        .inv-box-billed {
+            background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%) !important;
+            border: 1.5px solid #2563eb !important;
+            border-top: 3.5px solid #1d4ed8 !important;
+            box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.1) !important;
+        }
+        .inv-box-shipped {
+            background: linear-gradient(180deg, #f0fdf4 0%, #dcfce7 100%) !important;
+            border: 1.5px solid #16a34a !important;
+            border-top: 3.5px solid #15803d !important;
+            box-shadow: 0 4px 12px -2px rgba(22, 163, 74, 0.1) !important;
+        }
+        .inv-box-bank {
+            background: linear-gradient(180deg, #fffdf5 0%, #fef3c7 100%) !important;
+            border: 1.5px solid #d97706 !important;
+            border-top: 3.5px solid #b45309 !important;
+            box-shadow: 0 4px 12px -2px rgba(217, 119, 6, 0.1) !important;
+        }
+        .inv-box-summary {
+            background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%) !important;
+            border: 1.5px solid #475569 !important;
+            border-top: 3.5px solid #0f172a !important;
+            box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.1) !important;
+        }
+        .inv-table-box {
+            border: 1.5px solid #475569 !important;
+            box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08) !important;
+        }
+</style>
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col items-center antialiased">
 
@@ -267,8 +392,8 @@
 </div>
 
 <!-- Main Workspace -->
-<div class="w-full max-w-4xl px-4 mt-28 mb-16">
-    <div class="flex justify-between items-center mb-3 no-print">
+<div class="w-full max-w-4xl px-4 mt-32 sm:mt-36 mb-12">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3 no-print">
         <a href="index.html" class="text-sm font-semibold text-gray-500 hover:text-red-600">← Back to Dashboard</a>
         <div class="flex items-center space-x-3 flex-wrap gap-y-2">
             <button onclick="downloadExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl shadow transition-all text-xs uppercase cursor-pointer flex items-center space-x-1.5">
@@ -281,14 +406,20 @@
     </div>
 
     <!-- Corporate Tax Invoice Sheet -->
-    <div id="invoice-paper" class="bg-white p-5 rounded-2xl shadow-xl border border-gray-200">
+    <div id="invoice-paper" class="bg-white p-3.5 sm:p-4 rounded-xl shadow-xl border-2 border-slate-300/80">
         
-        <div class="pb-2 mb-3 border-b border-gray-100 print-tax-title" style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;">
-            <div></div>
-            <h1 class="text-2xl font-black text-red-600 tracking-tight text-center">TAX INVOICE</h1>
-            <div class="no-print flex items-center justify-end space-x-2 text-xs font-bold text-slate-700">
-                <span>Currency:</span>
-                <select id="currency-select" onchange="calcTotals()" class="bg-slate-50 border border-gray-200 rounded p-1 font-bold outline-none">
+        <!-- Top Title Bar -->
+        <div class="pb-2 mb-2.5 border-b-2 border-slate-200 flex flex-wrap items-center justify-between gap-2.5 print-tax-title">
+            <div class="flex items-center space-x-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-red-600 inline-block animate-pulse"></span>
+                <span class="text-xs font-black uppercase tracking-widest text-slate-600">Enterprise Invoice Studio</span>
+            </div>
+            <h1 class="text-lg sm:text-xl font-black text-slate-900 tracking-tight text-center">
+                TAX <span class="text-red-600">INVOICE</span>
+            </h1>
+            <div class="no-print flex items-center space-x-2 text-xs font-bold text-slate-700 bg-slate-100 px-3.5 py-1.5 rounded-xl border-2 border-slate-300 shadow-xs">
+                <span class="font-extrabold">Currency:</span>
+                <select id="currency-select" onchange="calcTotals()" class="bg-white border-2 border-slate-400 hover:border-slate-600 focus:border-red-500 focus:ring-4 focus:ring-red-500/20 rounded-lg px-2.5 py-1 font-black text-xs text-slate-900 outline-none transition-all cursor-pointer shadow-xs">
                     <option value="INR" selected>INR (₹)</option>
                     <option value="USD">USD ($)</option>
                     <option value="EUR">EUR (€)</option>
@@ -297,107 +428,173 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 print-grid-2 print-vendor-meta gap-4 border-b border-gray-200 pb-3 mb-3">
-            <div class="space-y-1">
-                <input type="text" id="bus-name" value="" oninput="updateSignCompany(this.value)" autocomplete="off" placeholder="YOUR BUSINESS NAME" class="text-lg font-black text-slate-900 border-b border-dashed border-gray-300 focus:border-red-500 outline-none w-full">
-                <div class="text-xs font-bold text-slate-600 flex items-center space-x-2">
-                    <span class="text-slate-400 w-20">Owner:</span>
-                    <input type="text" id="bus-prop" value="" autocomplete="off" placeholder="Proprietor Name" class="border-b border-dashed border-gray-200 outline-none w-full">
+        <!-- Vendor & Invoice Meta Section (Distinct Highlighted Boxes) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 print-grid-2 print-vendor-meta gap-2.5 border-b-2 border-slate-200 pb-2.5 mb-2.5">
+            <!-- Business Info Card (Highlighted Slate Card) -->
+            <div class="space-y-1.5 inv-box-business p-2.5 sm:p-3 rounded-lg">
+                <div class="flex items-center justify-between">
+                    <div class="inline-flex items-center space-x-1.5 bg-slate-900 text-white px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider shadow-xs">
+                        <span>🏢</span> <span>Your Business Details</span>
+                    </div>
+                    <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Vendor Info</span>
                 </div>
-                <div class="text-xs font-bold text-slate-600 flex items-center space-x-2">
-                    <span class="text-slate-400 w-20">GSTIN:</span>
-                    <input type="text" id="bus-gst" value="" autocomplete="off" placeholder="GSTIN Number" class="border-b border-dashed border-gray-200 outline-none w-full uppercase">
+                <div>
+                    <input type="text" id="bus-name" value="" oninput="updateSignCompany(this.value)" autocomplete="off" placeholder="YOUR BUSINESS NAME" class="inv-field-lg w-full uppercase">
                 </div>
-                <div class="text-xs text-slate-500 flex items-center space-x-2">
-                    <span class="text-slate-400 w-20">Email:</span>
-                    <input type="text" id="bus-email" value="" autocomplete="off" placeholder="business@email.com" class="border-b border-dashed border-gray-200 outline-none w-full">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                    <div class="flex flex-col space-y-0.5">
+                        <label class="text-[10px] font-extrabold text-slate-700">Owner / Proprietor:</label>
+                        <input type="text" id="bus-prop" value="" autocomplete="off" placeholder="Proprietor Name" class="inv-field w-full">
+                    </div>
+                    <div class="flex flex-col space-y-0.5">
+                        <label class="text-[10px] font-extrabold text-slate-700">GSTIN Number:</label>
+                        <input type="text" id="bus-gst" value="" autocomplete="off" placeholder="GSTIN Number" class="inv-field w-full uppercase">
+                    </div>
                 </div>
-                <div class="text-xs text-slate-500 flex items-center space-x-2">
-                    <span class="text-slate-400 w-20">Mobile:</span>
-                    <input type="text" id="bus-mobile" value="" autocomplete="off" placeholder="+91 0000000000" class="border-b border-dashed border-gray-200 outline-none w-full">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                    <div class="flex flex-col space-y-0.5">
+                        <label class="text-[10px] font-extrabold text-slate-700">Email Address:</label>
+                        <input type="text" id="bus-email" value="" autocomplete="off" placeholder="business@email.com" class="inv-field w-full">
+                    </div>
+                    <div class="flex flex-col space-y-0.5">
+                        <label class="text-[10px] font-extrabold text-slate-700">Mobile / Phone:</label>
+                        <input type="text" id="bus-mobile" value="" autocomplete="off" placeholder="+91 0000000000" class="inv-field w-full">
+                    </div>
                 </div>
             </div>
 
-            <div class="text-right print-right space-y-1 flex flex-col items-end justify-center">
-                <div class="text-xs font-bold text-slate-700 space-y-1 w-72">
-                    <div class="flex justify-between items-center">
-                        <span class="text-left">Invoice No:</span>
-                        <input type="text" id="inv-no" value="" autocomplete="off" class="border-b border-dashed border-gray-300 w-44 text-right outline-none">
+            <!-- Invoice Meta Card (Highlighted Slate Card) -->
+            <div class="flex flex-col justify-between space-y-1.5 inv-box-meta p-2.5 sm:p-3 rounded-lg print-right">
+                <div class="flex items-center justify-between">
+                    <div class="inline-flex items-center space-x-1.5 bg-slate-900 text-white px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider shadow-xs">
+                        <span>📄</span> <span>Invoice Meta &amp; Dates</span>
                     </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-left">Invoice Date:</span>
-                        <input type="date" id="inv-date" class="border-b border-dashed border-gray-300 w-44 text-right outline-none">
+                    <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Document Ref</span>
+                </div>
+                <div class="space-y-1 flex-1 flex flex-col justify-center">
+                    <div class="flex items-center justify-between space-x-1.5">
+                        <label class="text-[10.5px] font-extrabold text-slate-800 w-20 shrink-0">Invoice No:</label>
+                        <input type="text" id="inv-no" value="" autocomplete="off" placeholder="INV-001" class="inv-field text-right flex-1 font-black text-slate-900">
                     </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-left">State Code:</span>
-                        <input type="text" id="inv-state" value="" autocomplete="off" class="border-b border-dashed border-gray-300 w-44 text-right outline-none">
+                    <div class="flex items-center justify-between space-x-1.5">
+                        <label class="text-[10.5px] font-extrabold text-slate-800 w-20 shrink-0">Invoice Date:</label>
+                        <input type="date" id="inv-date" class="inv-field text-right flex-1 font-black text-slate-900">
+                    </div>
+                    <div class="flex items-center justify-between space-x-1.5">
+                        <label class="text-[10.5px] font-extrabold text-slate-800 w-20 shrink-0">State Code:</label>
+                        <input type="text" id="inv-state" value="" autocomplete="off" placeholder="e.g. 07 (Delhi)" class="inv-field text-right flex-1 font-black text-slate-900">
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 print-grid-2 print-customer-box gap-4 bg-slate-50 p-3 rounded-xl border border-gray-200 mb-3">
-            <div>
-                <span class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-1 box-title">Billed To (Customer):</span>
-                <input type="text" id="bill-name" placeholder="Client / Company Name" value="" autocomplete="off" class="text-xs font-extrabold text-slate-900 border-b border-dashed border-gray-300 w-full block outline-none mb-0.5">
-                <input type="text" id="bill-addr" placeholder="Billing Address / City" value="" autocomplete="off" class="text-xs text-slate-600 border-b border-dashed border-gray-200 w-full block outline-none mb-0.5">
-                <input type="text" id="bill-gst" placeholder="Client GSTIN" value="" autocomplete="off" class="text-xs font-semibold text-slate-700 border-b border-dashed border-gray-200 w-full block outline-none uppercase">
+        <!-- Billed To & Shipped To Cards (Strong Highlighted Color Accents) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 print-grid-2 print-customer-box gap-2.5 mb-2.5">
+            <!-- Billed To (Customer) -->
+            <div class="inv-box-billed p-2.5 sm:p-3 rounded-lg space-y-1.5">
+                <div class="flex items-center justify-between mb-2 box-title gap-2">
+                    <div class="inline-flex items-center space-x-1.5 bg-blue-600 text-white px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider shadow-xs shrink-0 whitespace-nowrap">
+                        <span>👤</span> <span>Billed To (Customer)</span>
+                    </div>
+                    <span class="text-[9px] font-black text-blue-800 uppercase tracking-wider bg-blue-100/90 px-1.5 py-0.5 rounded border border-blue-200 shrink-0 whitespace-nowrap">Client Details</span>
+                </div>
+                <div>
+                    <label class="text-[10px] font-extrabold text-blue-950 block mb-0.5">Company / Customer Name:</label>
+                    <input type="text" id="bill-name" placeholder="Client / Company Name" value="" autocomplete="off" class="inv-field w-full font-black text-slate-900 block">
+                </div>
+                <div>
+                    <label class="text-[10px] font-extrabold text-blue-950 block mb-0.5">Billing Address:</label>
+                    <input type="text" id="bill-addr" placeholder="Billing Address / City / Pincode" value="" autocomplete="off" class="inv-field w-full block">
+                </div>
+                <div>
+                    <label class="text-[10px] font-extrabold text-blue-950 block mb-0.5">Client GSTIN:</label>
+                    <input type="text" id="bill-gst" placeholder="Client GSTIN Number" value="" autocomplete="off" class="inv-field w-full uppercase font-black text-slate-900 block">
+                </div>
             </div>
 
-            <div>
-                <span class="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-1 box-title">Shipped To (Delivery Address):</span>
-                <input type="text" id="ship-name" placeholder="Receiver Name / Location" value="" autocomplete="off" class="text-xs font-extrabold text-slate-900 border-b border-dashed border-gray-300 w-full block outline-none mb-0.5">
-                <input type="text" id="ship-addr" placeholder="Shipping Address" value="" autocomplete="off" class="text-xs text-slate-600 border-b border-dashed border-gray-200 w-full block outline-none mb-0.5">
-                <input type="text" id="ship-supply" placeholder="Place of Supply" value="" autocomplete="off" class="text-xs font-semibold text-slate-700 border-b border-dashed border-gray-200 w-full block outline-none">
+            <!-- Shipped To (Delivery Address) -->
+            <div class="inv-box-shipped p-2.5 sm:p-3 rounded-lg space-y-1.5">
+                <div class="flex items-center justify-between mb-2 box-title gap-2">
+                    <div class="inline-flex items-center space-x-1.5 bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider shadow-xs shrink-0 whitespace-nowrap">
+                        <span>🚚</span> <span>Shipped To (Delivery)</span>
+                    </div>
+                    <span class="text-[9px] font-black text-emerald-800 uppercase tracking-wider bg-emerald-100/90 px-1.5 py-0.5 rounded border border-emerald-200 shrink-0 whitespace-nowrap">Shipping Details</span>
+                </div>
+                <div>
+                    <label class="text-[10px] font-extrabold text-emerald-950 block mb-0.5">Receiver Name / Location:</label>
+                    <input type="text" id="ship-name" placeholder="Receiver Name / Location" value="" autocomplete="off" class="inv-field w-full font-black text-slate-900 block">
+                </div>
+                <div>
+                    <label class="text-[10px] font-extrabold text-emerald-950 block mb-0.5">Shipping Address:</label>
+                    <input type="text" id="ship-addr" placeholder="Shipping Address / Warehouse" value="" autocomplete="off" class="inv-field w-full block">
+                </div>
+                <div>
+                    <label class="text-[10px] font-extrabold text-emerald-950 block mb-0.5">Place of Supply:</label>
+                    <input type="text" id="ship-supply" placeholder="Place of Supply (State)" value="" autocomplete="off" class="inv-field w-full font-black text-slate-900 block">
+                </div>
             </div>
         </div>
 
-        <!-- Line Items Table -->
-        <table class="w-full text-left mb-3 border-collapse overflow-hidden rounded-xl border border-slate-200 print-table">
-            <thead>
-                <tr class="bg-slate-900 text-white text-[11px] font-black uppercase tracking-wider">
-                    <th class="py-2 px-3">Item Description / HSN</th>
-                    <th class="py-2 px-2 text-center w-16">Qty</th>
-                    <th class="py-2 px-2 text-right w-24">Price (<span class="curr-symbol">₹</span>)</th>
-                    <th class="py-2 px-2 text-right w-20">GST %</th>
-                    <th class="py-2 px-3 text-right w-28">Total (<span class="curr-symbol">₹</span>)</th>
-                    <th class="w-6 no-print"></th>
-                </tr>
-            </thead>
-            <tbody id="items-tbody" class="divide-y divide-gray-100">
-                <tr class="item-row text-xs font-semibold">
-                    <td class="py-1.5 px-3">
-                        <input type="text" value="Product Description" autocomplete="off" class="item-desc w-full outline-none font-bold text-slate-800">
-                        <input type="text" value="HSN: 00000000" autocomplete="off" class="item-hsn w-full outline-none text-[10px] text-slate-400 font-mono">
-                    </td>
-                    <td class="py-1.5 px-2 text-center"><input type="number" value="1" min="1" oninput="calcTotals()" class="item-qty w-12 text-center bg-slate-50 border border-gray-200 rounded p-0.5 text-xs"></td>
-                    <td class="py-1.5 px-2 text-right"><input type="number" value="1000" oninput="calcTotals()" class="item-price w-20 text-right bg-slate-50 border border-gray-200 rounded p-0.5 text-xs"></td>
-                    <td class="py-1.5 px-2 text-right">
-                        <select onchange="calcTotals()" class="item-tax w-16 bg-slate-50 border border-gray-200 rounded p-0.5 text-center font-bold text-xs">
-                            <option value="18" selected>18%</option>
-                            <option value="12">12%</option>
-                            <option value="5">5%</option>
-                            <option value="0">0%</option>
-                        </select>
-                    </td>
-                    <td class="py-1.5 px-3 text-right font-black text-slate-900 item-total">1180.00</td>
-                    <td class="py-1.5 text-center no-print"><button onclick="removeItem(this)" class="text-red-500 font-bold hover:text-red-700">✕</button></td>
-                </tr>
-            </tbody>
-        </table>
+        <!-- Line Items Table (Prominent Bordered Table Card) -->
+        <div class="overflow-x-auto inv-table-box rounded-lg mb-2">
+            <table class="w-full min-w-[500px] text-left border-collapse print-table">
+                <thead>
+                    <tr class="bg-slate-900 text-white text-[10px] font-black uppercase tracking-wider">
+                        <th class="py-1.5 px-2.5">Item Description / HSN</th>
+                        <th class="py-1.5 px-1.5 text-center w-14">Qty</th>
+                        <th class="py-1.5 px-2 text-right w-20">Price (<span class="curr-symbol">₹</span>)</th>
+                        <th class="py-1.5 px-1.5 text-center w-18">GST %</th>
+                        <th class="py-1.5 px-2.5 text-right w-24">Total (<span class="curr-symbol">₹</span>)</th>
+                        <th class="w-10 no-print text-center"></th>
+                    </tr>
+                </thead>
+                <tbody id="items-tbody" class="divide-y-2 divide-slate-200 bg-white">
+                    <tr class="item-row text-xs font-semibold hover:bg-slate-50 transition-colors">
+                        <td class="py-1.5 px-2">
+                            <input type="text" value="Product Description" placeholder="Item name / Description" autocomplete="off" class="item-desc inv-field-sm w-full block font-black text-slate-900">
+                            <input type="text" value="HSN: 00000000" placeholder="HSN/SAC (e.g. 998311)" autocomplete="off" class="item-hsn inv-field-sm w-full block text-[11px] font-mono text-slate-700 mt-1.5">
+                        </td>
+                        <td class="py-1.5 px-1.5 text-center">
+                            <input type="number" value="1" min="1" oninput="calcTotals()" class="item-qty inv-field-sm w-16 text-center">
+                        </td>
+                        <td class="py-1.5 px-2 text-right">
+                            <input type="number" value="1000" oninput="calcTotals()" class="item-price inv-field-sm w-24 text-right">
+                        </td>
+                        <td class="py-1.5 px-1.5 text-center">
+                            <select onchange="calcTotals()" class="item-tax inv-field-sm w-20 text-center font-black cursor-pointer">
+                                <option value="18" selected>18%</option>
+                                <option value="12">12%</option>
+                                <option value="5">5%</option>
+                                <option value="0">0%</option>
+                            </select>
+                        </td>
+                        <td class="py-1.5 px-2 text-right font-black text-slate-900 item-total text-sm">1180.00</td>
+                        <td class="py-3 text-center no-print">
+                            <button onclick="removeItem(this)" title="Remove item" class="w-8 h-8 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 border border-transparent hover:border-red-200 transition-all font-bold text-sm inline-flex items-center justify-center cursor-pointer">✕</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-        <button type="button" onclick="addItem()" class="no-print text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-xl transition-all mb-3 cursor-pointer flex items-center space-x-1">
-            <span>+ Add Line Item</span>
+        <button type="button" onclick="addItem()" class="no-print text-xs font-black text-red-600 bg-red-50 hover:bg-red-100 hover:text-red-700 border-2 border-red-200 px-3 py-1.5 rounded-lg text-[11px] transition-all mb-2.5 cursor-pointer flex items-center space-x-1.5 shadow-xs active:scale-95">
+            <span>＋ Add Line Item</span>
         </button>
 
         <div class="unbreakable-footer">
-            <div class="grid grid-cols-1 md:grid-cols-2 print-grid-2 print-footer-grid gap-6 border-t border-gray-200 pt-3">
-                <div class="space-y-1.5 text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-gray-200 print-bank-box">
-                    <span class="font-black text-slate-800 uppercase tracking-wider block mb-1 bank-title">Bank Account Details:</span>
+            <div class="grid grid-cols-1 md:grid-cols-2 print-grid-2 print-footer-grid gap-2.5 border-t-2 border-slate-200 pt-2.5">
+                <!-- Bank Account Details Card (Highlighted Amber Card) -->
+                <div class="space-y-1.5 text-xs text-slate-800 inv-box-bank p-2.5 sm:p-3 rounded-lg print-bank-box">
+                    <div class="flex items-center justify-between mb-2 bank-title">
+                        <div class="inline-flex items-center space-x-1.5 bg-amber-600 text-white px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider shadow-xs">
+                            <span>🏦</span> <span>Bank Account Details</span>
+                        </div>
+                        <span class="text-[9px] font-extrabold text-amber-800 uppercase tracking-wider">Payment Details</span>
+                    </div>
                     
                     <div class="flex items-center space-x-2">
-                        <span class="w-24 text-slate-400">Bank Name:</span>
-                        <select id="bank-select" onchange="handleBankSelection()" class="font-bold text-slate-900 bg-white border border-gray-200 rounded p-0.5 outline-none text-xs flex-1">
+                        <span class="w-20 text-slate-700 font-extrabold text-[10.5px] shrink-0">Bank Name:</span>
+                        <select id="bank-select" onchange="handleBankSelection()" class="inv-field-sm flex-1 font-black text-slate-900 cursor-pointer">
                             <option value="" disabled selected>Select Bank</option>
                             <option value="HDFC Bank">HDFC Bank</option>
                             <option value="State Bank of India (SBI)">State Bank of India (SBI)</option>
@@ -427,65 +624,76 @@
                     </div>
 
                     <div id="manual-bank-container" class="flex items-center space-x-2 hidden">
-                        <span class="w-24 text-slate-400">Custom Bank:</span>
-                        <input type="text" id="manual-bank-name" autocomplete="off" placeholder="Enter Bank Name" class="font-bold text-slate-900 bg-white border border-gray-200 rounded p-0.5 outline-none text-xs flex-1">
+                        <span class="w-20 text-slate-700 font-extrabold text-[10.5px] shrink-0">Custom Bank:</span>
+                        <input type="text" id="manual-bank-name" autocomplete="off" placeholder="Enter Bank Name" class="inv-field-sm flex-1 font-black text-slate-900">
                     </div>
 
                     <div class="flex items-center space-x-2">
-                        <span class="w-24 text-slate-400">A/C Number:</span>
-                        <input type="text" id="bank-acc" value="" autocomplete="off" placeholder="Account Number" class="font-bold text-slate-900 bg-white border border-gray-200 rounded p-0.5 outline-none text-xs flex-1">
+                        <span class="w-20 text-slate-700 font-extrabold text-[10.5px] shrink-0">A/C Number:</span>
+                        <input type="text" id="bank-acc" value="" autocomplete="off" placeholder="Account Number" class="inv-field-sm flex-1 font-black text-slate-900">
                     </div>
 
                     <div class="flex items-center space-x-2">
-                        <span class="w-24 text-slate-400">IFSC Code:</span>
-                        <input type="text" id="bank-ifsc" value="" autocomplete="off" placeholder="IFSC Code" class="font-bold text-slate-900 bg-white border border-gray-200 rounded p-0.5 outline-none text-xs flex-1 uppercase">
+                        <span class="w-20 text-slate-700 font-extrabold text-[10.5px] shrink-0">IFSC Code:</span>
+                        <input type="text" id="bank-ifsc" value="" autocomplete="off" placeholder="IFSC Code" class="inv-field-sm flex-1 font-black text-slate-900 uppercase">
                     </div>
 
                     <div class="flex items-center space-x-2">
-                        <span class="w-24 text-slate-400">Branch:</span>
-                        <input type="text" id="bank-branch" value="" autocomplete="off" placeholder="Branch Name" class="font-bold text-slate-900 bg-white border border-gray-200 rounded p-0.5 outline-none text-xs flex-1">
+                        <span class="w-20 text-slate-700 font-extrabold text-[10.5px] shrink-0">Branch:</span>
+                        <input type="text" id="bank-branch" value="" autocomplete="off" placeholder="Branch Name" class="inv-field-sm flex-1 font-black text-slate-900">
                     </div>
                 </div>
 
-                <div class="space-y-1 text-xs font-bold text-slate-700 print-totals-box">
-                    <div class="flex justify-between py-1">
-                        <span>Taxable Subtotal:</span>
-                        <span id="sub-total"><span class="curr-symbol">₹</span>1000.00</span>
+                <!-- Financial Summary Card (Highlighted Slate Card) -->
+                <div class="space-y-1.5 text-xs font-bold text-slate-800 inv-box-summary p-2.5 sm:p-3 rounded-lg print-totals-box flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <div class="inline-flex items-center space-x-1.5 bg-slate-900 text-white px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider shadow-xs">
+                                <span>📊</span> <span>Invoice Summary</span>
+                            </div>
+                            <span class="text-[9px] font-extrabold text-slate-500 uppercase tracking-wider">Totals</span>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between py-0.5 border-b border-slate-300 pb-1">
+                                <span class="text-slate-600 font-bold">Taxable Subtotal:</span>
+                                <span id="sub-total" class="font-black text-slate-900"><span class="curr-symbol">₹</span>1000.00</span>
+                            </div>
+                            <div class="flex justify-between py-0.5 border-b border-slate-300 pb-1">
+                                <span class="text-slate-600 font-bold">CGST (9%):</span>
+                                <span id="cgst-total" class="font-black text-slate-900"><span class="curr-symbol">₹</span>90.00</span>
+                            </div>
+                            <div class="flex justify-between py-0.5 border-b border-slate-300 pb-1">
+                                <span class="text-slate-600 font-bold">SGST (9%):</span>
+                                <span id="sgst-total" class="font-black text-slate-900"><span class="curr-symbol">₹</span>90.00</span>
+                            </div>
+                            <div class="flex justify-between pt-1 text-sm font-black text-slate-900 grand-total-row border-t-2 border-slate-400">
+                                <span>Grand Total:</span>
+                                <span id="grand-total" class="text-red-600 text-base font-black bg-red-50 px-2 py-0.5 rounded-md border-2 border-red-200 shadow-xs"><span class="curr-symbol">₹</span>1180.00</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="flex justify-between py-1">
-                        <span>CGST (9%):</span>
-                        <span id="cgst-total"><span class="curr-symbol">₹</span>90.00</span>
-                    </div>
-                    <div class="flex justify-between py-1">
-                        <span>SGST (9%):</span>
-                        <span id="sgst-total"><span class="curr-symbol">₹</span>90.00</span>
-                    </div>
-                    <div class="flex justify-between border-t border-gray-200 pt-2 text-base font-black text-slate-900 grand-total-row">
-                        <span>Grand Total:</span>
-                        <span id="grand-total" class="text-red-600"><span class="curr-symbol">₹</span>1180.00</span>
-                    </div>
-                    <div class="text-[10px] font-normal text-slate-500 pt-0.5 italic" id="amount-in-words">
+                    <div class="text-[10px] font-bold text-slate-600 pt-1 italic bg-white p-1.5 rounded-lg border-2 border-slate-200 shadow-2xs" id="amount-in-words">
                         Amount in words: One Thousand One Hundred and Eighty Only
                     </div>
                 </div>
             </div>
 
-            <div class="mt-5 pt-3 border-t border-gray-200 flex justify-between items-end print-terms-box">
-                <div class="text-[10px] text-slate-500 space-y-0.5">
-                    <p class="font-bold terms-heading">Terms & Conditions:</p>
+            <!-- Terms & Authorized Signatory -->
+            <div class="mt-2.5 pt-2 border-t-2 border-slate-200 flex flex-col sm:flex-row justify-between items-stretch sm:items-end gap-2.5 print-terms-box">
+                <div class="text-[9.5px] text-slate-600 space-y-0.5 bg-slate-50 p-2 rounded-lg border border-slate-200">
+                    <p class="font-black text-slate-800 terms-heading">Terms &amp; Conditions:</p>
                     <p>1. Goods once sold will not be taken back.</p>
                     <p>2. Subject to State Jurisdiction.</p>
                 </div>
-                <div class="text-center space-y-3">
-                    <div class="text-xs font-bold text-slate-800" id="sign-company">For YOUR BUSINESS NAME</div>
-                    <div class="text-[10px] text-slate-400 auth-sign-label">(Authorized Signatory)</div>
+                <div class="text-center space-y-1.5 bg-slate-100 p-2 rounded-lg border-2 border-slate-300 min-w-[170px] shadow-xs">
+                    <div class="text-xs font-black text-slate-900" id="sign-company">For YOUR BUSINESS NAME</div>
+                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-wider auth-sign-label">(Authorized Signatory)</div>
                 </div>
             </div>
         </div>
 
     </div>
 </div>
-
 
     <!-- Exact Corporate Print Container (Hidden on screen, matches Excel layout for PDF / Print) -->
     <div id="print-excel-layout" class="hidden"></div>
@@ -598,24 +806,30 @@
     function addItem() {
         const tbody = document.getElementById('items-tbody');
         const tr = document.createElement('tr');
-        tr.className = "item-row text-xs font-semibold";
+        tr.className = "item-row text-xs font-semibold hover:bg-slate-50/60 transition-colors";
         tr.innerHTML = `
-            <td class="py-1.5 px-3">
-                <input type="text" placeholder="Item name / Description" autocomplete="off" class="item-desc w-full outline-none font-bold text-slate-800">
-                <input type="text" placeholder="HSN/SAC Code" autocomplete="off" class="item-hsn w-full outline-none text-[10px] text-slate-400 font-mono">
+            <td class="py-2.5 px-3">
+                <input type="text" placeholder="Item name / Description" autocomplete="off" class="item-desc inv-field-sm w-full block font-bold text-slate-900">
+                <input type="text" placeholder="HSN/SAC (e.g. 998311)" autocomplete="off" class="item-hsn inv-field-sm w-full block text-[11px] font-mono text-slate-600 mt-1">
             </td>
-            <td class="py-1.5 px-2 text-center"><input type="number" value="1" min="1" oninput="calcTotals()" class="item-qty w-12 text-center bg-slate-50 border border-gray-200 rounded p-0.5 text-xs"></td>
-            <td class="py-1.5 px-2 text-right"><input type="number" value="1000" oninput="calcTotals()" class="item-price w-20 text-right bg-slate-50 border border-gray-200 rounded p-0.5 text-xs"></td>
-            <td class="py-1.5 px-2 text-right">
-                <select onchange="calcTotals()" class="item-tax w-16 bg-slate-50 border border-gray-200 rounded p-0.5 text-center font-bold text-xs">
+            <td class="py-2.5 px-2 text-center">
+                <input type="number" value="1" min="1" oninput="calcTotals()" class="item-qty inv-field-sm w-16 text-center">
+            </td>
+            <td class="py-2.5 px-2 text-right">
+                <input type="number" value="1000" oninput="calcTotals()" class="item-price inv-field-sm w-24 text-right">
+            </td>
+            <td class="py-2.5 px-2 text-center">
+                <select onchange="calcTotals()" class="item-tax inv-field-sm w-20 text-center font-bold cursor-pointer">
                     <option value="18" selected>18%</option>
                     <option value="12">12%</option>
                     <option value="5">5%</option>
                     <option value="0">0%</option>
                 </select>
             </td>
-            <td class="py-1.5 px-3 text-right font-black text-slate-900 item-total">1180.00</td>
-            <td class="py-1.5 text-center no-print"><button onclick="removeItem(this)" class="text-red-500 font-bold hover:text-red-700">✕</button></td>
+            <td class="py-2.5 px-3 text-right font-black text-slate-900 item-total text-sm">1180.00</td>
+            <td class="py-2.5 text-center no-print">
+                <button onclick="removeItem(this)" title="Remove item" class="w-8 h-8 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all font-bold text-sm inline-flex items-center justify-center cursor-pointer">✕</button>
+            </td>
         `;
         tbody.appendChild(tr);
         calcTotals();
@@ -704,7 +918,6 @@
         });
     }
 
-    // Bank Details
     const bankSelectEl = document.getElementById('bank-select');
     let bankName = bankSelectEl ? bankSelectEl.value : '';
     if (bankName === 'Other') {
@@ -717,21 +930,14 @@
     const bankIfsc = getVal('bank-ifsc', 'IFSC Code');
     const bankBranch = getVal('bank-branch', 'Branch Name');
 
-    // Totals matching exact IDs from HTML
-    const subTotalEl = document.getElementById('sub-total');
-    const subTotalNum = subTotalEl ? (parseFloat(subTotalEl.textContent.replace(/[^0-9.]/g, '')) || 0) : 0;
+    const subTotalNum = parseFloat(document.getElementById('sub-total').textContent.replace(/[^0-9.]/g, '')) || 0;
+    const cgstNum = parseFloat(document.getElementById('cgst-total').textContent.replace(/[^0-9.]/g, '')) || 0;
+    const sgstNum = parseFloat(document.getElementById('sgst-total').textContent.replace(/[^0-9.]/g, '')) || 0;
+    const grandTotalNum = parseFloat(document.getElementById('grand-total').textContent.replace(/[^0-9.]/g, '')) || 0;
+
     const subTotalFmt = subTotalNum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-    const cgstEl = document.getElementById('cgst-total');
-    const cgstNum = cgstEl ? (parseFloat(cgstEl.textContent.replace(/[^0-9.]/g, '')) || 0) : 0;
     const cgstFmt = cgstNum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-    const sgstEl = document.getElementById('sgst-total');
-    const sgstNum = sgstEl ? (parseFloat(sgstEl.textContent.replace(/[^0-9.]/g, '')) || 0) : 0;
     const sgstFmt = sgstNum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-    const grandTotalEl = document.getElementById('grand-total');
-    const grandTotalNum = grandTotalEl ? (parseFloat(grandTotalEl.textContent.replace(/[^0-9.]/g, '')) || 0) : 0;
     const grandTotalFmt = grandTotalNum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
     const amountWordsEl = document.getElementById('amount-in-words');
@@ -741,7 +947,7 @@
     if (!printContainer) return;
 
     printContainer.innerHTML = `
-        <div style="border: 2px solid #000000; width: 100%; margin: 0 auto; background: #ffffff; font-family: Arial, Helvetica, sans-serif !important; box-sizing: border-box;">
+        <div style="border: 2px solid #000000; width: 100%; margin: 0 auto; background: #ffffff; font-family: Arial, Helvetica, sans-serif !important; box-sizing: border-box; page-break-inside: avoid; break-inside: avoid;">
             <!-- Title -->
             <div style="text-align: center; padding: 7px 0; border-bottom: 1.5px solid #000000;">
                 <h1 style="color: #990000; font-size: 16px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase; margin: 0; font-family: Arial, Helvetica, sans-serif;">TAX INVOICE</h1>
@@ -805,7 +1011,7 @@
                     </thead>
                     <tbody>
                         ${items.map(it => `
-                        <tr style="page-break-inside: avoid;">
+                        <tr style="page-break-inside: avoid; break-inside: avoid;">
                             <td style="text-align: left; font-size: 10.5px; padding: 5px 8px; border: 1px solid #000000; color: #000000;">${it.desc}</td>
                             <td style="text-align: center; font-size: 10.5px; padding: 5px 8px; border: 1px solid #000000; color: #000000;">${it.qty}</td>
                             <td style="text-align: right; font-size: 10.5px; padding: 5px 8px; border: 1px solid #000000; color: #000000;">${it.price}</td>
@@ -818,7 +1024,7 @@
             </div>
 
             <!-- Bank Details & Totals -->
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; padding: 2px 12px 8px 12px; page-break-inside: avoid;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; padding: 2px 12px 8px 12px; page-break-inside: avoid; break-inside: avoid;">
                 <div style="width: 46%;">
                     <table style="width: 100%; border-collapse: collapse; border: 1px solid #000000;">
                         <thead>
@@ -848,7 +1054,7 @@
             </div>
 
             <!-- Terms & Signature -->
-            <div style="border-top: 1.5px solid #000000; padding: 8px 12px 6px 12px; display: flex; justify-content: space-between; align-items: flex-end; page-break-inside: avoid;">
+            <div style="border-top: 1.5px solid #000000; padding: 8px 12px 6px 12px; display: flex; justify-content: space-between; align-items: flex-end; page-break-inside: avoid; break-inside: avoid;">
                 <div style="width: 55%;">
                     <div style="font-size: 10.5px; font-weight: bold; color: #000000; margin-bottom: 3px;">Terms & Conditions:</div>
                     <div style="font-size: 9.5px; color: #334155; line-height: 1.4;">1. Goods once sold will not be taken back.</div>
@@ -862,6 +1068,7 @@
         </div>
     `;
 }
+
 
 function triggerPdfPrint() {
     preparePrintView();
@@ -1277,6 +1484,21 @@ async function downloadExcel() {
         }
 
         // Trigger Excel file download
+                // Professional Print Setup: strict A4 / A5 fitting on single page
+        ws.pageSetup = {
+            paperSize: 9, // A4 Portrait
+            orientation: 'portrait',
+            fitToPage: true,
+            fitToWidth: 1,
+            fitToHeight: 1,
+            margins: {
+                left: 0.35, right: 0.35,
+                top: 0.45, bottom: 0.45,
+                header: 0.2, footer: 0.2
+            },
+            horizontalCentered: true
+        };
+
         const buffer = await wb.xlsx.writeBuffer();
         const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         const url = window.URL.createObjectURL(blob);
